@@ -1,0 +1,1702 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="default">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>cherri - singlefile</title>
+    <link rel="shortcut icon" href="https://cherrion.top/assets/img/fav.png" type="image/x-icon" id="appFavicon">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Lexend, sans-serif;
+        }
+
+        html[data-theme="default"] {
+            --bg: #000000;
+            --bg-2: #0a0a0a;
+            --bg-3: #121212;
+            --bg-4: #1a1a1a;
+            --border: rgba(255, 255, 255, 0.2);
+            --border-2: rgba(255, 255, 255, 0.12);
+            --text: #e0e0e0;
+            --text-2: #a0a0a0;
+            --bright-text: #ffffff;
+            --accent: #ff4da6;
+            --accent-2: #e6398d;
+            --accent-glow: rgba(255, 77, 166, 0.15);
+        }
+
+        html[data-theme="blood"] {
+            --bg: #000000;
+            --bg-2: #0a0a0a;
+            --bg-3: #121212;
+            --bg-4: #1a1a1a;
+            --border: rgba(255, 255, 255, 0.2);
+            --border-2: rgba(255, 255, 255, 0.12);
+            --text: #e0e0e0;
+            --text-2: #a0a0a0;
+            --bright-text: #ffffff;
+            --accent: #ff0000;
+            --accent-2: #bb1616;
+            --accent-glow: rgba(255, 77, 77, 0.15);
+        }
+
+        html[data-theme="blossom"] {
+            --bg: #0d080b;
+            --bg-2: #130c10;
+            --bg-3: #1a1017;
+            --bg-4: #22151d;
+            --border: rgba(255, 182, 210, 0.22);
+            --border-2: rgba(255, 182, 210, 0.14);
+            --text: #e8d5df;
+            --text-2: #a8899a;
+            --bright-text: #f9eef4;
+            --accent: #e87fa8;
+            --accent-2: #cf6590;
+            --accent-glow: rgba(232, 127, 168, 0.15);
+        }
+
+        html[data-theme="crimson"] {
+            --bg: #1a0a0a;
+            --bg-2: #260f0f;
+            --bg-3: #331616;
+            --bg-4: #421f1f;
+            --border: rgba(255, 100, 100, 0.2);
+            --border-2: rgba(255, 100, 100, 0.12);
+            --text: #f5d4d4;
+            --text-2: #d08b8b;
+            --bright-text: #ffffff;
+            --accent: #ef4444;
+            --accent-2: #dc2626;
+            --accent-glow: rgba(239, 68, 68, 0.15);
+        }
+
+        html[data-theme="forest"] {
+            --bg: #0f1a0f;
+            --bg-2: #152015;
+            --bg-3: #1c291c;
+            --bg-4: #243324;
+            --border: rgba(120, 200, 120, 0.2);
+            --border-2: rgba(120, 200, 120, 0.12);
+            --text: #d8e8d8;
+            --text-2: #9cbf9c;
+            --bright-text: #ffffff;
+            --accent: #4eff7a;
+            --accent-2: #3de668;
+            --accent-glow: rgba(78, 255, 122, 0.15);
+        }
+
+        html[data-theme="lavendar"] {
+            --bg: #120a1a;
+            --bg-2: #1a0f26;
+            --bg-3: #221633;
+            --bg-4: #2d1f42;
+            --border: rgba(180, 120, 255, 0.2);
+            --border-2: rgba(180, 120, 255, 0.12);
+            --text: #e8dff5;
+            --text-2: #b4a0d0;
+            --bright-text: #ffffff;
+            --accent: #a855f7;
+            --accent-2: #9333ea;
+            --accent-glow: rgba(168, 85, 247, 0.15);
+        }
+
+        html[data-theme="light"] {
+            --bg: #ffffff;
+            --bg-2: #f8f8f8;
+            --bg-3: #f0f0f0;
+            --bg-4: #e8e8e8;
+            --border: rgba(0, 0, 0, 0.12);
+            --border-2: rgba(0, 0, 0, 0.08);
+            --text: #1a1a1a;
+            --text-2: #666666;
+            --bright-text: #000000;
+            --accent: #ff4da6;
+            --accent-2: #e6398d;
+            --accent-glow: rgba(255, 77, 166, 0.1);
+        }
+
+        html[data-theme="midnight"] {
+            --bg: #0a0a14;
+            --bg-2: #0f0f1f;
+            --bg-3: #16162b;
+            --bg-4: #1f1f3a;
+            --border: rgba(130, 150, 255, 0.2);
+            --border-2: rgba(130, 150, 255, 0.12);
+            --text: #dfe5f5;
+            --text-2: #a0b0d0;
+            --bright-text: #ffffff;
+            --accent: #6b7eff;
+            --accent-2: #5563e6;
+            --accent-glow: rgba(107, 126, 255, 0.15);
+        }
+
+        html[data-theme="monochrome"] {
+            --bg: #000000;
+            --bg-2: #0a0a0a;
+            --bg-3: #121212;
+            --bg-4: #1a1a1a;
+            --border: rgba(255, 255, 255, 0.2);
+            --border-2: rgba(255, 255, 255, 0.12);
+            --text: #e0e0e0;
+            --text-2: #a0a0a0;
+            --bright-text: #ffffff;
+            --accent: #afafaf;
+            --accent-2: #8d8d8d;
+            --accent-glow: rgba(255, 255, 255, 0.15);
+        }
+
+        html[data-theme="ocean"] {
+            --bg: #0a1628;
+            --bg-2: #0d1d35;
+            --bg-3: #122542;
+            --bg-4: #1a3354;
+            --border: rgba(100, 200, 255, 0.2);
+            --border-2: rgba(100, 200, 255, 0.12);
+            --text: #d4e7f5;
+            --text-2: #8bb4d0;
+            --bright-text: #ffffff;
+            --accent: #00d4ff;
+            --accent-2: #00b8e6;
+            --accent-glow: rgba(0, 212, 255, 0.15);
+        }
+
+        html[data-theme="sunset"] {
+            --bg: #1a0f0a;
+            --bg-2: #241512;
+            --bg-3: #2e1d1a;
+            --bg-4: #3d2622;
+            --border: rgba(255, 150, 80, 0.2);
+            --border-2: rgba(255, 150, 80, 0.12);
+            --text: #f5e0d4;
+            --text-2: #d0a890;
+            --bright-text: #ffffff;
+            --accent: #ff7b3d;
+            --accent-2: #e6632a;
+            --accent-glow: rgba(255, 123, 61, 0.15);
+        }
+
+        html,
+        body {
+            margin: 0;
+            min-height: 100%;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        body {
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        h1,
+        h2,
+        h3,
+        p {
+            margin: 0;
+        }
+
+        button {
+            font: inherit;
+        }
+
+        button.secondary,
+        button.outline {
+            padding: 7px 10px;
+            font-size: 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+
+        button.secondary {
+            color: var(--text);
+            background: var(--bg-3);
+            border: none;
+        }
+
+        button.secondary:hover {
+            background: var(--bg-4);
+            transform: scale(1.04);
+        }
+
+        button.outline {
+            color: var(--text);
+            background: none;
+            border: 1px solid var(--border-2);
+        }
+
+        button.outline:hover {
+            transform: scale(1.04);
+        }
+
+        button.secondary:active,
+        button.outline:active {
+            transform: scale(0.96);
+        }
+
+        .dac {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .home-shell {
+            transition: opacity 0.15s, transform 0.15s;
+        }
+
+        .home-shell.popup-open {
+            opacity: 0.4;
+            transform: translate(-50%, -50%) scale(0.985);
+            pointer-events: none;
+        }
+
+        .hometitle {
+            font-size: 65px;
+            color: transparent;
+            background: linear-gradient(to bottom, var(--accent), var(--text));
+            background-clip: text;
+            text-shadow: 0 0 35px var(--accent);
+        }
+
+        .popup-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(14px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.15s;
+        }
+
+        .popup-backdrop.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .popup-window {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: min(960px, calc(100vw - 32px));
+            height: min(640px, calc(100vh - 32px));
+            transform: translate(-50%, -50%) scale(0.96);
+            border-radius: 26px;
+            border: 1px solid var(--border);
+            background: var(--bg-2);
+            box-shadow: 0 18px 48px rgba(0, 0, 0, 0.35);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.15s, transform 0.15s;
+            overflow: hidden;
+        }
+
+        .popup-window.open {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+            pointer-events: auto;
+        }
+
+        .popup-chrome {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            padding: 16px 18px;
+            border-bottom: 1px solid var(--border-2);
+            background: var(--bg-2);
+        }
+
+        .popup-title {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .popup-title p {
+            color: var(--text-2);
+            font-size: 13px;
+        }
+
+        .popup-body {
+            height: calc(100% - 73px);
+            padding: 0;
+        }
+
+        .section-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            height: 100%;
+            animation: section-enter 0.15s ease;
+        }
+
+        .section-title {
+            padding-top: 2px;
+        }
+
+        .section-title p {
+            margin-top: 4px;
+            color: var(--text-2);
+        }
+
+        .section-grid,
+        .theme-grid {
+            display: grid;
+            gap: 10px;
+        }
+
+        .section-grid {
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        }
+
+        .theme-grid {
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        }
+
+        .section-card,
+        .embed-shell {
+            border-radius: 18px;
+            border: 1px solid var(--border-2);
+            background: var(--bg-3);
+        }
+
+        .section-card {
+            padding: 16px;
+        }
+
+        .section-card p {
+            margin-top: 6px;
+            color: var(--text-2);
+            font-size: 14px;
+            line-height: 1.45;
+        }
+
+        .embed-shell {
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .mini-stage {
+            height: 100%;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .mini-stage h3 {
+            font-size: 28px;
+            color: var(--bright-text);
+            text-transform: lowercase;
+        }
+
+        .mini-stage p,
+        .mini-status {
+            color: var(--text-2);
+        }
+
+        .mini-stage p {
+            line-height: 1.5;
+            max-width: 560px;
+        }
+
+        .mini-toolbar,
+        .games-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .mini-input {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 14px;
+            border: 1px solid var(--border-2);
+            background: var(--bg-3);
+            color: var(--text);
+            outline: none;
+        }
+
+        .mini-input::placeholder {
+            color: var(--text-2);
+        }
+
+        .mini-status {
+            min-height: 20px;
+            font-size: 14px;
+        }
+
+        .mini-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            max-height: 280px;
+            overflow: auto;
+            padding-right: 4px;
+        }
+
+        .game-card,
+        .mini-pill {
+            color: var(--text);
+            background: var(--bg-3);
+            text-align: left;
+            cursor: pointer;
+            transition: 0.15s;
+            border: 1px solid var(--border-2);
+        }
+
+        .game-card {
+            padding: 10px;
+            border-radius: 16px;
+        }
+
+        .mini-pill {
+            padding: 12px 14px;
+            border-radius: 14px;
+        }
+
+        .game-card:hover,
+        .mini-pill:hover {
+            border-color: var(--border);
+        }
+
+        .game-card.active,
+        .mini-pill.active,
+        .theme-chip.active {
+            border-color: var(--accent);
+            color: var(--bright-text);
+        }
+
+        .game-card img {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            display: block;
+            border-radius: 12px;
+            background: var(--bg-4);
+        }
+
+        .game-card h3 {
+            margin: 10px 0 4px;
+            font-size: 14px;
+            line-height: 1.3;
+        }
+
+        .game-card p {
+            color: var(--text-2);
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .embed-frame {
+            width: 100%;
+            height: 100%;
+            border: 0;
+            background: var(--bg);
+        }
+
+        .theme-chip {
+            text-transform: capitalize;
+        }
+
+        @keyframes section-enter {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 720px) {
+            .popup-window {
+                width: calc(100vw - 18px);
+                height: calc(100vh - 18px);
+                border-radius: 22px;
+            }
+
+            .popup-chrome {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .popup-body {
+                height: calc(100% - 120px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dac home-shell" id="homeShell">
+        <center>
+            <h1 class="hometitle">cherri</h1>
+            <p id="splash"></p>
+            <br>
+            <button class="outline" onclick="launch('games')">games</button>
+            <button class="outline" onclick="launch('movies')">movies</button>
+            <button class="outline" onclick="launch('settings')">settings</button>
+        </center>
+    </div>
+
+    <div class="popup-backdrop" id="popupBackdrop" onclick="closePopup()"></div>
+    <div class="popup-window" id="popupWindow" role="dialog" aria-modal="true" aria-hidden="true">
+        <div class="popup-chrome">
+            <div class="popup-title">
+                <h2 id="popupTitle">cherri</h2>
+                <p id="popupSubtitle" style="display: none;">popup mode</p>
+            </div>
+            <div class="popup-actions">
+                <button class="outline" id="popupFullscreenButton" style="display: none;">fullscreen</button>
+                <button class="outline" id="popupDownloadButton" style="display: none;">download</button>
+                <button class="outline" onclick="closePopup()">close</button>
+            </div>
+        </div>
+        <div class="popup-body" id="popupBody"></div>
+    </div>
+
+    <script>
+        const splashes = [
+            "how are you today?",
+            "better than gn math",
+            "check out the partners",
+            "try using the real site?",
+            "join the discord",
+            "splishy splash",
+            "mmmm",
+            "i want pizza",
+            "hi"
+        ]
+
+        const $ = (s) => document.querySelector(s)
+
+        const popupSections = {
+            games: {
+                title: "games",
+                subtitle: "launches in a clean popup and unloads when you leave"
+            },
+            movies: {
+                title: "movies",
+                subtitle: "same chrome, same motion, separate runtime"
+            },
+            settings: {
+                title: "settings",
+                subtitle: "theme selector"
+            }
+        }
+
+        const popupState = {
+            activeSection: null,
+            cleanup: null,
+            activeGame: null
+        }
+
+        const GAME_ZONES_URL = "https://cdn.jsdelivr.net/gh/freebuisness/assets@latest/zones.json"
+        const GAME_COVER_BASE = "https://cdn.jsdelivr.net/gh/freebuisness/covers@latest"
+        const GAME_HTML_BASE = "https://cdn.jsdelivr.net/gh/freebuisness/html@latest"
+        const WATCH_API_KEY = "1070730380f5fee0d87cf0382670b255"
+        const watchSources = [
+            {
+                id: "vidking",
+                name: "Vidking",
+                urls: {
+                    movie: "https://www.vidking.net/embed/movie/{id}",
+                    tv: "https://www.vidking.net/embed/tv/{id}/{season}/{episode}?color=e50914&autoPlay=true&nextEpisode=true&episodeSelector=true"
+                }
+            },
+            {
+                id: "embedmaster",
+                name: "EmbedMaster",
+                urls: {
+                    movie: "https://embedmaster.link/movie/{id}",
+                    tv: "https://embedmaster.link/tv/{id}/{season}/{episode}"
+                }
+            },
+            {
+                id: "vidlink",
+                name: "VidLink",
+                urls: {
+                    movie: "https://vidlink.pro/movie/{id}",
+                    tv: "https://vidlink.pro/tv/{id}/{season}/{episode}"
+                }
+            },
+            {
+                id: "vidsrcxyz",
+                name: "VidSrcXyz",
+                urls: {
+                    movie: "https://vidsrc.xyz/embed/movie/{id}",
+                    tv: "https://vidsrc.xyz/embed/tv/{id}/{season}/{episode}"
+                }
+            },
+            {
+                id: "vidsrcrip",
+                name: "VidSrcRIP",
+                urls: {
+                    movie: "https://vidsrc.rip/embed/movie/{id}",
+                    tv: "https://vidsrc.rip/embed/tv/{id}/{season}/{episode}"
+                }
+            },
+            {
+                id: "videasy",
+                name: "VidEasy",
+                urls: {
+                    movie: "https://player.videasy.net/movie/{id}?color=8834ec",
+                    tv: "https://player.videasy.net/tv/{id}/{season}/{episode}?color=8834ec"
+                }
+            }
+        ]
+
+        const availableThemes = [
+            "default", "blood", "blossom", "crimson", "forest",
+            "lavendar", "light", "midnight", "monochrome", "ocean", "sunset"
+        ]
+        const defaultTabTitle = document.title
+        const defaultFaviconHref = $("#appFavicon")?.href || "https://cherrion.top/assets/img/fav.png"
+
+        $("#splash").textContent = splashes[Math.floor(Math.random() * splashes.length)]
+
+        function setPopupOpen(isOpen) {
+            $("#popupBackdrop").classList.toggle("open", isOpen)
+            $("#popupWindow").classList.toggle("open", isOpen)
+            $("#popupWindow").setAttribute("aria-hidden", isOpen ? "false" : "true")
+            $("#homeShell").classList.toggle("popup-open", isOpen)
+        }
+
+        function setPopupGameActions(isVisible) {
+            $("#popupFullscreenButton").style.display = isVisible ? "" : "none"
+            $("#popupDownloadButton").style.display = isVisible ? "" : "none"
+        }
+
+        function destroyActiveSection() {
+            if (typeof popupState.cleanup === "function") {
+                popupState.cleanup()
+            }
+
+            popupState.cleanup = null
+            popupState.activeSection = null
+            popupState.activeGame = null
+            $("#popupBody").innerHTML = ""
+            setPopupGameActions(false)
+        }
+
+        function closePopup() {
+            destroyActiveSection()
+            setPopupOpen(false)
+        }
+
+        function escapeHtml(value) {
+            return String(value)
+                .replaceAll("&", "&amp;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;")
+                .replaceAll("\"", "&quot;")
+        }
+
+        function resolveGameAsset(value, fallbackBase) {
+            if (!value) return ""
+
+            let resolved = String(value)
+                .replace(/\{COVER_URL\}/g, GAME_COVER_BASE)
+                .replace(/\{HTML_URL\}/g, GAME_HTML_BASE)
+                .replace(/\{HTML\}/g, GAME_HTML_BASE)
+                .replace(/\{COVERS\}/g, GAME_COVER_BASE)
+
+            if (resolved.startsWith("http://") || resolved.startsWith("https://")) {
+                return resolved
+            }
+
+            resolved = resolved.replace(/^\/+/, "")
+            return `${fallbackBase}/${resolved}`
+        }
+
+        function applyTheme(theme) {
+            document.documentElement.dataset.theme = theme
+            localStorage.setItem("cherri-theme", theme)
+
+            if (popupState.activeSection === "settings") {
+                const settingsFrame = $("#popupBody")?.querySelector("iframe.module-frame")
+                const settingsDoc = settingsFrame?.contentDocument
+                if (settingsDoc) {
+                    settingsDoc.documentElement.dataset.theme = theme
+                    settingsDoc.querySelectorAll("[data-theme]").forEach((button) => {
+                        button.classList.toggle("active", button.dataset.theme === theme)
+                    })
+                }
+            }
+        }
+
+        function applyTabSettings(title, favicon) {
+            const nextTitle = (title || "").trim() || defaultTabTitle
+            const nextFavicon = (favicon || "").trim() || defaultFaviconHref
+
+            document.title = nextTitle
+            const faviconLink = $("#appFavicon")
+            if (faviconLink) {
+                faviconLink.href = nextFavicon
+            }
+        }
+
+        function saveTabSettings(title, favicon) {
+            const cleanTitle = (title || "").trim()
+            const cleanFavicon = (favicon || "").trim()
+
+            if (cleanTitle) {
+                localStorage.setItem("cherri-tab-title", cleanTitle)
+            } else {
+                localStorage.removeItem("cherri-tab-title")
+            }
+
+            if (cleanFavicon) {
+                localStorage.setItem("cherri-tab-favicon", cleanFavicon)
+            } else {
+                localStorage.removeItem("cherri-tab-favicon")
+            }
+
+            applyTabSettings(cleanTitle, cleanFavicon)
+        }
+
+        window.__cherriApplyTheme = applyTheme
+        window.__cherriLaunchWatch = launchWatch
+
+        async function downloadGame(game) {
+            if (!game || !game.url) return
+
+            const response = await fetch(game.url)
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`)
+            }
+
+            const html = await response.text()
+            const blob = new Blob([html], { type: "text/html" })
+            const blobUrl = URL.createObjectURL(blob)
+            const link = document.createElement("a")
+            const safeName = (game.name || "game")
+                .replace(/[<>:"/\\|?*\x00-\x1F]/g, "")
+                .replace(/\s+/g, "-")
+                .toLowerCase()
+
+            link.href = blobUrl
+            link.download = `${safeName || "game"}.html`
+            document.body.appendChild(link)
+            link.click()
+            link.remove()
+            URL.revokeObjectURL(blobUrl)
+        }
+
+        async function fullscreenGameFrame() {
+            const bodyFrame = $("#popupBody")?.querySelector("iframe.module-frame")
+            const gameFrame = bodyFrame?.contentDocument?.querySelector("iframe.game-frame")
+            const target = bodyFrame || gameFrame
+
+            if (!target) {
+                throw new Error("game frame not ready")
+            }
+
+            if (target.requestFullscreen) {
+                await target.requestFullscreen()
+                return
+            }
+
+            if (target.webkitRequestFullscreen) {
+                target.webkitRequestFullscreen()
+                return
+            }
+
+            if (target.msRequestFullscreen) {
+                target.msRequestFullscreen()
+                return
+            }
+
+            throw new Error("fullscreen unavailable")
+        }
+
+        window.__cherriDownloadGame = downloadGame
+        window.__cherriFullscreenGame = fullscreenGameFrame
+
+        function injectBaseHref(html, baseHref) {
+            const baseTag = `<base href="${escapeHtml(baseHref)}">`
+
+            if (/<head[^>]*>/i.test(html)) {
+                return html.replace(/<head([^>]*)>/i, `<head$1>${baseTag}`)
+            }
+
+            if (/<html[^>]*>/i.test(html)) {
+                return html.replace(/<html([^>]*)>/i, `<html$1><head>${baseTag}</head>`)
+            }
+
+            return `<!DOCTYPE html><html><head>${baseTag}</head><body>${html}</body></html>`
+        }
+
+        function getPopupThemeCss() {
+            return `
+        html[data-theme="default"] {
+            --bg: #000000;
+            --bg-2: #0a0a0a;
+            --bg-3: #121212;
+            --bg-4: #1a1a1a;
+            --border: rgba(255,255,255,0.2);
+            --border-2: rgba(255,255,255,0.12);
+            --text: #e0e0e0;
+            --text-2: #a0a0a0;
+            --bright-text: #ffffff;
+            --accent: #ff4da6;
+        }
+        html[data-theme="blood"] {
+            --bg: #000000; --bg-2: #0a0a0a; --bg-3: #121212; --bg-4: #1a1a1a;
+            --border: rgba(255,255,255,0.2); --border-2: rgba(255,255,255,0.12);
+            --text: #e0e0e0; --text-2: #a0a0a0; --bright-text: #ffffff; --accent: #ff0000;
+        }
+        html[data-theme="blossom"] {
+            --bg: #0d080b; --bg-2: #130c10; --bg-3: #1a1017; --bg-4: #22151d;
+            --border: rgba(255,182,210,0.22); --border-2: rgba(255,182,210,0.14);
+            --text: #e8d5df; --text-2: #a8899a; --bright-text: #f9eef4; --accent: #e87fa8;
+        }
+        html[data-theme="crimson"] {
+            --bg: #1a0a0a; --bg-2: #260f0f; --bg-3: #331616; --bg-4: #421f1f;
+            --border: rgba(255,100,100,0.2); --border-2: rgba(255,100,100,0.12);
+            --text: #f5d4d4; --text-2: #d08b8b; --bright-text: #ffffff; --accent: #ef4444;
+        }
+        html[data-theme="forest"] {
+            --bg: #0f1a0f; --bg-2: #152015; --bg-3: #1c291c; --bg-4: #243324;
+            --border: rgba(120,200,120,0.2); --border-2: rgba(120,200,120,0.12);
+            --text: #d8e8d8; --text-2: #9cbf9c; --bright-text: #ffffff; --accent: #4eff7a;
+        }
+        html[data-theme="lavendar"] {
+            --bg: #120a1a; --bg-2: #1a0f26; --bg-3: #221633; --bg-4: #2d1f42;
+            --border: rgba(180,120,255,0.2); --border-2: rgba(180,120,255,0.12);
+            --text: #e8dff5; --text-2: #b4a0d0; --bright-text: #ffffff; --accent: #a855f7;
+        }
+        html[data-theme="light"] {
+            --bg: #ffffff; --bg-2: #f8f8f8; --bg-3: #f0f0f0; --bg-4: #e8e8e8;
+            --border: rgba(0,0,0,0.12); --border-2: rgba(0,0,0,0.08);
+            --text: #1a1a1a; --text-2: #666666; --bright-text: #000000; --accent: #ff4da6;
+        }
+        html[data-theme="midnight"] {
+            --bg: #0a0a14; --bg-2: #0f0f1f; --bg-3: #16162b; --bg-4: #1f1f3a;
+            --border: rgba(130,150,255,0.2); --border-2: rgba(130,150,255,0.12);
+            --text: #dfe5f5; --text-2: #a0b0d0; --bright-text: #ffffff; --accent: #6b7eff;
+        }
+        html[data-theme="monochrome"] {
+            --bg: #000000; --bg-2: #0a0a0a; --bg-3: #121212; --bg-4: #1a1a1a;
+            --border: rgba(255,255,255,0.2); --border-2: rgba(255,255,255,0.12);
+            --text: #e0e0e0; --text-2: #a0a0a0; --bright-text: #ffffff; --accent: #afafaf;
+        }
+        html[data-theme="ocean"] {
+            --bg: #0a1628; --bg-2: #0d1d35; --bg-3: #122542; --bg-4: #1a3354;
+            --border: rgba(100,200,255,0.2); --border-2: rgba(100,200,255,0.12);
+            --text: #d4e7f5; --text-2: #8bb4d0; --bright-text: #ffffff; --accent: #00d4ff;
+        }
+        html[data-theme="sunset"] {
+            --bg: #1a0f0a; --bg-2: #241512; --bg-3: #2e1d1a; --bg-4: #3d2622;
+            --border: rgba(255,150,80,0.2); --border-2: rgba(255,150,80,0.12);
+            --text: #f5e0d4; --text-2: #d0a890; --bright-text: #ffffff; --accent: #ff7b3d;
+        }
+    `
+        }
+
+        function getPopupBaseCss() {
+            return `
+        * { box-sizing: border-box; font-family: Lexend, sans-serif; }
+        html, body { margin: 0; width: 100%; height: 100%; background: var(--bg); color: var(--text); }
+        body { padding: 0; overflow: hidden; }
+        h1, h2, h3, p { margin: 0; }
+        button, input { font: inherit; }
+        .window { display: flex; flex-direction: column; gap: 16px; height: 100%; min-height: 0; }
+        .window.inset { padding: 18px; }
+        .window.flush { gap: 0; padding: 0; }
+        .title p { margin-top: 4px; color: var(--text-2); }
+        .row { display: flex; gap: 10px; flex-wrap: wrap; }
+        .grow { flex: 1; min-width: 0; }
+        .input {
+            width: 100%; padding: 10px 12px; border-radius: 14px; border: 1px solid var(--border-2);
+            background: var(--bg-3); color: var(--text); outline: none;
+        }
+        .status { color: var(--text-2); font-size: 14px; min-height: 20px; }
+        .games-shell {
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .games-grid {
+            flex: 1;
+            min-height: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            align-content: start;
+            gap: 12px;
+            overflow: auto;
+            padding-right: 4px;
+        }
+        .game-card, .theme-chip, .movie-pill {
+            color: var(--text); background: var(--bg-3); border: 1px solid var(--border-2);
+            border-radius: 16px; cursor: pointer; transition: 0.15s;
+        }
+        .game-card { padding: 10px; text-align: left; }
+        .theme-chip, .movie-pill { padding: 12px 14px; text-align: left; }
+        .game-card.active, .theme-chip.active, .movie-pill.active { border-color: var(--accent); color: var(--bright-text); }
+        .game-card img {
+            width: 100%; aspect-ratio: 1 / 1; object-fit: cover; display: block;
+            border-radius: 12px; background: var(--bg-4);
+        }
+        .game-card h3 { margin: 10px 0 4px; font-size: 14px; line-height: 1.3; }
+        .game-card p, .muted { color: var(--text-2); font-size: 12px; line-height: 1.4; }
+        .theme-grid, .movie-grid {
+            display: grid; gap: 10px;
+        }
+        .theme-grid { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); }
+        .movie-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+        .movie-results {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 14px;
+        }
+        .movie-card {
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            border-radius: 18px;
+            border: 1px solid var(--border-2);
+            background: linear-gradient(180deg, var(--bg-3), var(--bg-2));
+            transition: transform 0.15s, border-color 0.15s;
+        }
+        .movie-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent);
+        }
+        .movie-card-copy {
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .stage {
+            flex: 1; min-height: 280px; border-radius: 18px; border: 1px solid var(--border-2);
+            background: none; overflow: hidden;
+        }
+        .stage-copy { padding: 18px; }
+        .stage-copy h3 { font-size: 28px; color: var(--bright-text); text-transform: lowercase; }
+        .stage-copy p { margin-top: 8px; color: var(--text-2); line-height: 1.5; }
+        iframe.module-frame, iframe.game-frame {
+            width: 100%; height: 100%; border: 0; border-radius: 12px; display: block; background: none;
+        }
+        .window.flush .stage {
+            min-height: 0;
+            border: 0;
+            border-radius: 0;
+            background: #000;
+        }
+        .window.flush iframe.game-frame {
+            border-radius: 0;
+            background: #000;
+        }
+    `
+        }
+
+        function getPopupDocument(title, bodyMarkup, inlineScript = "", options = {}) {
+            const theme = document.documentElement.dataset.theme || "default"
+            const windowClass = options.flush ? "window flush" : "window inset"
+
+            return `<!DOCTYPE html>
+<html lang="en" data-theme="${theme}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${escapeHtml(title)}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        ${getPopupThemeCss()}
+        ${getPopupBaseCss()}
+    </style>
+</head>
+<body>
+    <div class="${windowClass}">
+        ${bodyMarkup}
+    </div>
+    <script>
+        const hostApi = window.parent;
+        ${inlineScript}
+    <\/script>
+</body>
+</html>`
+        }
+
+        function buildSettingsSrcdoc() {
+            const currentTheme = document.documentElement.dataset.theme || "default"
+            const themes = availableThemes.map((theme) => `
+        <button class="theme-chip ${currentTheme === theme ? "active" : ""}" data-theme="${theme}">
+            ${theme}
+        </button>
+    `).join("")
+
+            return getPopupDocument(
+                "settings",
+                `
+            <div class="title">
+                <p>theme selector</p>
+            </div>
+            <div class="theme-grid">${themes}</div>
+            <div class="title">
+                <p>tab customization</p>
+            </div>
+            <div class="row">
+                <input class="input grow" id="tabTitleInput" placeholder="tab title">
+            </div>
+            <div class="row">
+                <input class="input grow" id="tabFaviconInput" placeholder="favicon url">
+            </div>
+            <div class="row">
+                <button class="movie-pill" id="saveTabSettingsButton" type="button">save</button>
+                <button class="movie-pill" id="resetTabSettingsButton" type="button">reset</button>
+            </div>
+        `,
+                `
+            const titleInput = document.getElementById("tabTitleInput");
+            const faviconInput = document.getElementById("tabFaviconInput");
+            const savedTitle = localStorage.getItem("cherri-tab-title") || "";
+            const savedFavicon = localStorage.getItem("cherri-tab-favicon") || "";
+
+            titleInput.value = savedTitle;
+            faviconInput.value = savedFavicon;
+
+            document.querySelectorAll("[data-theme]").forEach((button) => {
+                button.addEventListener("click", () => {
+                    hostApi.__cherriApplyTheme?.(button.dataset.theme);
+                });
+            });
+
+            document.getElementById("saveTabSettingsButton").addEventListener("click", () => {
+                hostApi.__cherriSaveTabSettings?.(titleInput.value, faviconInput.value);
+            });
+
+            document.getElementById("resetTabSettingsButton").addEventListener("click", () => {
+                titleInput.value = "";
+                faviconInput.value = "";
+                hostApi.__cherriSaveTabSettings?.("", "");
+            });
+        `
+            )
+        }
+
+        function buildGamesSrcdoc() {
+            return getPopupDocument(
+                "games",
+                `
+            <div class="games-shell">
+                <div class="row">
+                    <input class="input" id="search" placeholder="search games">
+                </div>
+                <div class="games-grid" id="gamesGrid"></div>
+                <div class="status" id="status">loading games...</div>
+            </div>
+        `,
+                `
+            const GAME_ZONES_URL = ${JSON.stringify(GAME_ZONES_URL)};
+            const GAME_COVER_BASE = ${JSON.stringify(GAME_COVER_BASE)};
+            const GAME_HTML_BASE = ${JSON.stringify(GAME_HTML_BASE)};
+            const grid = document.getElementById("gamesGrid");
+            const status = document.getElementById("status");
+            const search = document.getElementById("search");
+            let games = [];
+            let activeUrl = "";
+
+            function resolveGameAsset(value, fallbackBase) {
+                if (!value) return "";
+                let resolved = String(value)
+                    .replace(/\\{COVER_URL\\}/g, GAME_COVER_BASE)
+                    .replace(/\\{HTML_URL\\}/g, GAME_HTML_BASE)
+                    .replace(/\\{HTML\\}/g, GAME_HTML_BASE)
+                    .replace(/\\{COVERS\\}/g, GAME_COVER_BASE);
+                if (resolved.startsWith("http://") || resolved.startsWith("https://")) return resolved;
+                return fallbackBase + "/" + resolved.replace(/^\\/+/, "");
+            }
+
+            function normalizeGame(raw) {
+                const candidates = [raw, raw?.data, raw?.attributes].filter(Boolean);
+                for (const obj of candidates) {
+                    const name = obj.name || obj.title || obj.n || "";
+                    const cover = obj.cover || obj.image || obj.thumbnail || obj.img || obj.coverUrl || "";
+                    const url = obj.url || obj.src || obj.link || obj.path || obj.gameUrl || "";
+                    const author = obj.author || obj.creator || obj.by || "";
+                    const special = Array.isArray(obj.special) ? obj.special : [];
+                    if (name && (cover || url)) {
+                        return {
+                            name: String(name).trim(),
+                            cover: resolveGameAsset(cover, GAME_COVER_BASE),
+                            url: resolveGameAsset(url, GAME_HTML_BASE),
+                            author: String(author).trim(),
+                            special
+                        };
+                    }
+                }
+                return null;
+            }
+
+            function render(items) {
+                grid.innerHTML = "";
+                if (!items.length) {
+                    status.textContent = "no games found";
+                    return;
+                }
+
+                items.forEach((game) => {
+                    const card = document.createElement("button");
+                    card.className = "game-card" + (game.url === activeUrl ? " active" : "");
+
+                    const image = document.createElement("img");
+                    image.src = game.cover;
+                    image.alt = game.name;
+                    image.onerror = () => { image.style.opacity = "0.3"; };
+
+                    const title = document.createElement("h3");
+                    title.textContent = game.name;
+
+                    const author = document.createElement("p");
+                    author.textContent = game.author || "unknown";
+
+                    card.append(image, title, author);
+                    card.addEventListener("click", () => {
+                        activeUrl = game.url;
+                        hostApi.__cherriLaunchGame?.(game);
+                        render(filterGames(search.value));
+                    });
+                    grid.appendChild(card);
+                });
+            }
+
+            function filterGames(query) {
+                const q = String(query || "").trim().toLowerCase();
+                return q ? games.filter((game) => {
+                    const haystack = (game.name + " " + game.author + " " + game.special.join(" ")).toLowerCase();
+                    return haystack.includes(q);
+                }) : games;
+            }
+
+            search.addEventListener("input", () => render(filterGames(search.value)));
+
+            fetch(GAME_ZONES_URL)
+                .then((response) => {
+                    if (!response.ok) throw new Error("HTTP " + response.status);
+                    return response.json();
+                })
+                .then((data) => {
+                    const raw = Array.isArray(data) ? data : (data?.games || data?.data || Object.values(data));
+                    games = raw
+                        .map(normalizeGame)
+                        .filter(Boolean)
+                        .filter((game) => {
+                            const name = game.name.toLowerCase();
+                            return !name.includes("suggest games") && !name.includes("comments");
+                        });
+
+                    render(filterGames(search.value));
+                    if (games.length) {
+                        status.textContent = "";
+                    } else {
+                        status.textContent = "no launchable games found";
+                    }
+                })
+                .catch((error) => {
+                    status.textContent = "failed to load games: " + error.message;
+                });
+        `
+            )
+        }
+
+        function buildGamePlayerSrcdoc(game, gameHtml) {
+            gameHtml = injectBaseHref(gameHtml, game.url)
+
+            return getPopupDocument(
+                game.name,
+                `
+            <div class="stage">
+                <iframe class="game-frame" sandbox="allow-scripts allow-forms allow-modals allow-pointer-lock allow-same-origin" srcdoc=${JSON.stringify(gameHtml)}></iframe>
+            </div>
+        `,
+                "",
+                { flush: true }
+            )
+        }
+
+        function buildMoviesSrcdoc() {
+            return getPopupDocument(
+                "movies",
+                `
+            <div class="window inset" style="padding:0; height:auto; min-height:100%;">
+                <div class="row">
+                    <input class="input grow" id="movieSearch" placeholder="what are we watching today?">
+                </div>
+                <div class="row">
+                    <button class="movie-pill active" id="moviesTab" type="button">movies</button>
+                    <button class="movie-pill" id="showsTab" type="button">tv and shows</button>
+                </div>
+                <div class="movie-results" id="movieResults"></div>
+                <div class="status" id="movieStatus">loading...</div>
+                <div class="row">
+                    <button class="movie-pill" id="prevPage" type="button">previous</button>
+                    <div class="muted" id="pageLabel">page 1</div>
+                    <button class="movie-pill" id="nextPage" type="button">next</button>
+                </div>
+            </div>
+        `,
+                `
+            document.body.style.overflowY = "auto";
+            document.body.style.overflowX = "hidden";
+            const apiKey = "fb7bb23f03b6994dafc674c074d01761";
+            const results = document.getElementById("movieResults");
+            const status = document.getElementById("movieStatus");
+            const search = document.getElementById("movieSearch");
+            const pageLabel = document.getElementById("pageLabel");
+            const prevPage = document.getElementById("prevPage");
+            const nextPage = document.getElementById("nextPage");
+            const moviesTab = document.getElementById("moviesTab");
+            const showsTab = document.getElementById("showsTab");
+
+            let currentTab = "movies";
+            let currentPage = 1;
+            let searchQuery = "";
+
+            function updateTabs() {
+                moviesTab.classList.toggle("active", currentTab === "movies");
+                showsTab.classList.toggle("active", currentTab === "shows");
+            }
+
+            function renderContent(items) {
+                results.innerHTML = "";
+
+                if (!items.length) {
+                    status.textContent = "nothing found";
+                    return;
+                }
+
+                items.forEach((item) => {
+                    const card = document.createElement("a");
+                    const itemType = currentTab === "movies" ? "movie" : "tv";
+                    const title = item.title || item.name || "untitled";
+                    const poster = item.poster_path ? "https://image.tmdb.org/t/p/w500" + item.poster_path : "";
+                    const yearValue = item.release_date || item.first_air_date;
+                    const year = yearValue ? String(new Date(yearValue).getFullYear()) : "";
+
+                    card.className = "movie-card";
+                    card.href = "#";
+                    card.addEventListener("click", (event) => {
+                        event.preventDefault();
+                        hostApi.__cherriLaunchWatch?.(item.id, itemType);
+                    });
+
+                    const imageWrap = document.createElement("div");
+                    imageWrap.style.aspectRatio = "3 / 2";
+                    imageWrap.style.background = "var(--bg-4)";
+                    imageWrap.style.overflow = "hidden";
+
+                    const image = document.createElement("img");
+                    image.src = poster;
+                    image.alt = title;
+                    image.style.width = "100%";
+                    image.style.height = "100%";
+                    image.style.objectFit = "cover";
+                    image.style.display = "block";
+                    image.onerror = () => {
+                        imageWrap.innerHTML = "<div class=\\"stage-copy\\"><h3>" + title.replace(/</g, "&lt;") + "</h3></div>";
+                    };
+
+                    const copy = document.createElement("div");
+                    copy.className = "movie-card-copy";
+                    copy.innerHTML = "<h3 style=\\"font-size:15px;line-height:1.35;\\">" + title.replace(/</g, "&lt;") + "</h3><p class=\\"muted\\">" + year + "</p>";
+
+                    imageWrap.appendChild(image);
+                    card.appendChild(imageWrap);
+                    card.appendChild(copy);
+                    results.appendChild(card);
+                });
+
+                status.textContent = items.length + " results";
+            }
+
+            async function fetchContent() {
+                const endpoint = currentTab === "movies" ? "movie/popular" : "tv/popular";
+                const url = "https://api.tmdb.org/3/" + endpoint + "?api_key=" + apiKey + "&page=" + currentPage;
+                const response = await fetch(url, { headers: { Accept: "application/json" } });
+                if (!response.ok) throw new Error("HTTP " + response.status);
+                const data = await response.json();
+                renderContent(data.results || []);
+            }
+
+            async function searchContent() {
+                if (!searchQuery.trim()) {
+                    await fetchContent();
+                    return;
+                }
+
+                const endpoint = currentTab === "movies" ? "movie" : "tv";
+                const url = "https://api.tmdb.org/3/search/" + endpoint + "?api_key=" + apiKey + "&query=" + encodeURIComponent(searchQuery) + "&page=" + currentPage;
+                const response = await fetch(url, { headers: { Accept: "application/json" } });
+                if (!response.ok) throw new Error("HTTP " + response.status);
+                const data = await response.json();
+                renderContent(data.results || []);
+            }
+
+            async function refresh() {
+                pageLabel.textContent = "page " + currentPage;
+                status.textContent = "loading...";
+                try {
+                    if (searchQuery.trim()) {
+                        await searchContent();
+                    } else {
+                        await fetchContent();
+                    }
+                } catch (error) {
+                    status.textContent = "failed to load movies";
+                }
+            }
+
+            search.addEventListener("input", async () => {
+                searchQuery = search.value;
+                currentPage = 1;
+                await refresh();
+            });
+
+            moviesTab.addEventListener("click", async () => {
+                currentTab = "movies";
+                currentPage = 1;
+                searchQuery = "";
+                search.value = "";
+                updateTabs();
+                await refresh();
+            });
+
+            showsTab.addEventListener("click", async () => {
+                currentTab = "shows";
+                currentPage = 1;
+                searchQuery = "";
+                search.value = "";
+                updateTabs();
+                await refresh();
+            });
+
+            prevPage.addEventListener("click", async () => {
+                if (currentPage <= 1) return;
+                currentPage -= 1;
+                await refresh();
+            });
+
+            nextPage.addEventListener("click", async () => {
+                currentPage += 1;
+                await refresh();
+            });
+
+            updateTabs();
+            refresh();
+        `
+            )
+        }
+
+        function buildSectionSrcdoc(key) {
+            if (key === "games") return buildGamesSrcdoc()
+            if (key === "movies") return buildMoviesSrcdoc()
+            return buildSettingsSrcdoc()
+        }
+
+        function buildWatchSrcdoc(contentId, contentType) {
+            return getPopupDocument(
+                "watch",
+                `
+            <div class="window inset" style="gap:18px; height:auto; min-height:100%;">
+                <div class="title">
+                    <h2 id="watchTitle">loading...</h2>
+                    <p id="watchMeta"></p>
+                </div>
+                <div class="stage" style="min-height: 480px;">
+                    <iframe id="watchFrame" class="game-frame" allowfullscreen></iframe>
+                </div>
+                <div class="row" id="seasonRow" style="display:none;"></div>
+                <div class="movie-grid" id="episodeGrid" style="display:none;"></div>
+                <div class="row">
+                    <select class="input" id="sourceSelect"></select>
+                </div>
+                <div class="stage-copy" style="border:1px solid var(--border-2); border-radius:18px; background:var(--bg-3);">
+                    <h3 style="font-size:20px;">overview</h3>
+                    <p id="watchOverview"></p>
+                </div>
+            </div>
+        `,
+                `
+            document.body.style.overflowY = "auto";
+            document.body.style.overflowX = "hidden";
+            const apiKey = ${JSON.stringify(WATCH_API_KEY)};
+            const contentId = ${JSON.stringify(String(contentId))};
+            const contentType = ${JSON.stringify(contentType)};
+            const sources = ${JSON.stringify(watchSources)};
+            const titleEl = document.getElementById("watchTitle");
+            const metaEl = document.getElementById("watchMeta");
+            const frameEl = document.getElementById("watchFrame");
+            const overviewEl = document.getElementById("watchOverview");
+            const sourceSelect = document.getElementById("sourceSelect");
+            const seasonRow = document.getElementById("seasonRow");
+            const episodeGrid = document.getElementById("episodeGrid");
+            let selectedSource = sources[0]?.id || "vidking";
+            let selectedSeason = 1;
+            let selectedEpisode = 1;
+            let seasonData = null;
+
+            function buildUrl(source) {
+                let url = source.urls[contentType];
+                const params = contentType === "tv"
+                    ? { id: contentId, season: selectedSeason, episode: selectedEpisode }
+                    : { id: contentId };
+                Object.entries(params).forEach(([key, value]) => {
+                    url = url.replace("{" + key + "}", value);
+                });
+                return url;
+            }
+
+            function updateVideo() {
+                const source = sources.find((item) => item.id === selectedSource) || sources[0];
+                if (source) frameEl.src = buildUrl(source);
+            }
+
+            function renderEpisodes() {
+                episodeGrid.innerHTML = "";
+                episodeGrid.style.display = "grid";
+                (seasonData?.episodes || []).forEach((episode) => {
+                    const button = document.createElement("button");
+                    button.className = "movie-pill" + (episode.episode_number === selectedEpisode ? " active" : "");
+                    button.textContent = "ep " + episode.episode_number + " - " + (episode.name || "");
+                    button.addEventListener("click", () => {
+                        selectedEpisode = episode.episode_number;
+                        renderEpisodes();
+                        updateVideo();
+                    });
+                    episodeGrid.appendChild(button);
+                });
+            }
+
+            async function fetchSeason() {
+                const response = await fetch("https://api.themoviedb.org/3/tv/" + contentId + "/season/" + selectedSeason + "?api_key=" + apiKey);
+                seasonData = await response.json();
+                selectedEpisode = 1;
+                renderEpisodes();
+                updateVideo();
+            }
+
+            async function init() {
+                sources.forEach((source) => {
+                    const option = document.createElement("option");
+                    option.value = source.id;
+                    option.textContent = source.name;
+                    sourceSelect.appendChild(option);
+                });
+                sourceSelect.value = selectedSource;
+                sourceSelect.addEventListener("change", () => {
+                    selectedSource = sourceSelect.value;
+                    updateVideo();
+                });
+
+                const response = await fetch("https://api.themoviedb.org/3/" + contentType + "/" + contentId + "?api_key=" + apiKey);
+                const content = await response.json();
+                titleEl.textContent = content.title || content.name || "watch";
+                overviewEl.textContent = content.overview || "";
+                const yearValue = content.release_date || content.first_air_date;
+                metaEl.textContent = yearValue ? String(new Date(yearValue).getFullYear()) : "";
+
+                if (contentType === "tv") {
+                    seasonRow.style.display = "flex";
+                    for (let i = 1; i <= (content.number_of_seasons || 0); i += 1) {
+                        const seasonButton = document.createElement("button");
+                        seasonButton.className = "movie-pill" + (i === selectedSeason ? " active" : "");
+                        seasonButton.textContent = "season " + i;
+                        seasonButton.addEventListener("click", async () => {
+                            selectedSeason = i;
+                            Array.from(seasonRow.children).forEach((child, index) => {
+                                child.classList.toggle("active", index === i - 1);
+                            });
+                            await fetchSeason();
+                        });
+                        seasonRow.appendChild(seasonButton);
+                    }
+                    await fetchSeason();
+                } else {
+                    updateVideo();
+                }
+            }
+
+            init().catch(() => {
+                titleEl.textContent = "failed to load";
+            });
+        `
+            )
+        }
+
+        function mountSectionFrame(key) {
+            const body = $("#popupBody")
+            const frame = document.createElement("iframe")
+            frame.className = "module-frame"
+            frame.style.width = "100%"
+            frame.style.height = "100%"
+            frame.style.display = "block"
+            frame.style.border = "0"
+            frame.style.borderRadius = "0px"
+            frame.style.background = "none"
+            frame.srcdoc = buildSectionSrcdoc(key)
+            
+            body.appendChild(frame)
+
+            popupState.cleanup = () => {
+                frame.src = "about:blank"
+                frame.remove()
+            }
+        }
+
+        function launchWatch(contentId, contentType) {
+            destroyActiveSection()
+            popupState.activeSection = "watch"
+
+            $("#popupTitle").textContent = "watch"
+            $("#popupSubtitle").textContent = contentType
+            setPopupOpen(true)
+
+            const body = $("#popupBody")
+            const frame = document.createElement("iframe")
+            frame.className = "module-frame"
+            frame.style.width = "100%"
+            frame.style.height = "100%"
+            frame.style.display = "block"
+            frame.style.border = "0"
+            frame.style.borderRadius = "18px"
+            frame.style.background = "var(--bg-3)"
+            frame.srcdoc = buildWatchSrcdoc(contentId, contentType)
+            body.appendChild(frame)
+
+            popupState.cleanup = () => {
+                frame.src = "about:blank"
+                frame.remove()
+            }
+        }
+
+        function launchGame(game) {
+            if (!game || !game.url) return
+
+            destroyActiveSection()
+            popupState.activeSection = "game"
+            popupState.activeGame = game
+
+            $("#popupTitle").textContent = game.name
+            $("#popupSubtitle").textContent = game.author || "game"
+            setPopupOpen(true)
+            setPopupGameActions(true)
+
+            const body = $("#popupBody")
+            const frame = document.createElement("iframe")
+            frame.className = "module-frame"
+            frame.style.width = "100%"
+            frame.style.height = "100%"
+            frame.style.display = "block"
+            frame.style.border = "0"
+            frame.style.borderRadius = "0"
+            frame.style.background = "none"
+            frame.srcdoc = getPopupDocument(
+                game.name,
+                `
+            <div class="stage"><div class="stage-copy"><h3>loading</h3><p>fetching ${escapeHtml(game.name)}</p></div></div>
+        `
+            )
+            
+            body.appendChild(frame)
+
+            let disposed = false
+
+            fetch(game.url)
+                .then((response) => {
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`)
+                    return response.text()
+                })
+                .then((html) => {
+                    if (disposed) return
+                    frame.srcdoc = html;
+                })
+                .catch((error) => {
+                    if (disposed) return
+                    frame.srcdoc = getPopupDocument(
+                        game.name,
+                        `
+                    <div class="stage"><div class="stage-copy"><h3>error</h3><p>${escapeHtml(error.message)}</p></div></div>
+                `
+                    )
+                })
+
+            popupState.cleanup = () => {
+                disposed = true
+                frame.src = "about:blank"
+                frame.remove()
+            }
+        }
+
+        window.__cherriLaunchGame = launchGame
+        window.__cherriSaveTabSettings = saveTabSettings
+
+        $("#popupFullscreenButton").addEventListener("click", async () => {
+            try {
+                await window.__cherriFullscreenGame?.()
+            } catch (error) {
+                console.error(error)
+            }
+        })
+
+        $("#popupDownloadButton").addEventListener("click", async () => {
+            try {
+                if (popupState.activeGame) {
+                    await window.__cherriDownloadGame?.(popupState.activeGame)
+                }
+            } catch (error) {
+                console.error(error)
+            }
+        })
+
+        function launch(key) {
+            const section = popupSections[key]
+            if (!section) return
+
+            destroyActiveSection()
+            popupState.activeSection = key
+
+            $("#popupTitle").textContent = section.title
+            $("#popupSubtitle").textContent = section.subtitle
+
+            setPopupOpen(true)
+            mountSectionFrame(key)
+        }
+
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape") {
+                closePopup()
+            }
+        })
+
+        const savedTheme = localStorage.getItem("cherri-theme")
+        if (savedTheme && availableThemes.includes(savedTheme)) {
+            document.documentElement.dataset.theme = savedTheme
+        }
+
+        applyTabSettings(
+            localStorage.getItem("cherri-tab-title") || "",
+            localStorage.getItem("cherri-tab-favicon") || ""
+        )
+    </script>
+</body>
+
+</html>

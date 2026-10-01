@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>aeos lite</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+    }
+
+    @keyframes fadeInScale {
+      from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.8; }
+    }
+    
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .animate-spin-slow {
+      animation: spin 1.5s linear infinite;
+    }
+
+    .animate-load { animation: fadeInScale 0.7s ease-out; }
+
+    #launch-button:not(:disabled) { animation: pulse 1.5s infinite; }
+
+    #content-container {
+      transition: background-color 0.8s ease-in-out, color 0.8s ease-in-out;
+    }
+
+    .bg-success {
+      background-color: #22c55e !important;
+      color: #f0fff4 !important;
+    }
+
+    #overlay-card { animation: fadeInScale 0.4s ease-out; }
+
+    .glassmorphic-panel {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 15px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .fade-in-down {
+      animation: fadeInDown 0.3s ease-out;
+    }
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .cloak-icon-button {
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      transition: background-color 0.15s ease-in-out;
+      background-color: rgba(255, 255, 255, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .cloak-icon-button:hover {
+      background-color: rgba(255, 255, 255, 0.25);
+    }
+
+    #search-results {
+        max-height: 400px;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .fade-out {
+      opacity: 0 !important;
+      transition: opacity 0.5s ease-out;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 sm:p-8 bg-gray-900 text-gray-100">
+  <div
+    id="loading-screen"
+    class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black/60 backdrop-blur-md transition-opacity duration-500 ease-out"
+  >
+    <div class="flex flex-col items-center space-y-4">
+      <div class="flex items-center space-x-3 text-4xl font-extrabold text-white">
+        <img
+          src="https://cdn.jsdelivr.net/gh/aeosntw/images@main/aeos.png"
+          alt="Aeos Logo"
+          class="h-12 w-12"
+        />
+        <span>aeos lite.</span>
+      </div>
+      <div class="text-xl text-gray-200 font-semibold mt-2 mb-2">Next generation of single-file games. Powered by UGS and its ever expanding catalog of games.</div>
+      <div class="flex items-center space-x-2 text-lg text-gray-300">
+        <i class="fa-solid fa-spinner animate-spin-slow"></i>
+        <span>Loading...</span>
+      </div>
+    </div>
+  </div>
+  <div class="fixed top-4 right-4 z-50">
+    <button
+      id="settings-button"
+      class="p-3 text-xl text-white bg-gray-700/70 hover:bg-gray-700 rounded-full transition shadow-lg"
+      aria-label="Settings"
+    >
+      <i class="fa-solid fa-gear"></i>
+    </button>
+
+    <div
+      id="settings-panel"
+      class="glassmorphic-panel absolute top-14 right-0 w-64 p-4 shadow-2xl hidden fade-in-down"
+    >
+      <h3 class="text-lg font-semibold mb-3 text-white">Cloak Settings</h3>
+      <div class="flex justify-around items-center space-x-3">
+        <button
+          id="aeos-refresh-button"
+          class="cloak-icon-button"
+          aria-label="Refresh with Aeos URL"
+          data-cloak="aeos"
+        >
+          <img
+            src="https://cdn.jsdelivr.net/gh/aeosntw/images@main/aeos.png"
+            alt="Aeos Icon"
+            class="h-6 w-6"
+          />
+        </button>
+
+        <button
+          id="clever-refresh-button"
+          class="cloak-icon-button"
+          aria-label="Refresh with Clever URL"
+          data-cloak="clever"
+        >
+          <img
+            src="https://assets.clever.com/oauth/aefedbbe52a741872571f3a5a06455c083bc15d8/favicon.ico?1"
+            alt="Clever Icon"
+            class="h-6 w-6"
+          />
+        </button>
+
+        <button
+          id="google-refresh-button"
+          class="cloak-icon-button"
+          aria-label="Refresh with Google URL"
+          data-cloak="google"
+        >
+          <img
+            src="https://google.com/favicon.ico"
+            alt="Google Icon"
+            class="h-6 w-6"
+          />
+        </button>
+
+        <button
+          id="schoology-refresh-button"
+          class="cloak-icon-button"
+          aria-label="Refresh with Schoology URL"
+          data-cloak="schoology"
+        >
+          <img
+            src="https://asset-cdn.schoology.com/sites/all/themes/schoology_theme/favicon.ico"
+            alt="Schoology Icon"
+            class="h-6 w-6"
+          />
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-4xl w-full text-center">
+    <div class="flex items-center justify-center mb-6 animate-load">
+      <img
+        src="https://cdn.jsdelivr.net/gh/aeosntw/images@main/aeos.png"
+        alt="Aeos Logo"
+        class="h-10 w-10 sm:h-12 sm:w-12 mr-3"
+      />
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-white">aeos lite.</h1>
+    </div>
+
+    <div
+      id="content-container"
+      class="bg-gray-800 p-6 sm:p-8 shadow-2xl rounded-xl border border-gray-700 animate-load"
+    >
+      <div class="flex flex-col space-y-3 mb-4"> <input
+          id="search-input"
+          type="text"
+          placeholder="Search for a game..."
+          class="block w-full px-4 py-3 text-base text-white border border-gray-600 rounded-lg bg-gray-700 focus:ring-blue-500 focus:border-blue-500"
+        />
+
+        <div
+          id="search-results"
+          class="hidden w-full bg-gray-700 rounded-lg border border-gray-600 divide-y divide-gray-600 text-left"
+        >
+          </div>
+      </div>
+
+      <div class="flex items-center space-x-3">
+        <select
+          id="content-dropdown"
+          class="block w-full px-4 py-3 text-base text-white border border-gray-600 rounded-lg bg-gray-700 focus:ring-blue-500 focus:border-blue-500"
+          disabled
+        >
+          <option selected>Loading...</option>
+        </select>
+        <button
+          id="launch-button"
+          class="px-5 py-3 text-base font-medium text-center text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 disabled:bg-gray-400"
+          disabled
+        >
+          Launch
+        </button>
+      </div>
+    </div>
+
+    <div id="status" class="mt-4 text-sm text-gray-400"></div>
+  </div>
+
+ <script>
+    const FILE_ID = '1_FmH3BlSBQI7FGgAQL59-ZPe8eCxs35wel6JUyVaG8Q';
+    const START_MARKER = '1-9';
+    const END_MARKER = 'Proxies/Unblockers';
+    const DRIVE_FOLDER_ID = '1ou3mI5xJVQv8Vt_MvwejPtf7zStSnU-s';
+    const OVERRIDE_MAPPING = {
+      "clslopeplus.html": "https://raw.githubusercontent.com/aeosntw/games/refs/heads/main/slopeplus.html",
+      "clslope2player.html": "https://raw.githubusercontent.com/aeosntw/games/refs/heads/main/slope2player.html"
+    };
+
+    const dropdownElement = document.getElementById('content-dropdown');
+    const launchButton = document.getElementById('launch-button');
+    const statusElement = document.getElementById('status');
+    const containerElement = document.getElementById('content-container');
+    const searchInput = document.getElementById('search-input');
+    const searchResults = document.getElementById('search-results');
+
+    const settingsButton = document.getElementById('settings-button');
+    const settingsPanel = document.getElementById('settings-panel');
+    const aeosRefreshButton = document.getElementById('aeos-refresh-button');
+    const cleverRefreshButton = document.getElementById('clever-refresh-button');
+    const googleRefreshButton = document.getElementById('google-refresh-button');
+    const schoologyRefreshButton = document.getElementById('schoology-refresh-button');
+    const loadingScreen = document.getElementById('loading-screen');
+
+    let allOptions = [];
+    
+    function hideLoadingScreen() {
+        loadingScreen.classList.add('fade-out');
+        setTimeout(() => {
+            loadingScreen.remove();
+        }, 500);
+    }
+
+    function displayError(message) {
+      dropdownElement.innerHTML = '';
+      const errorOption = document.createElement('option');
+      errorOption.textContent = message;
+      dropdownElement.appendChild(errorOption);
+      dropdownElement.disabled = true;
+      launchButton.disabled = true;
+      containerElement.classList.remove('bg-gray-800', 'bg-success');
+      containerElement.classList.add('bg-red-900', 'text-red-300');
+      
+      hideLoadingScreen();
+    }
+
+    function populateDropdown(options) {
+      dropdownElement.innerHTML = '';
+      const defaultOption = document.createElement('option');
+      defaultOption.textContent = 'Select a game...';
+      defaultOption.value = '';
+      defaultOption.selected = true;
+      dropdownElement.appendChild(defaultOption);
+
+      options.forEach(({ name, value }) => {
+        const option = document.createElement('option');
+        option.value = value;
+        option.textContent = name;
+        dropdownElement.appendChild(option);
+      });
+    }
+
+async function fetchAndPopulateDropdown() {
+  try {
+    statusElement.textContent = 'Fetching data...';
+
+    const exportUrl = `https://googleapis.aeos-cf.workers.dev/drive/v3/files/${FILE_ID}/export?mimeType=text/plain`;
+    const response = await fetch(exportUrl);
+    if (!response.ok) throw new Error(`Drive export failed (${response.status})`);
+
+    const fullText = await response.text();
+    
+    const lines = fullText.replace(/~/g, '').split('\n');
+    const gameRegex = /^(.*?):\s*([\w\-.()]+\.html)\s*$/i;
+
+    allOptions = lines.map(line => {
+      const match = line.trim().match(gameRegex);
+      if (match) {
+        return { 
+          name: match[1].trim(), 
+          value: match[2].trim() 
+        };
+      }
+      return null;
+    }).filter(Boolean);
+
+    allOptions.sort((a, b) => a.name.localeCompare(b.name));
+
+    populateDropdown(allOptions);
+
+    dropdownElement.disabled = false;
+    launchButton.disabled = false;
+    searchInput.disabled = false;
+
+    containerElement.classList.remove('bg-red-900', 'text-red-300');
+    containerElement.classList.add('bg-success');
+    
+    setTimeout(() => {
+      containerElement.classList.remove('bg-success');
+      containerElement.classList.add('bg-gray-800', 'text-gray-100');
+      
+      statusElement.textContent = `Loaded ${allOptions.length} games.`;
+      
+      hideLoadingScreen();
+    }, 1500);
+
+  } catch (error) {
+    console.error('Drive API error:', error);
+    displayError('Failed to load games.');
+    hideLoadingScreen();
+  }
+}
+
+    async function fetchHtmlFileByName(fileName) {
+      const overrideUrl = OVERRIDE_MAPPING[fileName];
+      
+      if (overrideUrl) {
+        statusElement.textContent = `Fetching overridden content from ${overrideUrl}...`;
+        const overrideResponse = await fetch(overrideUrl);
+        if (overrideResponse.ok) {
+          return await overrideResponse.text();
+        } else {
+          console.warn(`Failed to fetch override URL (${overrideResponse.status}). Falling back to Drive.`);
+          statusElement.textContent = `Override failed. Falling back to Drive...`;
+        }
+      }
+
+      const searchUrl = `https://googleapis.aeos-cf.workers.dev/drive/v3/files?q='${DRIVE_FOLDER_ID}'+in+parents+and+name='${fileName}'`;
+      const searchResponse = await fetch(searchUrl);
+      const searchData = await searchResponse.json();
+
+      if (!searchData.files || searchData.files.length === 0)
+        throw new Error(`File "${fileName}" not found in Drive folder.`);
+
+      const fileId = searchData.files[0].id;
+      const downloadUrl = `https://googleapis.aeos-cf.workers.dev/drive/v3/files/${fileId}?alt=media`;
+      const fileResponse = await fetch(downloadUrl);
+      if (!fileResponse.ok) throw new Error(`Failed to fetch file content (${fileResponse.status})`);
+      return await fileResponse.text();
+    }
+
+    launchButton.addEventListener('click', async () => {
+      const selectedPage = dropdownElement.value;
+      if (!selectedPage) return;
+
+      statusElement.textContent = `Loading ${selectedPage}...`;
+      launchButton.disabled = true;
+
+      try {
+        let htmlContent = await fetchHtmlFileByName(selectedPage);
+
+        const replacements = [
+          ['rawcdn.githack.com', 'raw.githubusercontent.com'],
+          [
+            'https://cdn.jsdelivr.net/gh/7DatsonBack/3kh0-Assets@60f2f97b00ffe9566ee06c82ecaf67255931118b/Run%202/waflash/waflash-style.css',
+            'https://cdn.jsdelivr.net/gh/aeosntw/aeos-files@main/waflash/waflash-style.css'
+          ],
+          [
+            'https://cdn.jsdelivr.net/gh/zhit73/wafedit@183cb00916e4d250ae5bc9813864f9a70cb9986b/wasm/waflash-player.min.js',
+            'https://cdn.jsdelivr.net/gh/aeosntw/aeos-files@main/waflash/waflash-player.min.js'
+          ],
+['https://cdn.jsdelivr.net/gh/supaub/interstellar-3@8a13c735e7df6d86602b354e45c090405f21f45a/play/flash/swf/ducklife4.swf', 'https://cdn.jsdelivr.net/gh/selenite-cc/flasharchive@4d5e2817c5a2d0c9343eb7c422c329827515fa41/Duck%20Life%204.swf']
+        ];
+        for (const [from, to] of replacements) htmlContent = htmlContent.replaceAll(from, to);
+
+        let overlay = document.getElementById('overlay-card');
+        if (overlay) overlay.remove();
+
+        overlay = document.createElement('div');
+        overlay.id = 'overlay-card';
+        overlay.className = `
+          fixed inset-0 z-50 flex flex-col items-center justify-center
+          bg-black/60 backdrop-blur-md animate-load
+        `;
+
+        const card = document.createElement('div');
+        card.className = `
+          relative bg-white/10 backdrop-blur-2xl border border-white/20
+          shadow-2xl rounded-2xl w-[90%] max-w-5xl h-[80vh] overflow-hidden
+          transition-transform duration-300 ease-out
+        `;
+
+        const iframe = document.createElement('iframe');
+        iframe.className = 'w-full h-full border-none rounded-2xl bg-transparent';
+        iframe.src = 'about:blank'; 
+console.log("about blank window made yay");
+
+        iframe.onload = () => {
+          if (iframe.contentWindow && iframe.contentDocument) {
+            try {
+            
+              iframe.contentDocument.write(htmlContent);
+              iframe.contentDocument.close();
+            } catch (e) {
+              console.error('Error writing content to iframe:', e);
+              statusElement.textContent = `Error: Failed to write game content to iframe.`;
+            }
+          } else {
+             console.error('Could not access iframe contentDocument or contentWindow.');
+             statusElement.textContent = `Error: Could not initialize game iframe.`;
+          }
+        };
+
+        card.appendChild(iframe);
+
+        const fullscreenBtn = document.createElement('button');
+        fullscreenBtn.innerHTML = '<i class="fa-solid fa-expand"></i>';
+        fullscreenBtn.className = `
+          mt-3 px-5 py-3 bg-white/15 hover:bg-white/25 text-white text-xl
+          rounded-xl backdrop-blur-md border border-white/20 transition
+        `;
+        let isFullscreen = false;
+
+        fullscreenBtn.onclick = () => {
+          if (!isFullscreen) {
+            card.style.borderRadius = '0';
+            card.style.border = 'none';
+            card.style.width = '100vw';
+            card.style.height = '100vh';
+            card.style.maxWidth = 'none';
+            card.style.maxHeight = 'none';
+            card.style.boxShadow = 'none';
+            card.style.background = 'black';
+            iframe.requestFullscreen().catch(console.error);
+            fullscreenBtn.innerHTML = '<i class="fa-solid fa-compress"></i>';
+            isFullscreen = true;
+          } else {
+            document.exitFullscreen();
+            card.style.borderRadius = '';
+            card.style.border = '';
+            card.style.width = '90%';
+            card.style.height = '80vh';
+            card.style.maxWidth = '64rem';
+            card.style.boxShadow = '';
+            card.style.background = 'rgba(255,255,255,0.1)';
+            fullscreenBtn.innerHTML = '<i class="fa-solid fa-expand"></i>';
+            isFullscreen = false;
+          }
+        };
+
+        document.addEventListener('fullscreenchange', () => {
+          if (!document.fullscreenElement && isFullscreen) {
+            fullscreenBtn.innerHTML = '<i class="fa-solid fa-compress"></i>';
+            card.style.borderRadius = '';
+            card.style.border = '';
+            card.style.width = '90%';
+            card.style.height = '80vh';
+            card.style.maxWidth = '64rem';
+            card.style.boxShadow = '';
+            card.style.background = 'rgba(255,255,255,0.1)';
+            isFullscreen = false;
+          }
+        });
+
+        const closeBtn = document.createElement('button');
+        closeBtn.innerHTML = '&#10005;';
+        closeBtn.className = `
+          absolute top-6 right-8 text-white/90 hover:text-white text-3xl
+          font-bold bg-black/30 rounded-full w-12 h-12 flex items-center
+          justify-center transition z-[60]
+        `;
+        closeBtn.onclick = () => {
+          overlay.remove();
+        };
+
+        overlay.appendChild(closeBtn);
+        overlay.appendChild(card);
+        overlay.appendChild(fullscreenBtn);
+        document.body.appendChild(overlay);
+
+        statusElement.textContent = `Loaded ${selectedPage}.`;
+      } catch (err) {
+        console.error(err);
+        statusElement.textContent = `Error: ${err.message}`;
+      } finally {
+        launchButton.disabled = false;
+      }
+    });
+
+    searchInput.addEventListener('input', (event) => {
+      const query = event.target.value.toLowerCase().trim();
+
+      if (query === '') {
+        dropdownElement.classList.remove('hidden');
+        searchResults.classList.add('hidden');
+        launchButton.disabled = !dropdownElement.value;
+        return;
+      }
+
+      dropdownElement.classList.add('hidden');
+      searchResults.classList.remove('hidden');
+
+      const filteredOptions = allOptions.filter(option =>
+        option.name.toLowerCase().includes(query)
+      );
+
+      searchResults.innerHTML = '';
+
+      if (filteredOptions.length === 0) {
+        searchResults.innerHTML = '<div class="p-3 text-gray-400">No results found.</div>';
+        launchButton.disabled = true;
+        return;
+      }
+
+      filteredOptions.slice(0, 10).forEach(option => {
+        const resultItem = document.createElement('div');
+        resultItem.className = 'p-3 hover:bg-gray-600 cursor-pointer transition';
+        resultItem.textContent = option.name;
+        resultItem.dataset.value = option.value;
+
+        resultItem.addEventListener('click', () => {
+          dropdownElement.value = option.value;
+
+          searchResults.classList.add('hidden');
+          dropdownElement.classList.remove('hidden');
+
+          searchInput.value = '';
+
+          launchButton.disabled = false;
+        });
+
+        searchResults.appendChild(resultItem);
+      });
+
+      launchButton.disabled = true;
+    });
+
+    dropdownElement.addEventListener('change', () => {
+      launchButton.disabled = !dropdownElement.value;
+    });
+
+    settingsButton.addEventListener('click', () => {
+        settingsPanel.classList.toggle('hidden');
+    });
+
+    function handleCloakRefresh(cloakValue) {
+        const newUrl = window.location.origin + window.location.pathname + `?clk=${cloakValue}`;
+        window.location.href = newUrl;
+    }
+
+    aeosRefreshButton.addEventListener('click', () => {
+        handleCloakRefresh('aeos');
+    });
+
+    cleverRefreshButton.addEventListener('click', () => {
+        handleCloakRefresh('clever');
+    });
+
+    googleRefreshButton.addEventListener('click', () => {
+        handleCloakRefresh('google');
+    });
+
+    schoologyRefreshButton.addEventListener('click', () => {
+        handleCloakRefresh('schoology');
+    });
+
+    document.addEventListener('click', (event) => {
+        if (!settingsPanel.contains(event.target) && !settingsButton.contains(event.target) && !settingsPanel.classList.contains('hidden')) {
+            settingsPanel.classList.add('hidden');
+        }
+    });
+
+    function applyCleverCloak() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const cloakType = urlParams.get('clk');
+
+        const cloaks = {
+            'clever': ['Clever | Portal', 'https://assets.clever.com/oauth/aefedbbe52a741872571f3a5a06455c083bc15d8/favicon.ico?1'],
+            'google': ['Google', 'https://google.com/favicon.ico'],
+            'schoology': ['Home | Schoology', 'https://asset-cdn.schoology.com/sites/all/themes/schoology_theme/favicon.ico'],
+            'aeos': ['aeos lite', 'https://experimental-rawgit.aeos-cf.workers.dev/aeosntw/images/refs/heads/main/aeos.png']
+        };
+
+        const [newTitle, newFaviconUrl] = cloaks[cloakType] || cloaks['aeos'];
+
+        document.title = newTitle;
+
+        let links = document.querySelectorAll("link[rel*='icon']");
+        links.forEach(link => link.remove());
+
+        const newLink = document.createElement('link');
+        newLink.rel = 'icon';
+        newLink.type = 'image/x-icon';
+        newLink.href = newFaviconUrl;
+        document.head.appendChild(newLink);
+    }
+
+    applyCleverCloak();
+
+    fetchAndPopulateDropdown();
+</script>
+</body>
+</html>

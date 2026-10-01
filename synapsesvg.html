@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Synapse</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.344.0/dist/umd/lucide.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; height: 100%; overflow: hidden; font-family: 'Space Grotesk', sans-serif; }
+
+    body > canvas {
+      position: fixed !important; top: 0 !important; left: 0 !important;
+      width: 100vw !important; height: 100vh !important; z-index: 0 !important; pointer-events: none;
+    }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,135,0,0.3); border-radius: 2px; }
+
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    @keyframes shimmer { 0% { background-position: -468px 0; } 100% { background-position: 468px 0; } }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes pulse-badge { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+    .loading-spinner { animation: spin 1s linear infinite; }
+    .skeleton {
+      background: linear-gradient(to right, rgba(255,255,255,0.03) 8%, rgba(255,255,255,0.07) 18%, rgba(255,255,255,0.03) 33%);
+      background-size: 800px 104px;
+      animation: shimmer 1.5s linear infinite forwards;
+    }
+
+    #app { position: fixed; inset: 0; z-index: 1; display: flex; flex-direction: column; pointer-events: none; }
+    #app > * { pointer-events: auto; }
+
+    #top-bar {
+      position: absolute; top: 0; left: 0; right: 0;
+      display: flex; align-items: center; justify-content: center;
+      padding: 18px 24px; z-index: 10; pointer-events: none;
+    }
+    #clock-display {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      color: rgba(255,255,255,0.55);
+      display: flex; align-items: center; gap: 12px;
+      letter-spacing: 0.05em;
+      pointer-events: auto;
+    }
+    #clock-display .time-main { color: rgba(255,255,255,0.85); font-size: 14px; }
+    #clock-display .time-sec { color: #ff8700; }
+    #clock-display .divider { opacity: 0.3; }
+
+    #sidebar {
+      position: absolute; left: 20px; top: 50%;
+      transform: translateY(-50%);
+      width: 180px; z-index: 10;
+      display: flex; flex-direction: column; gap: 2px;
+    }
+
+    .sidebar-section-header {
+      padding: 6px 12px 4px;
+      font-size: 10px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.12em;
+      color: rgba(255,255,255,0.25);
+    }
+
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 14px; border-radius: 10px;
+      font-size: 13px; font-weight: 500;
+      color: rgba(255,255,255,0.55);
+      cursor: pointer; transition: all 0.18s ease;
+      border: 1px solid transparent;
+      position: relative;
+      background: transparent;
+    }
+    .nav-item:hover {
+      color: rgba(255,255,255,0.9);
+      background: rgba(255,255,255,0.05);
+      border-color: rgba(255,255,255,0.08);
+    }
+    .nav-item.active {
+      color: white;
+      background: rgba(255,135,0,0.12);
+      border-color: rgba(255,135,0,0.25);
+    }
+    .nav-item.active svg { color: #ff8700; }
+
+    .nav-item-icon { width: 16px; height: 16px; flex-shrink: 0; }
+    .nav-item-label { flex: 1; }
+
+    .nav-badge {
+      font-size: 9px; font-weight: 700;
+      padding: 2px 6px; border-radius: 4px;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      font-family: 'DM Mono', monospace;
+    }
+    .badge-updated { background: rgba(255,135,0,0.2); color: #ff8700; }
+    .badge-fixed { background: rgba(34,197,94,0.15); color: #4ade80; }
+    .badge-soon { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.35); }
+    .badge-online { background: rgba(34,197,94,0.12); color: #4ade80; animation: pulse-badge 2.5s infinite; }
+
+    #friends-modal {
+      display: none; position: fixed; inset: 0; z-index: 250;
+    }
+    .friend-code-box {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(255,135,0,0.08); border: 1px solid rgba(255,135,0,0.25);
+      border-radius: 10px; padding: 10px 14px; margin-bottom: 4px;
+    }
+    .friend-code-box .code-text {
+      flex: 1; font-family: 'DM Mono', monospace; font-size: 15px; font-weight: 600;
+      color: #ff8700; letter-spacing: 0.08em;
+    }
+    .copy-code-btn {
+      width: 30px; height: 30px; border-radius: 7px;
+      background: rgba(255,135,0,0.15); border: 1px solid rgba(255,135,0,0.3);
+      color: #ff8700; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; flex-shrink: 0; transition: all 0.15s;
+    }
+    .copy-code-btn:hover { background: rgba(255,135,0,0.25); }
+    .add-friend-row { display: flex; gap: 8px; }
+    .add-friend-row input {
+      flex: 1; height: 40px; padding: 0 14px;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px; color: white; font-size: 13px; outline: none;
+      font-family: 'DM Mono', monospace; letter-spacing: 0.05em;
+      transition: border-color 0.15s;
+    }
+    .add-friend-row input:focus { border-color: rgba(255,135,0,0.5); }
+    .add-friend-row button {
+      height: 40px; padding: 0 16px; border-radius: 10px;
+      background: #ff8700; color: white; font-size: 12px; font-weight: 700;
+      border: none; cursor: pointer; white-space: nowrap;
+      font-family: 'Space Grotesk', sans-serif; transition: background 0.15s;
+    }
+    .add-friend-row button:hover { background: #e87900; }
+    .add-friend-row button:disabled { opacity: 0.5; cursor: not-allowed; }
+    #friends-list-wrap {
+      max-height: 260px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;
+    }
+    .friend-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; border-radius: 10px;
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+    }
+    .friend-avatar {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: linear-gradient(135deg, #ff8700, #ff3b00);
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-weight: 700; font-size: 13px; flex-shrink: 0;
+    }
+    .friend-row-info { flex: 1; min-width: 0; }
+    .friend-row-code {
+      font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.85);
+      font-family: 'DM Mono', monospace; letter-spacing: 0.05em;
+    }
+    .friend-row-added { font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 2px; }
+    .remove-friend-btn {
+      width: 26px; height: 26px; border-radius: 6px;
+      background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25);
+      color: rgba(239,68,68,0.8); display: flex; align-items: center; justify-content: center;
+      cursor: pointer; flex-shrink: 0; transition: all 0.15s;
+    }
+    .remove-friend-btn:hover { background: rgba(239,68,68,0.2); }
+    .friends-empty {
+      text-align: center; color: rgba(255,255,255,0.2); font-size: 12px; padding: 24px 0;
+    }
+    .friends-section-label {
+      font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em;
+      color: rgba(255,255,255,0.3); margin: 4px 0 8px;
+    }
+
+    #hero {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center; pointer-events: none; user-select: none;
+      display: flex; flex-direction: column; align-items: center; gap: 12px;
+    }
+    #logo-wrap { display: flex; align-items: center; gap: 14px; }
+    #logo-img { width: 52px; height: 52px; object-fit: contain; }
+    #logo-text {
+      font-size: clamp(38px, 5vw, 58px);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.45) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    #hero-sub {
+      font-size: 13px; color: rgba(255,255,255,0.35);
+      letter-spacing: 0.02em; font-weight: 400;
+    }
+
+
+    #user-pill {
+      position: absolute; top: 18px; right: 24px;
+      display: flex; align-items: center; gap: 8px;
+      z-index: 10;
+    }
+    .user-btn {
+      height: 34px; padding: 0 14px;
+      border-radius: 8px; font-size: 11px;
+      font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.08em; cursor: pointer;
+      transition: all 0.18s ease;
+      border: 1px solid; display: flex; align-items: center; gap: 6px;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .btn-signin {
+      background: rgba(255,135,0,0.9);
+      border-color: rgba(255,135,0,0.4);
+      color: white;
+    }
+    .btn-signin:hover { background: #e87900; }
+    .btn-signout {
+      background: rgba(239,68,68,0.12);
+      border-color: rgba(239,68,68,0.3);
+      color: rgba(239,68,68,0.8);
+    }
+    .btn-signout:hover { background: rgba(239,68,68,0.2); }
+    .user-stats {
+      height: 34px; padding: 0 12px;
+      border-radius: 8px; font-size: 11px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      display: flex; flex-direction: column; justify-content: center;
+      line-height: 1.2;
+    }
+    .user-stats .lvl { color: rgba(255,255,255,0.4); font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; }
+    .user-stats .time { color: white; font-size: 12px; font-weight: 600; font-family: 'DM Mono', monospace; }
+
+    #game-panel {
+      position: absolute; top: 0; left: 0; bottom: 0;
+      width: 360px; z-index: 20;
+      background: rgba(10,8,5,0.85);
+      backdrop-filter: blur(20px);
+      border-right: 1px solid rgba(255,255,255,0.07);
+      transform: translateX(-100%);
+      transition: transform 0.35s cubic-bezier(0.34,1.22,0.64,1);
+      display: flex; flex-direction: column; overflow: hidden;
+    }
+    #game-panel.open { transform: translateX(0); }
+
+    #game-panel-header {
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex; align-items: center; gap: 12px;
+    }
+    #panel-close {
+      margin-left: auto; width: 28px; height: 28px;
+      border-radius: 6px; background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: rgba(255,255,255,0.5);
+      transition: all 0.15s;
+    }
+    #panel-close:hover { background: rgba(255,255,255,0.12); color: white; }
+    #panel-close svg { width: 14px; height: 14px; }
+
+    #panel-search-wrap {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      position: relative;
+    }
+    #panel-search {
+      width: 100%; height: 36px; border-radius: 8px;
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+      color: white; font-size: 12px; padding: 0 12px 0 34px;
+      outline: none; font-family: 'Space Grotesk', sans-serif;
+      transition: border-color 0.15s;
+    }
+    #panel-search:focus { border-color: rgba(255,135,0,0.5); }
+    #panel-search::placeholder { color: rgba(255,255,255,0.25); }
+    #panel-search-icon {
+      position: absolute; left: 28px; top: 50%; transform: translateY(-50%);
+      color: rgba(255,255,255,0.3); width: 14px; height: 14px;
+    }
+
+    #category-pills {
+      padding: 10px 16px; display: flex; gap: 6px; overflow-x: auto;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      scrollbar-width: none;
+    }
+    #category-pills::-webkit-scrollbar { display: none; }
+    .cat-pill {
+      height: 26px; padding: 0 12px; border-radius: 13px;
+      font-size: 11px; font-weight: 600; white-space: nowrap;
+      cursor: pointer; transition: all 0.15s;
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.4); flex-shrink: 0;
+    }
+    .cat-pill.active {
+      background: rgba(255,135,0,0.15); border-color: rgba(255,135,0,0.35);
+      color: #ff8700;
+    }
+
+    #game-list { flex: 1; overflow-y: auto; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px; }
+
+    .game-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 10px; border-radius: 10px;
+      cursor: pointer; transition: all 0.15s;
+      border: 1px solid transparent;
+    }
+    .game-row:hover {
+      background: rgba(255,255,255,0.04);
+      border-color: rgba(255,255,255,0.07);
+    }
+    .game-thumb {
+      width: 44px; height: 44px; border-radius: 10px;
+      object-fit: cover; flex-shrink: 0;
+      background: rgba(255,255,255,0.05);
+    }
+    .game-row-info { flex: 1; min-width: 0; }
+    .game-row-title {
+      font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.85);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .game-row-sub { font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 2px; }
+    .game-row-badge {
+      font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 4px;
+      text-transform: uppercase; letter-spacing: 0.06em; flex-shrink: 0;
+      font-family: 'DM Mono', monospace;
+    }
+    .badge-pro { background: rgba(255,135,0,0.2); color: #ff8700; border: 1px solid rgba(255,135,0,0.3); }
+
+    .fav-star-btn {
+      width: 28px; height: 28px; border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; cursor: pointer; transition: all 0.15s;
+      background: transparent; border: 1px solid transparent;
+      color: rgba(255,255,255,0.25);
+    }
+    .fav-star-btn:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.5); }
+    .fav-star-btn.is-fav { color: #ff8700; }
+    .fav-star-btn.is-fav svg { fill: #ff8700; }
+    .fav-star-btn svg { width: 15px; height: 15px; pointer-events: none; }
+
+    .game-list-section-label {
+      font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em;
+      color: rgba(255,255,255,0.25); padding: 8px 10px 4px;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .game-list-section-label svg { width: 11px; height: 11px; color: #ff8700; }
+
+    #game-modal {
+      display: none; position: fixed; inset: 0; z-index: 100;
+    }
+    #modal-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); }
+    #modal-box {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: #0e0b07; border-top: 1px solid rgba(255,255,255,0.08);
+      padding: 24px;
+    }
+    @media (min-width: 768px) {
+      #modal-box {
+        top: 50%; left: 50%; bottom: auto; right: auto;
+        width: 480px; transform: translate(-50%, -50%);
+        border-radius: 20px; border: 1px solid rgba(255,255,255,0.08);
+        animation: fadeIn 0.2s ease;
+      }
+    }
+    #modal-content { display: flex; flex-direction: column; gap: 16px; }
+
+    #login-modal {
+      display: none; position: fixed; inset: 0; z-index: 200;
+    }
+    .modal-backdrop2 { position: absolute; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(6px); }
+    .login-box {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      background: #0e0b07; width: 90%; max-width: 380px;
+      padding: 32px; border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .login-label {
+      display: block; font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.12em;
+      color: rgba(255,255,255,0.3); margin-bottom: 6px;
+    }
+    .login-input {
+      width: 100%; height: 42px; padding: 0 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px; color: white; font-size: 13px;
+      outline: none; transition: border-color 0.15s;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .login-input:focus { border-color: rgba(255,135,0,0.5); }
+    .login-input option { background: #0e0b07; }
+
+    #queue-modal {
+      display: none; position: fixed; inset: 0; z-index: 300;
+    }
+
+    #recent-strip {
+      padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.05);
+      display: none;
+    }
+    #recent-strip h3 {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.12em; color: rgba(255,255,255,0.25);
+      margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+    }
+    #recent-thumbs { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+    #recent-thumbs::-webkit-scrollbar { display: none; }
+    .recent-thumb-item {
+      flex-shrink: 0; width: 64px; cursor: pointer; text-align: center;
+    }
+    .recent-thumb-item img {
+      width: 56px; height: 56px; border-radius: 12px; object-fit: cover;
+      border: 1.5px solid rgba(255,255,255,0.08); transition: border-color 0.15s;
+    }
+    .recent-thumb-item:hover img { border-color: rgba(255,135,0,0.5); }
+    .recent-thumb-item .r-label {
+      font-size: 10px; color: rgba(255,255,255,0.35);
+      margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    #server-nav-wrap {
+      padding: 8px 12px 4px;
+    }
+    .server-select-mini {
+      width: 100%; height: 30px; padding: 0 10px;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 7px; color: rgba(255,255,255,0.5); font-size: 11px;
+      outline: none; cursor: pointer; font-family: 'Space Grotesk', sans-serif;
+    }
+    .server-select-mini option { background: #0e0b07; }
+
+    #panel-mask {
+      display: none; position: absolute; inset: 0; z-index: 19;
+    }
+    #panel-mask.visible { display: block; }
+  </style>
+  <script src="https://pl29046809.effectivecpmnetwork.com/14/33/1c/14331ca261ae4e4ad2cabdbede9fb119.js"></script>
+<script src="https://pl29046809.effectivecpmnetwork.com/14/33/1c/14331ca261ae4e4ad2cabdbede9fb119.js"></script>
+</head>
+<body oncontextmenu="return false;">
+
+<div id="app">
+
+  <div id="user-pill"></div>
+
+  <nav id="sidebar">
+    <div class="nav-item active" onclick="App.openGamePanel()">
+      <i data-lucide="gamepad-2" class="nav-item-icon"></i>
+      <span class="nav-item-label">Play</span>
+    </div>
+    <div class="nav-item" onclick="App.openFriendsModal()" id="nav-friends">
+      <i data-lucide="users" class="nav-item-icon"></i>
+      <span class="nav-item-label">Friends</span>
+    </div>
+  </nav>
+
+  <div id="hero">
+    <div id="logo-wrap">
+      <img id="logo-img" src="run-site/images/favicon.png" onerror="this.style.display='none'" alt="Synapse">
+      <div id="logo-text">SYNAPSE</div>
+    </div>
+    <div id="hero-sub">join the discord server for link drops!</div>
+  </div>
+
+  <div id="panel-mask" onclick="App.closeGamePanel()"></div>
+
+  <div id="game-panel">
+    <div id="game-panel-header">
+      <i data-lucide="gamepad-2" style="width:16px;height:16px;color:#ff8700;"></i>
+      <span style="font-size:14px;font-weight:700;color:white;">Games</span>
+
+      <div id="server-nav-wrap" style="margin-left:auto;padding:0;">
+        <select id="nav-server-select" class="server-select-mini" onchange="App.handleServerChange(this.value)">
+          <option value="21">S. America</option>
+          <option value="22">US West</option>
+          <option value="23" selected>US East</option>
+          <option value="3">Asia</option>
+          <option value="4">Europe</option>
+        </select>
+      </div>
+
+      <div id="panel-close" onclick="App.closeGamePanel()">
+        <i data-lucide="x"></i>
+      </div>
+    </div>
+
+    <div id="recent-strip">
+      <h3><i data-lucide="history" style="width:11px;height:11px;"></i> Recently Played</h3>
+      <div id="recent-thumbs"></div>
+    </div>
+
+    <div id="panel-search-wrap">
+      <i data-lucide="search" id="panel-search-icon"></i>
+      <input type="text" id="panel-search" placeholder="Search games..." oninput="App.handleSearch(this.value)">
+    </div>
+
+    <div id="category-pills"></div>
+
+    <div id="game-list">
+      <div id="game-list-inner" style="display:flex;flex-direction:column;gap:4px;"></div>
+    </div>
+  </div>
+
+  <div id="game-modal">
+    <div id="modal-backdrop" onclick="App.closeModal()"></div>
+    <div id="modal-box">
+      <div id="modal-content"></div>
+    </div>
+  </div>
+
+  <div id="login-modal">
+    <div class="modal-backdrop2" onclick="App.closeLoginModal()"></div>
+    <div class="login-box">
+      <h2 style="font-size:20px;font-weight:700;color:white;margin-bottom:24px;">Sign In</h2>
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div>
+          <label class="login-label">Email Address</label>
+          <input type="email" id="login-email" class="login-input" placeholder="name@example.com">
+        </div>
+        <div>
+          <label class="login-label">Password</label>
+          <input type="password" id="login-password" class="login-input" placeholder="••••••••">
+        </div>
+        <div>
+          <label class="login-label">Region Server</label>
+          <select id="server-select" class="login-input" style="cursor:pointer;">
+            <option value="21">South America</option>
+            <option value="22">US West</option>
+            <option value="23" selected>US East</option>
+            <option value="3">Asia</option>
+            <option value="4">Europe</option>
+          </select>
+        </div>
+        <button id="login-submit-btn" onclick="App.handleLogin()" class="user-btn btn-signin" style="width:100%;height:44px;border-radius:12px;font-size:12px;margin-top:4px;justify-content:center;">
+          Sign In
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="friends-modal">
+    <div class="modal-backdrop2" onclick="App.closeFriendsModal()"></div>
+    <div class="login-box" style="max-width:400px;">
+      <div style="display:flex;align-items:center;margin-bottom:20px;">
+        <h2 style="font-size:20px;font-weight:700;color:white;">Friends</h2>
+        <div onclick="App.closeFriendsModal()" style="margin-left:auto;padding:6px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:8px;cursor:pointer;color:rgba(255,255,255,0.5);display:flex;">
+          <i data-lucide="x" style="width:14px;height:14px;"></i>
+        </div>
+      </div>
+
+      <div class="friends-section-label">Your Friend Code</div>
+      <div class="friend-code-box">
+        <span class="code-text" id="my-friend-code">------</span>
+        <div class="copy-code-btn" onclick="App.copyFriendCode(event)">
+          <i data-lucide="copy" style="width:14px;height:14px;"></i>
+        </div>
+      </div>
+
+      <div class="friends-section-label" style="margin-top:16px;">Add a Friend</div>
+      <div class="add-friend-row">
+        <input type="text" id="add-friend-input" placeholder="Enter friend code" maxlength="8" oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter') App.addFriend();">
+        <button id="add-friend-btn" onclick="App.addFriend()">Add</button>
+      </div>
+
+      <div class="friends-section-label" style="margin-top:18px;">Your Friends</div>
+      <div id="friends-list-wrap"></div>
+    </div>
+  </div>
+
+  <div id="queue-modal">
+    <div style="position:absolute;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);"></div>
+    <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#0e0b07;width:90%;max-width:360px;padding:36px 28px;border-radius:20px;border:1px solid rgba(255,255,255,0.08);text-align:center;">
+      <div class="loading-spinner" style="width:44px;height:44px;border:3px solid rgba(255,135,0,0.2);border-top-color:#ff8700;border-radius:50%;margin:0 auto 20px;"></div>
+      <h2 style="font-size:20px;font-weight:700;color:white;margin-bottom:6px;">In Queue</h2>
+      <p style="font-size:13px;color:rgba(255,255,255,0.35);margin-bottom:24px;">Waiting for an available cloud device...</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px;">
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px;">
+          <span style="display:block;font-size:9px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;">Position</span>
+          <span id="queue-pos" style="font-size:22px;font-weight:700;color:white;font-family:'DM Mono',monospace;">--</span>
+        </div>
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px;">
+          <span style="display:block;font-size:9px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;">Est. Time</span>
+          <span id="queue-time" style="font-size:22px;font-weight:700;color:white;font-family:'DM Mono',monospace;">--</span>
+        </div>
+      </div>
+      <button onclick="App.cancelQueue()" style="width:100%;height:42px;border-radius:10px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.6);font-size:13px;font-weight:600;cursor:pointer;font-family:'Space Grotesk',sans-serif;">Cancel</button>
+    </div>
+  </div>
+
+</div>
+
+
+<script>
+const API_LIST = ["https://api.cloudmoon.cloudbatata.com","https://api.prod.cloudmoonapp.com","https://api.prod.geometry.today"];
+const BACKUP_API_LIST = ["https://hrz5zfjq02.execute-api.us-east-1.amazonaws.com","https://api.prod.viewoncloud.com"];
+
+window.App = {
+  currentApiHost: null, apiHostPromise: null,
+  token: localStorage.getItem("cm_auth_token"),
+  rawGames: [], filteredGames: [], categories: [],
+  activeCategory: "all", searchQuery: '',
+  isLoading: false, userLevel: 0, timeLeft: '',
+  lastRenderedKey: '', statsInterval: null,
+  queueInterval: null, currentPkg: null, searchTimer: null,
+  recentGames: [], panelOpen: false,
+
+  async init() {
+    await this.probeApi();
+    this.renderUserArea();
+    await this.initPortal();
+  },
+
+  async probeApi() {
+    if (this.currentApiHost) return this.currentApiHost;
+    if (this.apiHostPromise) return this.apiHostPromise;
+    this.apiHostPromise = (async () => {
+      let host = await this.findAvailableApiFast(API_LIST);
+      if (!host) host = await this.findAvailableApiFast(BACKUP_API_LIST);
+      if (host) { this.currentApiHost = host; return host; }
+      return null;
+    })();
+    return this.apiHostPromise;
+  },
+
+  async findAvailableApiFast(list) {
+    const controllers = list.map(() => new AbortController());
+    return new Promise(resolve => {
+      let failed = 0, done = false;
+      list.forEach((url, i) => {
+        const t = setTimeout(() => controllers[i].abort(), 3000);
+        fetch(url + "/_ping", { signal: controllers[i].signal })
+          .then(r => { clearTimeout(t); if (r.ok && !done) { done = true; controllers.forEach((c,j) => { if(j!==i) c.abort(); }); resolve(url); } else throw new Error(); })
+          .catch(() => { clearTimeout(t); if (++failed === list.length && !done) resolve(null); });
+      });
+    });
+  },
+
+  async customFetch(path, opts = {}) {
+    const host = await this.probeApi();
+    if (!host) throw new Error("API unavailable");
+    const url = new URL(host + (path.startsWith('/') ? path : '/' + path));
+    url.searchParams.set("device_type", "web");
+    url.searchParams.set("query_uuid", this.generateUUID());
+    url.searchParams.set("site", "cm");
+    url.searchParams.set("device_id", this.getDeviceId());
+    const headers = new Headers(opts.headers || {});
+    const tok = localStorage.getItem("cm_auth_token");
+    if (tok) headers.set("X-User-Token", tok);
+    const lang = (localStorage.getItem("cm_lang") || navigator.language.split('-')[0] || 'en');
+    headers.set("X-User-Language", lang);
+    const loc = (navigator.language.split('-')[1] || navigator.language.split('-')[0]).toUpperCase();
+    headers.set("X-User-Locale", loc);
+    if (!headers.has("Content-Type")) headers.set("Content-Type", "application/json");
+    try {
+      const res = await fetch(url.toString(), { ...opts, headers });
+      const clone = res.clone();
+      try { const j = await clone.json(); if (j && String(j.code) === "40001") { this.signOut(false); throw new Error("Unauthorized"); } } catch(e) {}
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      return await res.json();
+    } catch(e) { this.currentApiHost = null; this.apiHostPromise = null; throw e; }
+  },
+
+  generateUUID() {
+    if (typeof crypto !== "undefined" && crypto.randomUUID) return crypto.randomUUID();
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, c => {
+      const r = Math.random() * 16 | 0;
+      return (c === 'x' ? r : r & 0x3 | 0x8).toString(16);
+    });
+  },
+
+  getDeviceId() {
+    let id = localStorage.getItem("cm_device_id");
+    if (!id) { id = this.generateUUID(); localStorage.setItem("cm_device_id", id); }
+    return id;
+  },
+
+  renderUserArea() {
+    const tok = this.token;
+    const stats = tok
+      ? `<div class="user-stats"><span class="lvl">LVL ${this.userLevel}</span><span class="time">${this.timeLeft || '--:--'}</span></div>`
+      : '';
+    const btn = tok
+      ? `<button onclick="App.signOut()" class="user-btn btn-signout"><i data-lucide="power" style="width:13px;height:13px;"></i> Sign Out</button>`
+      : `<button onclick="App.showLogin()" class="user-btn btn-signin">Sign In</button>`;
+
+    const up = document.getElementById('user-pill');
+    if (up) { up.innerHTML = stats + btn; lucide.createIcons(); }
+  },
+
+  async initPortal() {
+    try {
+      const host = await this.probeApi();
+      if (host) {
+        if (!localStorage.getItem("selectedServer")) localStorage.setItem("selectedServer", '23');
+        if (this.token) {
+          await Promise.all([this.loadUserLevel(), this.loadRecentGames()]);
+          this.startStatsPolling();
+        }
+        await Promise.all([this.loadCategories(), this.loadGames()]);
+        this.filterEmptyCategories();
+        this.renderCategories();
+        this.applyFilter();
+      } else {
+        document.getElementById('game-list-inner').innerHTML = '<div style="text-align:center;color:rgba(255,80,80,0.7);padding:30px 0;font-size:13px;">Unable to connect to server.</div>';
+      }
+    } catch(e) { console.error("Init Error:", e); }
+  },
+
+  async loadUserLevel() {
+    try {
+      const r = await this.customFetch("/phone/list");
+      if (r.code === 0 && r.data?.list?.length > 0) {
+        this.userLevel = Math.max(...r.data.list.map(x => x.level || 0));
+        this.timeLeft = r.data.list[0].time_left || "0h 0m";
+        this.renderUserArea();
+      }
+    } catch(e) { console.error(e); }
+  },
+
+  async loadCategories() {
+    try {
+      const r = await this.customFetch("/game/category");
+      if (r.code === 0 && r.data?.list?.length > 0) this.categories = r.data.list;
+    } catch(e) { console.error(e); }
+  },
+
+  async loadGames() {
+    this.isLoading = true;
+    this.renderListSkeleton();
+    try {
+      const r = await this.customFetch(this.token ? "/game/list" : "/game/guest_list");
+      if (r.code === 0 && r.data?.list) {
+        this.rawGames = r.data.list.map(g => ({
+          id: g.package_name, title: g.title, icon: g.icon_url,
+          status: g.status, categories: g.categories || [],
+          isHigh: g.is_high || false, unlimit: g.unlimit || false
+        }));
+      }
+    } catch(e) {
+      document.getElementById('game-list-inner').innerHTML = '<div style="text-align:center;color:rgba(255,80,80,0.7);padding:30px 0;font-size:13px;">Failed to load games.</div>';
+    } finally {
+      this.isLoading = false;
+      this.applyFilter();
+    }
+  },
+
+  renderListSkeleton() {
+    const inner = document.getElementById('game-list-inner');
+    if (!inner) return;
+    inner.innerHTML = Array(8).fill(0).map(() =>
+      `<div class="game-row" style="opacity:0.5;">
+        <div class="skeleton" style="width:44px;height:44px;border-radius:10px;flex-shrink:0;"></div>
+        <div style="flex:1;">
+          <div class="skeleton" style="height:12px;border-radius:4px;margin-bottom:6px;width:70%;"></div>
+          <div class="skeleton" style="height:10px;border-radius:4px;width:40%;"></div>
+        </div>
+      </div>`
+    ).join('');
+  },
+
+  filterEmptyCategories() {
+    if (!this.categories.length || !this.rawGames.length) return;
+    const used = new Set();
+    this.rawGames.forEach(g => (g.categories || []).forEach(c => used.add(String(c))));
+    this.categories = this.categories.filter(c => c.key === "all" || used.has(String(c.key)));
+    this.categories.sort((a,b) => a.key === "all" ? -1 : b.key === "all" ? 1 : 0);
+  },
+
+  renderCategories() {
+    const bar = document.getElementById('category-pills');
+    if (!bar || !this.categories.length) return;
+    bar.innerHTML = this.categories.map(c =>
+      `<button onclick="App.filterByCategory('${c.key}')" class="cat-pill${this.activeCategory === String(c.key) ? ' active' : ''}" data-cat="${c.key}">${c.name}</button>`
+    ).join('');
+  },
+
+  filterByCategory(key) {
+    this.activeCategory = key;
+    document.querySelectorAll('.cat-pill').forEach(b =>
+      b.classList.toggle('active', b.getAttribute('data-cat') === key)
+    );
+    this.applyFilter();
+  },
+
+  handleSearch(val) {
+    this.searchQuery = val.toLowerCase();
+    if (this.searchTimer) clearTimeout(this.searchTimer);
+    this.searchTimer = setTimeout(() => this.applyFilter(), 120);
+  },
+
+  getFavorites() {
+    try { return JSON.parse(localStorage.getItem("cm_favorite_games") || "[]"); }
+    catch(e) { return []; }
+  },
+
+  saveFavorites(list) {
+    localStorage.setItem("cm_favorite_games", JSON.stringify(list));
+  },
+
+  isFavorite(id) {
+    return this.getFavorites().includes(id);
+  },
+
+  toggleFavorite(id, evt) {
+    if (evt) evt.stopPropagation();
+    let favs = this.getFavorites();
+    if (favs.includes(id)) favs = favs.filter(f => f !== id);
+    else favs.unshift(id);
+    this.saveFavorites(favs);
+    this.lastRenderedKey = '';
+    this.applyFilter();
+  },
+
+  applyFilter() {
+    const favs = this.getFavorites();
+    this.filteredGames = this.rawGames.filter(g => {
+      if (g.status !== 1) return false;
+      if (g.isHigh && this.userLevel !== 3) return false;
+      const catMatch = this.activeCategory === "all" || g.categories.includes(this.activeCategory) || g.categories.includes(parseInt(this.activeCategory));
+      const searchMatch = g.title.toLowerCase().includes(this.searchQuery);
+      return catMatch && searchMatch;
+    }).sort((a, b) => {
+      const aFav = favs.includes(a.id), bFav = favs.includes(b.id);
+      if (aFav && !bFav) return -1;
+      if (!aFav && bFav) return 1;
+      if (aFav && bFav) return favs.indexOf(a.id) - favs.indexOf(b.id);
+      return 0;
+    });
+    this.renderList();
+  },
+
+  renderList() {
+    const inner = document.getElementById('game-list-inner');
+    if (!inner) return;
+    const favs = this.getFavorites();
+    const key = this.filteredGames.map(g => g.id + (favs.includes(g.id) ? '*' : '')).join(',');
+    if (this.lastRenderedKey === key) return;
+    this.lastRenderedKey = key;
+    if (!this.filteredGames.length) {
+      inner.innerHTML = '<div style="text-align:center;color:rgba(255,255,255,0.2);padding:40px 0;font-size:13px;">No games found.</div>';
+      return;
+    }
+    const favCount = this.filteredGames.filter(g => favs.includes(g.id)).length;
+    let html = '';
+    if (favCount > 0) {
+      html += `<div class="game-list-section-label"><i data-lucide="star"></i> Favorites</div>`;
+      html += this.filteredGames.slice(0, favCount).map(g => this.renderGameRow(g, favs)).join('');
+      html += `<div class="game-list-section-label">All Games</div>`;
+      html += this.filteredGames.slice(favCount).map(g => this.renderGameRow(g, favs)).join('');
+    } else {
+      html = this.filteredGames.map(g => this.renderGameRow(g, favs)).join('');
+    }
+    inner.innerHTML = html;
+    lucide.createIcons();
+  },
+
+  renderGameRow(g, favs) {
+    const fav = favs.includes(g.id);
+    return `<div class="game-row" onclick="App.showGameDetails('${g.id}')">
+        <img src="${g.icon}" class="game-thumb" onerror="this.src='https://cloudmoonapp.com/favicon.ico'">
+        <div class="game-row-info">
+          <div class="game-row-title">${g.title}</div>
+          <div class="game-row-sub">Cloud Play</div>
+        </div>
+        ${g.isHigh ? '<span class="game-row-badge badge-pro">Pro</span>' : ''}
+        <div class="fav-star-btn${fav ? ' is-fav' : ''}" onclick="App.toggleFavorite('${g.id}', event)" title="${fav ? 'Remove favorite' : 'Add favorite'}">
+          <i data-lucide="star"></i>
+        </div>
+      </div>`;
+  },
+
+  async loadRecentGames() {
+    if (!this.token) return;
+    try {
+      const sid = parseInt(localStorage.getItem("selectedServer") || '23');
+      const region = [21,22,23].includes(sid) ? 'us' : sid === 4 ? 'eu' : 'sgp';
+      const r = await this.customFetch("/game/record?select_server=" + region);
+      if (r.code === 0 && r.data?.list?.length > 0) {
+        this.recentGames = r.data.list.map(g => ({ id: g.package_name, title: g.title, icon: g.icon_url, is_high: g.is_high || false, status: g.status }));
+        this.renderRecentGames();
+      }
+    } catch(e) { console.error(e); }
+  },
+
+  renderRecentGames() {
+    const strip = document.getElementById('recent-strip');
+    const thumbs = document.getElementById('recent-thumbs');
+    if (!strip || !thumbs || !this.recentGames.length) { if (strip) strip.style.display = 'none'; return; }
+    strip.style.display = 'block';
+    thumbs.innerHTML = this.recentGames.slice(0,6).map(g =>
+      `<div class="recent-thumb-item" onclick="App.showGameDetails('${g.id}')">
+        <img src="${g.icon}" onerror="this.src='https://cloudmoonapp.com/favicon.ico'">
+        <div class="r-label">${g.title}</div>
+      </div>`
+    ).join('');
+  },
+
+  openGamePanel() {
+    const panel = document.getElementById('game-panel');
+    const mask = document.getElementById('panel-mask');
+    panel.classList.add('open');
+    mask.classList.add('visible');
+    this.panelOpen = true;
+  },
+
+  closeGamePanel() {
+    const panel = document.getElementById('game-panel');
+    const mask = document.getElementById('panel-mask');
+    panel.classList.remove('open');
+    mask.classList.remove('visible');
+    this.panelOpen = false;
+  },
+
+  async showGameDetails(pkg) {
+    const modal = document.getElementById('game-modal');
+    const content = document.getElementById('modal-content');
+    modal.style.display = 'block';
+    content.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;padding:40px 0;gap:10px;color:rgba(255,255,255,0.3);font-size:13px;"><div class="loading-spinner" style="width:20px;height:20px;border:2px solid rgba(255,135,0,0.3);border-top-color:#ff8700;border-radius:50%;"></div>Loading...</div>`;
+    try {
+      const r = await this.customFetch("/game/info?pkg=" + pkg);
+      if (r.code === 0 && r.data) {
+        const d = r.data, i18n = d.i18n || {};
+        const title = i18n.title || d.title;
+        const icon = i18n.icon || d.icon_url;
+        const desc = (i18n.desc || '').replace(/\n/g, '<br>');
+        content.innerHTML = `
+          <div style="display:flex;align-items:flex-start;gap:14px;">
+            <img src="${icon}" style="width:72px;height:72px;border-radius:16px;object-fit:cover;border:1px solid rgba(255,255,255,0.1);">
+            <div style="flex:1;min-width:0;">
+              <h2 style="font-size:18px;font-weight:700;color:white;margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${title}</h2>
+              <p style="font-size:12px;color:rgba(255,255,255,0.35);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${(i18n.categoryList||[]).join(' / ')}</p>
+              <div style="margin-top:8px;display:flex;gap:6px;">
+                ${d.is_high ? '<span style="background:rgba(255,135,0,0.15);color:#ff8700;font-size:9px;font-weight:700;padding:2px 8px;border-radius:4px;border:1px solid rgba(255,135,0,0.3);text-transform:uppercase;letter-spacing:0.1em;">PRO</span>' : ''}
+                ${d.status === 4 ? '<span style="background:rgba(239,68,68,0.15);color:rgba(239,68,68,0.8);font-size:9px;font-weight:700;padding:2px 8px;border-radius:4px;border:1px solid rgba(239,68,68,0.3);text-transform:uppercase;letter-spacing:0.1em;">Maintenance</span>' : ''}
+              </div>
+            </div>
+            <div onclick="App.toggleFavorite('${d.package_name}', event); App.showGameDetails('${d.package_name}');" style="padding:6px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:8px;cursor:pointer;color:${this.isFavorite(d.package_name) ? '#ff8700' : 'rgba(255,255,255,0.5)'};display:flex;margin:-4px -4px 0 0;">
+              <i data-lucide="star" style="width:14px;height:14px;${this.isFavorite(d.package_name) ? 'fill:#ff8700;' : ''}"></i>
+            </div>
+            <button onclick="App.closeModal()" style="padding:6px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:8px;cursor:pointer;color:rgba(255,255,255,0.5);display:flex;margin:-4px -4px 0 0;">
+              <i data-lucide="x" style="width:14px;height:14px;"></i>
+            </button>
+          </div>
+          ${i18n.screenshots?.length ? `<div style="display:flex;gap:8px;overflow-x:auto;padding:2px 0;scrollbar-width:none;">${i18n.screenshots.map(s => `<img src="${s}" style="height:120px;border-radius:10px;border:1px solid rgba(255,255,255,0.08);flex-shrink:0;">`).join('')}</div>` : ''}
+          ${desc ? `<div style="font-size:12px;color:rgba(255,255,255,0.35);line-height:1.7;max-height:100px;overflow-y:auto;">${desc}</div>` : ''}
+          <button onclick="App.handlePlay('${d.package_name}', ${d.status})" id="play-btn-el" style="width:100%;height:48px;border-radius:12px;background:#ff8700;color:white;font-size:14px;font-weight:700;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-family:'Space Grotesk',sans-serif;transition:background 0.15s;" onmouseover="this.style.background='#e87900'" onmouseout="this.style.background='#ff8700'">
+            <i data-lucide="play" style="width:18px;height:18px;fill:currentColor;"></i>
+            Play Now
+          </button>`;
+        lucide.createIcons();
+      }
+    } catch(e) { content.innerHTML = '<div style="text-align:center;color:rgba(255,80,80,0.7);padding:30px 0;font-size:13px;">Error loading details.</div>'; }
+  },
+
+  closeModal() { document.getElementById('game-modal').style.display = 'none'; },
+  showLogin() {
+    document.getElementById('login-modal').style.display = 'block';
+    document.getElementById('server-select').value = localStorage.getItem("selectedServer") || '23';
+  },
+  closeLoginModal() { document.getElementById('login-modal').style.display = 'none'; },
+
+  async handleLogin() {
+    const email = document.getElementById('login-email').value;
+    const pass = document.getElementById('login-password').value;
+    const srv = document.getElementById('server-select').value;
+    const btn = document.getElementById('login-submit-btn');
+    if (!email || !pass) { alert("Enter credentials"); return; }
+    try {
+      btn.disabled = true;
+      btn.innerHTML = '<div class="loading-spinner" style="width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;margin:auto;"></div>';
+      const r = await this.customFetch("/login/pwd", { method: "POST", body: JSON.stringify({ email, password: pass }) });
+      if (r.code === 0 && r.data?.token) {
+        localStorage.setItem("cm_auth_token", r.data.token);
+        localStorage.setItem("selectedServer", srv);
+        location.reload();
+      } else { alert("Login failed: " + (r.message || "Error")); }
+    } catch(e) { alert("Error during login."); }
+    finally { btn.disabled = false; btn.innerHTML = "Sign In"; }
+  },
+
+  signOut(confirm_ = true) {
+    if (confirm_ && !window.confirm("Logout?")) return;
+    localStorage.removeItem("cm_auth_token");
+    location.reload();
+  },
+
+  handleServerChange(val) {
+    localStorage.setItem("selectedServer", val);
+    const loginSel = document.getElementById('server-select');
+    if (loginSel) loginSel.value = val;
+    if (this.token) { this.loadUserLevel(); this.applyFilter(); }
+  },
+
+  startStatsPolling() {
+    if (this.statsInterval) return;
+    this.statsInterval = setInterval(() => {
+      if (this.token) this.loadUserLevel();
+      else { clearInterval(this.statsInterval); this.statsInterval = null; }
+    }, 30000);
+  },
+
+  async handlePlay(pkg, status) {
+    if (!this.token) { if (window.confirm("Login required. Login now?")) this.showLogin(); return; }
+    if (status === 4) { alert("Under maintenance."); return; }
+    if (!this.timeLeft || this.timeLeft === "0h 0m") { alert("No time left."); return; }
+    const btn = document.getElementById('play-btn-el');
+    const orig = btn.innerHTML;
+    try {
+      btn.disabled = true;
+      btn.innerHTML = '<div class="loading-spinner" style="width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;"></div><span>Connecting...</span>';
+      const phones = await this.customFetch("/phone/list");
+      if (phones.code === 0 && phones.data?.list?.length > 0) {
+        const conn = await this.customFetch("/phone/connect", {
+          method: "POST",
+          body: JSON.stringify({
+            android_id: phones.data.list[0].android_id,
+            game_name: pkg, screen_res: "720x1280",
+            server_id: parseInt(localStorage.getItem("selectedServer") || '23'),
+            params: JSON.stringify({ language: 'en', locale: 'us' }),
+            ad_unblock: false
+          })
+        });
+        if (conn.code === 0 && conn.data) {
+          this.closeModal();
+          if (conn.data.android_instance_id) this.launchGameAction(conn.data.sid);
+          else if (conn.data.position) this.showQueue(pkg, conn.data, phones.data.list[0].android_id);
+        } else { alert("Failed: " + conn.message); btn.disabled = false; btn.innerHTML = orig; }
+      } else { alert("No device available."); btn.disabled = false; btn.innerHTML = orig; }
+    } catch(e) { alert("Error."); btn.disabled = false; btn.innerHTML = orig; }
+  },
+
+  showQueue(pkg, data, androidId) {
+    this.currentPkg = pkg;
+    document.getElementById('queue-modal').style.display = 'block';
+    this.updateQueueUI(data);
+    if (this.queueInterval) clearInterval(this.queueInterval);
+    this.queueInterval = setInterval(async () => {
+      try {
+        const r = await this.customFetch("/phone/connect", { method: "POST", body: JSON.stringify({ android_id: androidId, game_name: pkg, screen_res: "720x1280", server_id: parseInt(localStorage.getItem("selectedServer") || '23'), params: JSON.stringify({ language:'en', locale:'us' }), ad_unblock: false }) });
+        if (r.code === 0 && r.data) {
+          if (r.data.android_instance_id) { clearInterval(this.queueInterval); this.queueInterval = null; document.getElementById('queue-modal').style.display = 'none'; this.launchGameAction(r.data.sid); }
+          else this.updateQueueUI(r.data);
+        }
+      } catch(e) {}
+    }, 5000);
+  },
+
+  updateQueueUI(data) {
+    document.getElementById('queue-pos').textContent = data.position || '--';
+    document.getElementById('queue-time').textContent = data.waiting_time ? Math.ceil(data.waiting_time / 60) + 'm' : '--';
+  },
+
+  async cancelQueue() {
+    const pkg = this.currentPkg;
+    if (this.queueInterval) { clearInterval(this.queueInterval); this.queueInterval = null; }
+    document.getElementById('queue-modal').style.display = 'none';
+    if (pkg) { try { await this.customFetch("/phone/disconnect", { method: "POST", body: JSON.stringify({ game_name: pkg }) }); } catch(e) {} }
+  },
+
+  launchGameAction(sid) {
+    localStorage.setItem("cm_launch_data", JSON.stringify({ sid, quality: 'SD', timestamp: Date.now() }));
+    window.location.assign("./play-260430.svg");
+  },
+
+  getMyFriendCode() {
+    let code = localStorage.getItem("cm_friend_code");
+    if (!code) {
+      code = this.generateFriendCode();
+      localStorage.setItem("cm_friend_code", code);
+    }
+    return code;
+  },
+
+  generateFriendCode() {
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no one touch ts pls it bugs out when special characters are der
+    let out = "";
+    for (let i = 0; i < 6; i++) out += chars[Math.floor(Math.random() * chars.length)];
+    return out;
+  },
+
+  getFriends() {
+    try { return JSON.parse(localStorage.getItem("cm_friends") || "[]"); }
+    catch(e) { return []; }
+  },
+
+  saveFriends(list) {
+    localStorage.setItem("cm_friends", JSON.stringify(list));
+  },
+
+  openFriendsModal() {
+    if (!this.token) {
+      if (window.confirm("You need to be signed in to use friends. Sign in now?")) this.showLogin();
+      return;
+    }
+    document.getElementById('friends-modal').style.display = 'block';
+    document.getElementById('my-friend-code').textContent = this.getMyFriendCode();
+    const input = document.getElementById('add-friend-input');
+    if (input) input.value = '';
+    this.renderFriends();
+    lucide.createIcons();
+  },
+
+  closeFriendsModal() {
+    document.getElementById('friends-modal').style.display = 'none';
+  },
+
+  copyFriendCode(evt) {
+    const code = this.getMyFriendCode();
+    if (navigator.clipboard) navigator.clipboard.writeText(code).catch(() => {});
+    const btn = evt && evt.currentTarget;
+    if (btn) {
+      const orig = btn.innerHTML;
+      btn.innerHTML = '<i data-lucide="check" style="width:14px;height:14px;"></i>';
+      lucide.createIcons();
+      setTimeout(() => { btn.innerHTML = orig; lucide.createIcons(); }, 1200);
+    }
+  },
+
+  addFriend() {
+    if (!this.token) {
+      this.closeFriendsModal();
+      if (window.confirm("Sign in required. Sign in now?")) this.showLogin();
+      return;
+    }
+    const input = document.getElementById('add-friend-input');
+    const code = input.value.trim().toUpperCase();
+    if (!code) return;
+    const myCode = this.getMyFriendCode();
+    if (code === myCode) { alert("You can't add yourself."); return; }
+    const friends = this.getFriends();
+    if (friends.some(f => f.code === code)) { alert("Already friends with this code."); return; }
+    friends.unshift({ code, addedAt: Date.now() });
+    this.saveFriends(friends);
+    input.value = '';
+    this.renderFriends();
+  },
+
+  removeFriend(code) {
+    if (!window.confirm("Remove this friend?")) return;
+    const friends = this.getFriends().filter(f => f.code !== code);
+    this.saveFriends(friends);
+    this.renderFriends();
+  },
+
+  renderFriends() {
+    const wrap = document.getElementById('friends-list-wrap');
+    if (!wrap) return;
+    const friends = this.getFriends();
+    if (!friends.length) {
+      wrap.innerHTML = '<div class="friends-empty">No friends yet. Share your code above!</div>';
+      return;
+    }
+    wrap.innerHTML = friends.map(f => `
+      <div class="friend-row">
+        <div class="friend-avatar">${f.code.slice(0,2)}</div>
+        <div class="friend-row-info">
+          <div class="friend-row-code">${f.code}</div>
+          <div class="friend-row-added">Added ${new Date(f.addedAt).toLocaleDateString()}</div>
+        </div>
+        <div class="remove-friend-btn" onclick="App.removeFriend('${f.code}')">
+          <i data-lucide="x" style="width:12px;height:12px;"></i>
+        </div>
+      </div>
+    `).join('');
+    lucide.createIcons();
+  }
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+  window.App.init();
+  lucide.createIcons();
+});
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.fog.min.js"></script>
+<script>
+VANTA.FOG({
+  el: "body",
+  mouseControls: true,
+  touchControls: true,
+  gyroControls: false,
+  minHeight: 200.00,
+  minWidth: 200.00,
+  midtoneColor: 0xff8700,
+  lowlightColor: 0xff3b00,
+  baseColor: 0x0a0806,
+  blurFactor: 0.62,
+  speed: 1.2,
+  zoom: 0.9
+})
+</script>
+</body>
+</html>

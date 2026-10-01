@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Game Launcher</title>
+<style>
+  body {
+    margin: 0; display: flex; justify-content: center; align-items: center;
+    height: 100vh; background: #222; font-family: Arial, sans-serif;
+  }
+  button {
+    padding: 20px 60px; font-size: 20px; border: none; border-radius: 12px;
+    background: linear-gradient(45deg, #00c6ff, #0072ff); color: #fff; cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: 0.3s;
+  }
+  button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+  }
+</style>
+</head>
+<body>
+
+<button onclick="launchGame()">Launch Your Game</button>
+
+<script>
+  // Replace this URL with your target game or page
+  const TARGET_URL = "https://pizzaedition.win"; // <-- Paste your URL here
+
+  function launchGame() {
+    const url = TARGET_URL.trim();
+    if (!url) {
+      alert('Please set the TARGET_URL in the script.');
+      return;
+    }
+    const win = window.open('about:blank', '_blank');
+    if (!win) {
+      alert("Pop-up blocked! Please allow pop-ups.");
+      return;
+    }
+
+    // Disguise tab as Google Docs
+    win.document.title = "Google Docs - Shared";
+    const icon = win.document.createElement('link');
+    icon.rel = 'icon';
+    icon.href = 'https://gstatic.com/favicon.ico';
+    win.document.head.appendChild(icon);
+
+    // Create iframe filling the entire tab
+    const iframe = win.document.createElement('iframe');
+    iframe.src = url;
+    iframe.style.cssText = `
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%; border: none; background: #000; z-index: 9999;
+    `;
+    // Permissions for iframe
+    iframe.setAttribute('allow', 'fullscreen; pointer-lock; camera; microphone; autoplay');
+    iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups allow-moderation');
+
+    // Append iframe
+    win.document.body.style.margin = '0';
+    win.document.body.appendChild(iframe);
+
+    // Hotkey to escape
+    win.addEventListener('keydown', function(e) {
+      if (e.key === '`') {
+        win.location.replace('https://classroom.google.com');
+      }
+    });
+  }
+</script>
+
+</body>
+</html>

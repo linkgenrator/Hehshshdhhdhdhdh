@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+<base href="https://cdn.jsdelivr.net/gh/wasmdotrip/Peak-Port@main/">
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Unity Web Player | PEAK</title>
+<style>
+  body { padding: 0; margin: 0; overflow: hidden; background: #231f20; }
+  #unity-container { width: 100%; height: 100%; position: absolute; }
+  #unity-canvas { width: 100%; height: 100%; background: #231f20; }
+  #unity-loading-bar { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: none; }
+  #unity-logo { width: 154px; height: 54px; background: url('TemplateData/unity-logo-dark.png') no-repeat center; margin-bottom: 10px; }
+  #unity-progress-bar-empty { width: 141px; height: 18px; margin-top: 10px; background: rgba(255, 255, 255, 0.2); }
+  #unity-progress-bar-full { width: 0%; height: 100%; background: #fff; }
+</style>
+</head>
+<body>
+<div id="unity-container">
+  <canvas id="unity-canvas" tabindex="-1"></canvas>
+  <div id="unity-loading-bar">
+    <div id="unity-logo"></div>
+    <div id="unity-progress-bar-empty">
+      <div id="unity-progress-bar-full"></div>
+    </div>
+  </div>
+</div>
+<script>
+  const canvas = document.querySelector("#unity-canvas");
+  const buildUrl = "Build/";
+
+  async function fetchAndMerge(prefix, parts, extension = "") {
+    const chunks = [];
+    for (const part of parts) {
+      const r = await fetch(buildUrl + prefix + part + extension);
+      if (!r.ok) throw new Error();
+      chunks.push(await r.arrayBuffer());
+    }
+    return URL.createObjectURL(new Blob(chunks, { type: "application/octet-stream" }));
+  }
+
+  const dataParts = [];
+  const abc = "abcdefghijklmnopqrstuvwxyz".split("");
+  outer: for (let i = 0; i < 3; i++) {
+    for (let j = 0; j < 26; j++) {
+      let s = abc[i] + abc[j];
+      dataParts.push(s);
+      if (s === "ci") break outer;
+    }
+  }
+
+  const config = {
+    arguments: [],
+    frameworkUrl: buildUrl + "WebGL.framework.js",
+    streamingAssetsUrl: "StreamingAssets",
+    companyName: "LandCrab",
+    productName: "PEAK",
+    productVersion: "1.62.a",
+  };
+
+  if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+    const meta = document.createElement('meta');
+    meta.name = 'viewport';
+    meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+    document.getElementsByTagName('head')[0].appendChild(meta);
+  }
+
+  document.querySelector("#unity-loading-bar").style.display = "block";
+
+  (async () => {
+    try {
+      const [d, w] = await Promise.all([
+        fetchAndMerge("WebGL.data.part_", dataParts),
+        fetchAndMerge("WebGL.wasm.part", ["1", "2", "3", "4"])
+      ]);
+      config.dataUrl = d;
+      config.codeUrl = w;
+
+      const s = document.createElement("script");
+      s.src = buildUrl + "WebGL.loader.js";
+      s.onload = () => {
+        createUnityInstance(canvas, config, (p) => {
+          document.querySelector("#unity-progress-bar-full").style.width = 100 * p + "%";
+        }).then((u) => {
+          document.querySelector("#unity-loading-bar").style.display = "none";
+        }).catch(alert);
+      };
+      document.body.appendChild(s);
+    } catch (e) {
+      alert("Load failed");
+    }
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+
+<!-- THIS IS FOR ARCHIVE PURPOSES --> 
+
+<html lang="en">
+    <head>
+    <link rel="icon" type="image/png" href="https://cdn.jsdelivr.net/gh/daknux/assets@master/DAKNUX-FAV.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://cdn.jsdelivr.net/gh/daknux/assets@master/DAKNUX-FAV.png">
+    <link rel="apple-touch-icon" href="https://cdn.jsdelivr.net/gh/daknux/assets@master/DAKNUX-FAV.png">
+    <script>
+        window.addEventListener('beforeunload', function (event) {
+            event.preventDefault();
+            event.returnValue = '';
+            return 'Are you sure you want to leave? Any unsaved changes will be lost.';
+        });
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DAKNUX</title>
+    <meta name="title" content="DAKNUX">
+    <meta name="description" content="Play unbl*cked games like Deltarune, Sprunked, and Sonic rom hacks on DAKNUX. Fast, free, no downloads—perfect for school or home.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://daknux.github.io/">
+    <meta property="og:title" content="DAKNUX">
+    <meta property="og:description" content="Play unbl*cked games like Deltarune, Sprunked, and Sonic rom hacks on DAKNUX. Fast, free, no downloads—perfect for school or home.">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://daknux.github.io/">
+    <meta name="twitter:title" content="DAKNUX">
+    <meta name="twitter:description" content="Play unbl*cked games like Deltarune, Sprunked, and Sonic rom hacks on DAKNUX. Fast, free, no downloads—perfect for school or home.">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Staatliches&display=swap" rel="stylesheet">
+ <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/daknux/egg-shell@master/vg-style.css" />
+ <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/daknux/assets@master/rgb-alt-b.css" />
+<style>
+    body {
+    overflow-x: hidden;
+}
+</style>
+</head>
+<body class="dark-mode">
+    <header>
+        <div class="header-content">
+            <div class="logo">
+            <img src="https://rawcdn.githack.com/daknux/assets/ef878fa0dfe203e2b83779e68370d27b6e91ab52/DAKNUX-LOGO-SITE.png" alt="DAKNUX" width="190" height="40">
+            </div>
+            <div class="search-container">
+                <input type="text" id="searchBar" placeholder="Search zones..." oninput="filterZones()">
+                <select id="sortOptions" onchange="sortZones()">
+                    <option value="name">Name</option>
+                    <option value="id">ID (Date)</option>
+                </select>
+            </div>
+            <div class="control-buttons">
+                <button id="settings" style="background-color: var(--primary-color); color: white; border: none; border-radius: 4px; padding: 0.5rem 1rem; font-size: 16px; cursor: pointer;">
+                    <img src="https://cdn.jsdelivr.net/gh/daknux/assets@main/settings-icon.png" alt="settings" width="30" height="30">
+                </button>
+            </div>
+        </div>
+    </header>
+   
+
+    <main>
+    <div class="rainbow-container">
+    <h3 class="rainbow-text" id="rainbowText"> WELCOME TO DAKUX </h3>
+    <script src="https://cdn.jsdelivr.net/gh/daknux/assets@master/rng-quotes.js"></script>
+    </div>
+        <details id="featuredZonesWrapper" open>
+            <summary id="allZonesSummary" style="font-size: 1.2rem; font-weight: bold; cursor: pointer;">Featured Games</summary>
+            <div id="featuredZones" class="zone-container"></div>
+        </details>
+        <br><hr><br>
+        <details id="allZonesWrapper" open>
+            <summary id="allSummary" style="font-size: 1.2rem; font-weight: bold; cursor: pointer;">All Zones</summary>
+            <div id="container">Loading...</div>
+        </details>
+    </main>
+    
+    <div id="zoneViewer">
+        <div class="zone-header">
+            <div class="zone-title">
+                <h2 id="zoneName">zone</h2>
+                <span id="zoneId" style="display: none;"></span>
+                <a id="zoneAuthor" href="#" target="_blank">by Author</a>
+            </div>
+            <div class="zone-controls">
+                <button onclick="fullscreenZone()">Fullscreen</button>
+                <button onclick="aboutBlank()">Open in New Tab</button>
+                <button onclick="downloadZone()">Download</button>
+                <button onclick="closeZone()">Close</button>
+            </div>
+        </div>
+        <iframe id="zoneFrame"></iframe>
+    </div>
+
+    <div id="popupOverlay">
+        <div class="popup">
+            <div class="popup-header">
+                <h3 id="popupTitle">Title</h3>
+                <button id="popupClose" onclick="closePopup()">×</button>
+            </div>
+            <div id="popupBody">
+                Content will be here
+            </div>
+        </div>
+    </div>
+
+   
+    <footer>
+        <div class="footer-links">
+            <a href="#" onclick="showContact(); return false;">Contact</a>
+            <a href="#" onclick="loadPrivacy(); return false;">Privacy Policy</a>
+            <a href="javascript:saveData()">Export Data</a>
+            <a href="#" onclick="document.getElementById('importData').click(); return false;">Import Data</a>
+            <input type="file" id="importData" style="display: none;" onchange="loadData(event)">
+        </div>
+    </footer>
+
+<script src="https://cdn.jsdelivr.net/gh/daknux/egg-shell@main/script.js"></script>
+</body>
+</html>

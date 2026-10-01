@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Uranium Games</title>
+<link id="favicon" rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☢️</text></svg>">
+<style>
+:root {
+  --primary: #00ff88;
+  --primary-rgb: 0, 255, 136;
+  --bg: #0a0e1a;
+  --card-bg: rgba(10, 20, 30, 0.85);
+  --glow: 0.35;
+  --blur: 12px;
+  --card-radius: 18px;
+  --font-scale: 1;
+  --anim-strength: 1;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  font-family:'Segoe UI',system-ui,Tahoma,Geneva,Verdana,sans-serif;
+  background:var(--bg);
+  min-height:100vh;
+  color:#fff;
+  overflow-x:hidden;
+  position:relative;
+  font-size:calc(16px * var(--font-scale));
+}
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background:
+    radial-gradient(circle at 20% 50%,rgba(var(--primary-rgb),0.12) 0%,transparent 50%),
+    radial-gradient(circle at 80% 80%,rgba(var(--primary-rgb),0.10) 0%,transparent 50%),
+    radial-gradient(circle at 40% 20%,rgba(var(--primary-rgb),0.06) 0%,transparent 40%);
+  pointer-events:none;z-index:0;
+}
+
+.container{max-width:1440px;margin:0 auto;padding:20px;position:relative;z-index:1;}
+
+header{
+  text-align:center;
+  padding:42px 24px 36px;
+  background:var(--card-bg);
+  backdrop-filter:blur(var(--blur));
+  border-radius:22px;
+  margin-bottom:32px;
+  box-shadow:
+    0 0 calc(40px * var(--glow)) rgba(var(--primary-rgb),0.35),
+    inset 0 0 60px rgba(var(--primary-rgb),0.08),
+    0 10px 36px rgba(0,0,0,0.55);
+  border:1px solid rgba(var(--primary-rgb),0.32);
+  position:relative;overflow:hidden;
+  animation:slideDown 0.55s ease-out, glowPulse 3.2s ease-in-out infinite;
+}
+header::before{
+  content:'☢️';
+  position:absolute;font-size:14em;opacity:0.04;
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  animation:rotate 22s linear infinite;
+  pointer-events:none;
+}
+@keyframes rotate{to{transform:translate(-50%,-50%) rotate(360deg);}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-28px);}to{opacity:1;transform:translateY(0);}}
+@keyframes glowPulse{
+  0%,100%{box-shadow:0 0 calc(40px * var(--glow)) rgba(var(--primary-rgb),0.35),inset 0 0 60px rgba(var(--primary-rgb),0.08),0 10px 36px rgba(0,0,0,0.55);}
+  50%{box-shadow:0 0 calc(60px * var(--glow)) rgba(var(--primary-rgb),0.5),inset 0 0 80px rgba(var(--primary-rgb),0.12),0 10px 36px rgba(0,0,0,0.55);}
+}
+
+h1{
+  font-size:3.6em;font-weight:900;letter-spacing:4px;margin-bottom:6px;
+  background:linear-gradient(90deg,var(--primary),#39ff14,var(--primary));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  text-shadow:0 0 18px rgba(var(--primary-rgb),0.55);
+  position:relative;z-index:1;
+}
+.tagline{font-size:1.05em;color:var(--primary);opacity:0.85;position:relative;z-index:1;}
+.status-line{margin-top:10px;font-size:0.78em;letter-spacing:1.5px;color:rgba(var(--primary-rgb),0.65);position:relative;z-index:1;}
+
+.clock-wrap{
+  position:absolute;top:18px;right:22px;
+  font-variant-numeric:tabular-nums;
+  font-size:0.95em;letter-spacing:1px;
+  color:var(--primary);
+  text-shadow:0 0 12px rgba(var(--primary-rgb),0.5);
+  z-index:2;
+  display:flex;flex-direction:column;align-items:flex-end;gap:2px;
+}
+.clock-time{font-weight:700;font-size:1.15em;}
+.clock-date{font-size:0.72em;opacity:0.7;}
+
+.top-controls{
+  display:flex;justify-content:center;gap:14px;flex-wrap:wrap;
+  margin:0 0 22px;align-items:center;
+}
+.search-bar input{
+  width:min(520px,90vw);padding:14px 24px;font-size:1.05em;
+  border:2px solid rgba(var(--primary-rgb),0.38);
+  border-radius:50px;background:rgba(10,20,30,0.92);
+  color:var(--primary);box-shadow:0 0 18px rgba(var(--primary-rgb),0.18);
+  transition:all 0.25s ease;
+}
+.search-bar input::placeholder{color:rgba(var(--primary-rgb),0.45);}
+.search-bar input:focus{
+  outline:none;border-color:var(--primary);
+  box-shadow:0 0 28px rgba(var(--primary-rgb),0.4);
+  transform:scale(1.015);
+}
+
+.filter-bar{display:flex;justify-content:center;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
+.filter-btn,.settings-btn{
+  background:rgba(10,20,30,0.9);
+  border:2px solid rgba(var(--primary-rgb),0.28);
+  color:rgba(var(--primary-rgb),0.75);
+  padding:9px 20px;border-radius:30px;font-size:0.88em;font-weight:600;
+  letter-spacing:0.8px;cursor:pointer;transition:all 0.22s ease;
+}
+.filter-btn:hover,.settings-btn:hover{
+  border-color:var(--primary);color:var(--primary);
+  box-shadow:0 0 14px rgba(var(--primary-rgb),0.28);
+}
+.filter-btn.active{
+  background:var(--primary);color:#000;border-color:var(--primary);
+  box-shadow:0 0 18px rgba(var(--primary-rgb),0.55);
+}
+
+.game-count{font-size:0.95em;color:var(--primary);text-align:right;padding-right:8px;margin-bottom:8px;opacity:0.9;font-weight:600;}
+
+.games-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(var(--card-min,200px),1fr));
+  gap:26px;margin-top:20px;justify-items:center;
+}
+@media(max-width:1000px){.games-grid{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:700px){.games-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:420px){.games-grid{grid-template-columns:1fr;}}
+
+.game-card{
+  background:var(--card-bg);backdrop-filter:blur(var(--blur));
+  border-radius:var(--card-radius);overflow:hidden;cursor:pointer;
+  transition:transform 0.35s ease,box-shadow 0.35s ease,border-color 0.25s;
+  box-shadow:0 0 18px rgba(var(--primary-rgb),0.18),0 8px 22px rgba(0,0,0,0.5);
+  border:1px solid rgba(var(--primary-rgb),0.28);
+  text-decoration:none;color:inherit;display:block;width:100%;max-width:230px;
+  animation:fadeInUp 0.45s ease-out both;
+}
+.game-card:hover{
+  transform:translateY(calc(-10px * var(--anim-strength))) scale(calc(1 + 0.025 * var(--anim-strength)));
+  box-shadow:0 0 36px rgba(var(--primary-rgb),0.45),0 14px 36px rgba(0,0,0,0.55);
+  border-color:var(--primary);
+}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+
+.game-image{width:100%;aspect-ratio:1/1;background:linear-gradient(135deg,#001a0f,#003d29);position:relative;overflow:hidden;}
+.game-image img{width:100%;height:100%;object-fit:cover;transition:transform 0.35s ease;}
+.game-card:hover .game-image img{transform:scale(1.06);}
+.game-image .fallback{
+  position:absolute;inset:0;display:none;align-items:center;justify-content:center;
+  flex-direction:column;gap:6px;color:rgba(var(--primary-rgb),0.5);
+  font-size:0.72em;letter-spacing:1.5px;text-align:center;padding:10px;
+}
+.game-info{padding:16px 18px 18px;}
+.game-title{font-size:1.12em;font-weight:700;margin-bottom:3px;color:var(--primary);text-shadow:0 0 10px rgba(var(--primary-rgb),0.4);}
+.game-author{font-size:0.7em;color:rgba(var(--primary-rgb),0.5);letter-spacing:0.8px;}
+
+.floating-particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.particle{
+  position:absolute;width:3px;height:3px;background:var(--primary);
+  border-radius:50%;box-shadow:0 0 10px var(--primary);
+  animation:float 14s infinite ease-in-out;
+  opacity:0;
+}
+@keyframes float{
+  0%,100%{transform:translateY(0) translateX(0);opacity:0;}
+  12%,88%{opacity:0.85;}
+  50%{transform:translateY(-110px) translateX(40px);}
+}
+
+.loading-state{grid-column:1/-1;text-align:center;padding:60px 20px;color:rgba(var(--primary-rgb),0.7);}
+.spinner{
+  width:38px;height:38px;border:3px solid rgba(var(--primary-rgb),0.2);
+  border-top-color:var(--primary);border-radius:50%;margin:0 auto 14px;
+  animation:spin 0.75s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+#gameModal{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);
+  z-index:9999;align-items:center;justify-content:center;flex-direction:column;
+}
+#gameFrame{width:92%;height:86%;border:none;border-radius:14px;box-shadow:0 0 32px rgba(var(--primary-rgb),0.45);background:#000;}
+#closeBtn{
+  position:absolute;top:22px;right:40px;
+  background:var(--primary);color:#000;font-weight:700;font-size:1.05em;
+  padding:10px 22px;border:none;border-radius:30px;cursor:pointer;
+  box-shadow:0 0 18px rgba(var(--primary-rgb),0.55);transition:0.25s;
+}
+#closeBtn:hover{filter:brightness(1.15);transform:scale(1.04);}
+#modalError{display:none;flex-direction:column;align-items:center;gap:12px;color:#ff5c5c;text-align:center;max-width:420px;}
+#modalError .icon{font-size:2.3em;}
+
+/* Settings Panel */
+.settings-panel{
+  position:fixed;top:0;right:-400px;width:380px;max-width:95vw;height:100%;
+  background:rgba(8,14,22,0.97);backdrop-filter:blur(18px);
+  border-left:1px solid rgba(var(--primary-rgb),0.3);
+  z-index:10000;padding:28px 24px;overflow-y:auto;
+  transition:right 0.32s cubic-bezier(0.22,1,0.36,1);
+  box-shadow:-12px 0 40px rgba(0,0,0,0.5);
+}
+.settings-panel.open{right:0;}
+.settings-panel h2{color:var(--primary);margin-bottom:22px;font-size:1.4em;letter-spacing:1px;}
+.settings-group{margin-bottom:20px;}
+.settings-group label{display:block;font-size:0.84em;color:rgba(var(--primary-rgb),0.75);margin-bottom:7px;letter-spacing:0.5px;}
+.settings-group input[type="color"],
+.settings-group input[type="range"],
+.settings-group select{
+  width:100%;padding:9px;border-radius:10px;border:1px solid rgba(var(--primary-rgb),0.3);
+  background:rgba(0,0,0,0.35);color:#fff;
+}
+.settings-group input[type="range"]{padding:0;accent-color:var(--primary);}
+.settings-row{display:flex;justify-content:space-between;align-items:center;gap:12px;}
+.settings-actions{display:flex;gap:12px;margin-top:24px;}
+.settings-actions button{
+  flex:1;padding:12px;border-radius:12px;border:none;font-weight:700;cursor:pointer;
+  background:var(--primary);color:#000;font-size:0.95em;
+}
+.settings-actions button.secondary{background:transparent;border:2px solid rgba(var(--primary-rgb),0.4);color:var(--primary);}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9998;display:none;}
+.overlay.show{display:block;}
+
+/* Stealth visual */
+body.stealth header::before{content:'📊';}
+body.stealth h1{
+  background:linear-gradient(90deg,#4285f4,#34a853,#fbbc05,#ea4335);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  text-shadow:none;letter-spacing:1px;
+}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:0.01ms !important;transition-duration:0.01ms !important;}
+}
+body.reduced-motion *,body.reduced-motion *::before,body.reduced-motion *::after{
+  animation-duration:0.01ms !important;transition-duration:0.01ms !important;
+}
+</style>
+</head>
+<body>
+<div class="floating-particles" id="particles"></div>
+
+<div class="container">
+  <header>
+    <div class="clock-wrap">
+      <div class="clock-time" id="clockTime">--:--</div>
+      <div class="clock-date" id="clockDate">---</div>
+    </div>
+    <h1 id="mainTitle">☢️ URANIUM</h1>
+    <p class="tagline" id="mainTagline">Play hundreds of games instantly</p>
+    <p class="status-line" id="statusLine">Loading…</p>
+  </header>
+
+  <div class="top-controls">
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search games…" autocomplete="off">
+    </div>
+    <button class="settings-btn" id="openSettings">⚙️ Settings</button>
+  </div>
+
+  <div class="filter-bar" id="filterBar"></div>
+  <div id="gameCount" class="game-count">— Games</div>
+  <div class="games-grid" id="gamesGrid">
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <div>Loading…</div>
+    </div>
+  </div>
+</div>
+
+<div id="gameModal">
+  <button id="closeBtn">Close ✕</button>
+  <iframe id="gameFrame" allowfullscreen sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock allow-modals"></iframe>
+  <div id="modalError">
+    <div class="icon">⚠️</div>
+    <div id="modalErrorTitle" style="font-size:1.25em;font-weight:700;color:#fff;"></div>
+    <div id="modalErrorReason" style="font-size:0.9em;color:rgba(255,255,255,0.6);"></div>
+  </div>
+</div>
+
+<div class="overlay" id="settingsOverlay"></div>
+<aside class="settings-panel" id="settingsPanel">
+  <h2>⚙️ Settings</h2>
+
+  <div class="settings-group">
+    <label>Primary Color</label>
+    <input type="color" id="setPrimary" value="#00ff88">
+  </div>
+
+  <div class="settings-group">
+    <label>Background</label>
+    <input type="color" id="setBg" value="#0a0e1a">
+  </div>
+
+  <div class="settings-group">
+    <label>Glow <span id="glowVal">35%</span></label>
+    <input type="range" id="setGlow" min="0" max="100" value="35">
+  </div>
+
+  <div class="settings-group">
+    <label>Blur <span id="blurVal">12px</span></label>
+    <input type="range" id="setBlur" min="0" max="28" value="12">
+  </div>
+
+  <div class="settings-group">
+    <label>Card Size <span id="cardVal">200px</span></label>
+    <input type="range" id="setCard" min="160" max="280" value="200">
+  </div>
+
+  <div class="settings-group">
+    <label>Font Size <span id="fontVal">100%</span></label>
+    <input type="range" id="setFont" min="80" max="130" value="100">
+  </div>
+
+  <div class="settings-group">
+    <label>Animation <span id="animVal">100%</span></label>
+    <input type="range" id="setAnim" min="0" max="150" value="100">
+  </div>
+
+  <div class="settings-group">
+    <label>Particles <span id="partVal">18</span></label>
+    <input type="range" id="setParticles" min="0" max="40" value="18">
+  </div>
+
+  <div class="settings-group">
+    <label>Clock Format</label>
+    <select id="setClockFormat">
+      <option value="12">12-hour</option>
+      <option value="24">24-hour</option>
+    </select>
+  </div>
+
+  <div class="settings-group">
+    <label class="settings-row">
+      <span>Reduced Motion</span>
+      <input type="checkbox" id="setReducedMotion">
+    </label>
+  </div>
+
+  <div class="settings-group">
+    <label class="settings-row">
+      <span>🛡️ Stealth Mode (Tab Cloaking)</span>
+      <input type="checkbox" id="setStealth">
+    </label>
+    <p style="font-size:0.78em;color:rgba(255,255,255,0.45);margin-top:6px;line-height:1.45;">
+      Changes the browser tab name to look like Google Slides, Docs, Drive, Classroom, etc.
+    </p>
+  </div>
+
+  <div class="settings-actions">
+    <button id="resetSettings" class="secondary">Reset</button>
+    <button id="closeSettings">Done</button>
+  </div>
+</aside>
+
+<script>
+const DEFAULTS = {
+  primary: '#00ff88',
+  bg: '#0a0e1a',
+  glow: 35,
+  blur: 12,
+  card: 200,
+  font: 100,
+  anim: 100,
+  particles: 18,
+  clockFormat: '12',
+  reducedMotion: false,
+  stealth: false
+};
+
+let settings = loadSettings();
+let allGames = [];
+let currentBlobUrl = null;
+let currentFilter = 'all';
+let cloakInterval = null;
+
+const gamesGrid   = document.getElementById('gamesGrid');
+const gameCountEl = document.getElementById('gameCount');
+const statusLine  = document.getElementById('statusLine');
+const searchInput = document.getElementById('searchInput');
+const gameModal   = document.getElementById('gameModal');
+const gameFrame   = document.getElementById('gameFrame');
+const modalError  = document.getElementById('modalError');
+const filterBar   = document.getElementById('filterBar');
+const particlesEl = document.getElementById('particles');
+
+/* ========== FULL GAME LIST ========== */
+const customGames = [
+  { name:"Doom", author:"id Software", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/1200.webp", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/doom.html" },
+  { name:"Doom 2", author:"id Software", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/ss_05f81f237a6370c3c797af951b42291dc747d199.1920x1080.jpg", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/doom2.html" },
+  { name:"Doom 3", author:"id Software", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/doom3box.jpg", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/doom3.html" },
+  { name:"Doom 64", author:"Midway Games", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/doom_64_box.jpg", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/doom64.html" },
+  { name:"Doom RPG", author:"id Software", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/doomrpg.png", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/doomrpg.html" },
+  { name:"Gran Turismo 2", author:"Polyphony Digital", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/61qihedj%2B5l._ac_uf1000%2C1000_ql80_.jpg", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/gt2.html" },
+  { name:"GTA Advance", author:"Rockstar Games", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/grand%20theft%20auto%20advance%20(usa)-image.png", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/gtaa.html" },
+  { name:"GTA China", author:"Rockstar Games", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/grand%20theft%20auto%20-%20chinatown%20wars%20(usa)%20(en%2Cfr%2Cde%2Ces%2Cit)-image.png", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/gtachina.html" },
+  { name:"GTA Vice City Stories", author:"Rockstar Games", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/gtavcs.jpg", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/gtavcs.html" },
+  { name:"Journey", author:"thatgamecompany", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/journey-image.png", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/journey.html" },
+  { name:"LEGO Star Wars", author:"Traveller's Tales", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/61xyz0rhcol._ac_uf1000%2C1000_ql80_.jpg", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/lsw.html" },
+  { name:"LEGO Star Wars 2", author:"Traveller's Tales", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@refs/heads/main/images/download.jfif", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/lsw2.html" },
+  { name:"Super Mario World", author:"Nintendo", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/super_mario_world_coverart.png", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/smw.html" },
+  { name:"Scribblenauts", author:"5th Cell", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/scribblenauts_cover.jpg", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/scribblenauts.html" },
+  { name:"Opposing Force", author:"Gearbox Software", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/opposing.png", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/opposing.html" },
+  { name:"Peggle", author:"PopCap Games", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/peggle.png", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/peggle.html" },
+  { name:"Super Mario Bros", author:"Nintendo", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/super_mario_bros._box.png", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/smb.html" },
+  { name:"Super Mario Bros 2", author:"Nintendo", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/super%20mario%20bros.%202%20(usa)%20(rev%201)-image.png", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/smb2.html" },
+  { name:"Super Mario Bros 3", author:"Nintendo", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/super%20mario%20bros.%203%20(usa)%20(rev%201)-image.png", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/smb3.html" },
+  { name:"Ms. Pac-Man", author:"Namco", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/mspacman-thumb.png", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/mspacman.html" },
+  { name:"Patrick's", author:"Uranium", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/OIP.jpg", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/patricks/index.html" },
+  { name:"Plants vs. Zombies", author:"PopCap Games", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/plants%2Bvs.%2Bzombies%2B(usa)-image.jpg", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/pvz.html" },
+  { name:"Shotgun Mario 64", author:"GomePlayTV", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/shotgunmario64.png", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/shotgunmario64.html" },
+  { name:"Pac-Man", author:"Namco", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/puckman-thumb.jpg", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/puckman.html" },
+  { name:"Half-Life", author:"Valve", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/half-life.png", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clhalflife.html" },
+  { name:"NBA JAM", author:"EA SPORTS", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/nbajamte-1673053591219.jpg", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clNBAjam.html" },
+  { name:"BitLife", author:"BitLife", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/OIP.jpg", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clbitlife.html" },
+  { name:"Paper Mario DS", author:"Nintendo", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/paper%20mario%20ds.jpg", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clPaperMarioDSE.html" },
+  { name:"Bitplanes", author:"Someone", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/bitplaness.jpg", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clbitplanes.html" },
+  { name:"Backyard Baseball 10", author:"Nintendo", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/6333099-backyard-baseball-10-nintendo-ds-front-cover.jpg", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clbackyardbaseball10.html" },
+  { name:"Angry Birds", author:"Rovio", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/angry%20birds.jpg", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clangrybirds.html" },
+  { name:"Flushed Away DS", author:"Nintendo", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/ds_flushed_away_p_mvu68a.jpg", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/retro-games-@main/FlushedAway.html" },
+  { name:"Mario Party Advance", author:"Nintendo", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/MariopartyGBA.jpg", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/Ultimate-games-stash-games-@main/UGS-Files/clMario%20Party%20Advance.html" },
+  { name:"Subway Surfers Berlin", author:"NA", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/subway-surfers-berlin.png", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/Ultimate-games-stash-games-@main/UGS-Files/clsubwaysurfersberlin.html" },
+  { name:"Baseball Bros", author:"NA", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/baseball_bros.webp", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/Ultimate-games-stash-games-@main/UGS-Files/clbaseballbros.html" },
+  { name:"Five Nights at Shrek's", author:"NA", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/770ff34d046e6ccd6ee470d9d7b3d55f.jpg", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/Ultimate-games-stash-games-@main/UGS-Files/clfivenightsatshreks.html" },
+  { name:"FIFA World Cup 2026 SNES", author:"Nintendo", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/image-49.png", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/Mathisfunallfiles@main/worldcup.html" },
+  { name:"Cookie Clicker", author:"NA", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/432bf350e866b2544f9a5cd80de83e0c24f4efddfd7811016c4aa33e48c5df7c.avif", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/Mathisfunallfiles@main/cookie-clicker.html" },
+  { name:"Spaceflight Simulator", author:"NA", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/09dc947ac1fdd31481539b5766a86513.png", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/Mathisfunallfiles@main/Spaceflight%20Simulator.html" },
+  { name:"1v1.LOL", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/channels4_profile.jpg", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/cl1v1lol.html" },
+  { name:"2048", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/download.png", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/cl2048.html" },
+  { name:"2048 Cupcakes", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/download.jpg", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/cl2048cupcakes.html" },
+  { name:"3 Pandas", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/images.jpg", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/cl3pandas.html" },
+  { name:"3 Pandas Brazil", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/pandasinjapna.jpg", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/cl3pandasbrazil.html" },
+  { name:"3 Pandas Fantasy", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/3pandasinfanstasy.jpeg", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/cl3pandasfantasy.html" },
+  { name:"3 Pandas Japan", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/3pandasinjapan.jpeg", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/cl3pandasjapan.html" },
+  { name:"3 Pandas Night", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/panasdss%20night.jpeg", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/cl3pandasnight.html" },
+  { name:"3 Slices 2", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/3slicesof2.png", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/cl3slices2.html" },
+  { name:"4th and Goal", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/4thandgoal.jpeg", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/cl4thandgoal.html" },
+  { name:"8 Ball Classic", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/8BallBilliardsClassicTeaser.jpg", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/cl8ballclassic.html" },
+  { name:"8 Ball Pool", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/8-Ball-Pool.png.webp", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/cl8ballpool.html" },
+  { name:"ADOFAI", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/adofai.jpg", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clADOFAI.html" },
+  { name:"A Dark Room", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/adofai.jpg", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clADarkRoom.html" },
+  { name:"Adventure Capitalist", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/Adventure-Capitalist.webp", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clAdventureCapatalist.html" },
+  { name:"Altered Beast", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/altered-beast-3.jpg", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clAltered%20Beast.html" },
+  { name:"Geometry Dash Wave", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/geometry-dash-wave-game.png", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clGeometryDashWave.html" },
+  { name:"Awesome Pirates", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/Awesome-Pirates.jpg", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clAwesomePirates.html" },
+  { name:"B3313", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/sm64_b3313_fanart_by_modraw08_djcr62e-fullview.jpg", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clB3313.html" },
+  { name:"BFDI Branches", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/bfdi_branches__demo__poster__by_bobbyinteraction5_dhr7288-fullview.jpg", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clBFDIBranches.html" },
+  { name:"BMX 2", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@refs/heads/main/images/bmx%202.avif", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clBMX2.html" },
+  { name:"Bloons TD 1", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/OIP.jpg", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clBTD1.html" },
+  { name:"Bank Robbery", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/bank-robbery.jpg", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clBank%20Robbery.html" },
+  { name:"Bonanza Bros", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/Bonanza-Bros-destc-1024x576.jpg", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clBonanza-Bros.html" },
+  { name:"Bounty Of One", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/bounty-of-one-button-1696613856511.jpg", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clBountyOfOne.html" },
+  { name:"Brawl Stars", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/brawl-stars-game-ft.webp", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clBrawlstars.html" },
+  { name:"Cell To Singularity", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/celltosingularity-1673648155490.jpg", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clCellToSingularity.html" },
+  { name:"Chicken CS", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@refs/heads/main/images/chicken-cs_16x9-cover.avif", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clChickenCS.html" },
+  { name:"CircloO 2", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/CircloO_2.png", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clCircloO2.html" },
+  { name:"Crystal Castles", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/crystal-castles_5.png", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clCrystalCastles.html" },
+  { name:"Dashmetry", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/dashmetry.png", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clDashmetry.html" },
+  { name:"Dragon Ball Z Legacy of Goku", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/1200px-Dragon_Ball_Z-_The_Legacy_of_Goku_(us)_cover.jpg", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clDragonBallZTheLegacyofGoku.html" },
+  { name:"Dragon Quest IX", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/Dragon-Quest-IX-Box-art-1280px-50p.webp", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clDragonQuestIX.html" },
+  { name:"FIFA 07", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/fifa%207.jpg", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clFIFA07.html" },
+  { name:"FIFA 10", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@refs/heads/main/images/FIFA-10-Cover.avif", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clFIFA10.html" },
+  { name:"FIFA 11", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/Fifa11_Game_Cover.jpg", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clFIFA11.html" },
+  { name:"FNAF", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/fnaf1_cover.webp", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clFNAF.html" },
+  { name:"FNAF 2", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/five-nights-at-freddys-2-game.jpg", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clFNAF2.html" },
+  { name:"FNAF 3", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/fnaf3_cover.webp", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clFNAF3.html" },
+  { name:"FNAF 4", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@refs/heads/main/images/fnaf-4-poster.avif", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clFNAF4.html" },
+  { name:"Tomcat F-14 Flight Sim", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/56869-dan-kitchen-s-tomcat-the-f-14-fighter-simulator-atari-2600-front-cover.webp", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/retro-games-@main/atari2880%20tomcat%20f-14.html" },
+  { name:"MS Flight Sim Old", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/microsoft-flight-simulator-4-03-big.webp", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/microsoftflightsimold.html" },
+  { name:"Untime", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/images%20(6).jpeg", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/cluntime.html" },
+  { name:"Untitled Goose Game", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/images%20(5).jpeg", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/cluntitledgoosegame.html" },
+  { name:"Upgrade Complete", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/images%20(8).jpeg", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clupgradecomplete.html" },
+  { name:"Upgrade Complete 2", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/images%20(7).jpeg", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clupgradecomplete2.html" },
+  { name:"Upslash", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/images%20(9).jpeg", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clupslash.html" },
+  { name:"Urban Champion", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/download%20(2).jpeg", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clurbanchampion.html" },
+  { name:"Uster Rush", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/Screenshot%202026-08-18%208.43.47%20PM.png", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clusterrush.html" },
+  { name:"Vampire Survivors", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/images%20(10).jpeg", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clvampiresurvivors.html" },
+  { name:"Vanguard", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/header.jpg", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clvanguard.html" },
+  { name:"Vapor Trails", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/images%20(11).jpeg", resolvedUrl:"https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@main/UGS-Files/clvaportrails.html" },
+  { name:"Minecraft Tower Defense", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/images%20(12).jpeg", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/Ultimate-games-stash-games-@main/UGS-Files/clMINECRAFTTOWERDEFENSE.html" },
+  { name:"Hell Talker", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/images%20(1).webp", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/Ultimate-games-stash-games-@main/UGS-Files/HellTaker.html" },
+  { name:"10 Minutes Til Dawn", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/images.png", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/Ultimate-games-stash-games-@main/UGS-Files/cl10minutestildawn.html" },
+  { name:"Crossy Road", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/images%20(16).jpeg", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/Ultimate-games-stash-games-@main/UGS-Files/clcrossyroad.html" },
+  { name:"Slope", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/images%20(1).png", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/Ultimate-games-stash-games-@main/UGS-Files/clslope.html" },
+  { name:"Run", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/images%20(19).jpeg", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/Ultimate-games-stash-games-@main/UGS-Files/clrun.html" },
+  { name:"Run 2", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/images%20(20).jpeg", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/Ultimate-games-stash-games-@main/UGS-Files/clrun2.html" },
+  { name:"Run 3", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/images%20(21).jpeg", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/Ultimate-games-stash-games-@main/UGS-Files/clrun3.html" },
+  { name:"Retro Bowl", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/unnamed.png", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/Ultimate-games-stash-games-@main/offline/retrobowl.html" },
+  { name:"Baldi's Basics", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/baldisbasics_plus.webp", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/Ultimate-games-stash-games-@main/UGS-Files/clbaldisbasics.html" },
+  { name:"Chess", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/images%20(22).jpeg", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/Ultimate-games-stash-games-@main/UGS-Files/clchessclassic.html" },
+  { name:"Minecraft", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/download%20(3).jpeg", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/Ultimate-games-stash-games-@main/UGS-Files/clminecraftpocketedition.html" },
+  { name:"Stack", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/images%20(25).jpeg", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/Ultimate-games-stash-games-@main/offline/stack.html" },
+  { name:"Happy Wheels", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/happy-wheels-logo.avif", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/Ultimate-games-stash-games-@main/UGS-Files/clhappywheels.html" },
+  { name:"Orange Roulette", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/images%20(27).jpeg", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/Ultimate-games-stash-games-@main/UGS-Files/clOrangeRoulette.html" },
+  { name:"Angry Birds", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/images%20(31).jpeg", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/Ultimate-games-stash-games-@main/offline/angrybirds.html" },
+  { name:"Friday Night Funkin Twiddler Finger", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/images%20(32).jpeg", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/Ultimate-games-stash-games-@main/UGS-Files/clfnfTWIDDLEFINGER.html" },
+  { name:"Friday Night Funkin Aethos ", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/images%20(33).jpeg", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/Ultimate-games-stash-games-@main/UGS-Files/clfnfaethos.html" },
+  { name:"Friday Night Funkin Binary Breakdown ", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/images%20(34).jpeg", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/Ultimate-games-stash-games-@main/UGS-Files/clfnfbinarybreakdown.html" },
+  { name:"Friday Night Funkin Below depths ", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/images%20(35).jpeg", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/Ultimate-games-stash-games-@main/UGS-Files/clfnfbelowdepths.html" },
+  { name:"Friday Night Funkin Black Betrayal  ", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/images%20(36).jpeg", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/Ultimate-games-stash-games-@main/UGS-Files/clfnfblackbetrayal.html" },
+  { name:"Friday Night Funkin B Side  ", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/images%20(37).jpeg", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/Ultimate-games-stash-games-@main/UGS-Files/clfnfblackbetrayal.html" },
+  { name:"Friday Night Funkin Candy Carrier ", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/images%20(38).jpeg", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/Ultimate-games-stash-games-@main/UGS-Files/clfnfcandycarrier.html" },
+  { name:"Friday Night Funkin Chara ", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/images%20(39).jpeg", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/Ultimate-games-stash-games-@main/UGS-Files/clfnfchara.html" },
+  { name:"Friday Night Funkin City Tales ", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/images%20(40).jpeg", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/Ultimate-games-stash-games-@main/UGS-Files/clfnfcitytales.html" },
+  { name:"Friday Night Funkin Corrision", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/images%20(17).jpeg", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/Ultimate-games-stash-games-@main/UGS-Files/clfridaynightfunkin.html" },
+  { name:"Friday Night Funkin Cory", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/maxresdefault.jpg", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/Ultimate-games-stash-games-@main/UGS-Files/clfnfcory.html" },
+  { name:"Friday Night Funkin Crunchin", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/images%20(42).jpeg", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/Ultimate-games-stash-games-@main/UGS-Files/clfnfcrunchin.html" },
+  { name:"Friday Night Funkin'Deceiver", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/images%20(43).jpeg", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/Ultimate-games-stash-games-@main/UGS-Files/clfnfdeciever.html" },
+  { name:"Friday Night Funkin Desolation", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/images%20(44).jpeg", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/Ultimate-games-stash-games-@main/UGS-Files/clfnfdesolation.html" },
+  { name:"Friday Night Funkin Golden Apple", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/images%20(50).jpeg", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/Ultimate-games-stash-games-@main/UGS-Files/clfnfgoldenapple.html" },
+  { name:"Doodle Jump", author:"Unknown", resolvedCover:"https://cdn.jsdelivr.net/gh/Onex558/uranium-source-@main/images/images%20(49).jpeg", resolvedUrl:"https://cdn.jsdelivr.net/gh/Onex558/Ultimate-games-stash-games-@main/UGS-Files/cldoodlejumpgoober.html" },
+  
+  
+  
+  ];
+
+/* ========== SETTINGS ========== */
+function loadSettings() {
+  try {
+    const raw = localStorage.getItem('uraniumSettings');
+    return raw ? { ...DEFAULTS, ...JSON.parse(raw) } : { ...DEFAULTS };
+  } catch { return { ...DEFAULTS }; }
+}
+function saveSettings() {
+  localStorage.setItem('uraniumSettings', JSON.stringify(settings));
+}
+
+/* ========== TAB CLOAKING ========== */
+const CLOAK_TITLES = [
+  "Google Slides",
+  "Google Docs",
+  "Google Drive",
+  "Google Classroom",
+  "Classroom",
+  "Kahoot!",
+  "Canvas",
+  "Google Sheets",
+  "Meet - Google",
+  "Docs",
+  "Slides",
+  "Drive",
+  "New Tab"
+];
+
+function applyCloaking() {
+  const titleEl = document.getElementById('mainTitle');
+  const taglineEl = document.getElementById('mainTagline');
+  const favicon = document.getElementById('favicon');
+
+  if (settings.stealth) {
+    document.body.classList.add('stealth');
+    // Random realistic title
+    const randomTitle = CLOAK_TITLES[Math.floor(Math.random() * CLOAK_TITLES.length)];
+    document.title = randomTitle;
+    titleEl.textContent = "📊 " + randomTitle;
+    taglineEl.textContent = "Educational resources and tools";
+    // Change favicon to a simple document icon
+    favicon.href = "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📄</text></svg>";
+    
+    // Keep changing the tab title every 8-15 seconds so it looks more natural
+    if (cloakInterval) clearInterval(cloakInterval);
+    cloakInterval = setInterval(() => {
+      if (settings.stealth) {
+        document.title = CLOAK_TITLES[Math.floor(Math.random() * CLOAK_TITLES.length)];
+      }
+    }, 8000 + Math.random() * 7000);
+  } else {
+    document.body.classList.remove('stealth');
+    document.title = "Uranium Games";
+    titleEl.textContent = "☢️ URANIUM";
+    taglineEl.textContent = "Play hundreds of games instantly";
+    favicon.href = "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☢️</text></svg>";
+    if (cloakInterval) {
+      clearInterval(cloakInterval);
+      cloakInterval = null;
+    }
+  }
+}
+
+function applySettings() {
+  const root = document.documentElement;
+  root.style.setProperty('--primary', settings.primary);
+  const r = parseInt(settings.primary.slice(1,3),16);
+  const g = parseInt(settings.primary.slice(3,5),16);
+  const b = parseInt(settings.primary.slice(5,7),16);
+  root.style.setProperty('--primary-rgb', `${r},${g},${b}`);
+  root.style.setProperty('--bg', settings.bg);
+  root.style.setProperty('--glow', settings.glow / 100);
+  root.style.setProperty('--blur', settings.blur + 'px');
+  root.style.setProperty('--card-min', settings.card + 'px');
+  root.style.setProperty('--font-scale', settings.font / 100);
+  root.style.setProperty('--anim-strength', settings.anim / 100);
+  document.body.style.background = settings.bg;
+  document.body.classList.toggle('reduced-motion', settings.reducedMotion);
+  buildParticles(settings.particles);
+  applyCloaking();
+
+  document.getElementById('glowVal').textContent = settings.glow + '%';
+  document.getElementById('blurVal').textContent = settings.blur + 'px';
+  document.getElementById('cardVal').textContent = settings.card + 'px';
+  document.getElementById('fontVal').textContent = settings.font + '%';
+  document.getElementById('animVal').textContent = settings.anim + '%';
+  document.getElementById('partVal').textContent = settings.particles;
+}
+
+function buildParticles(count) {
+  particlesEl.innerHTML = '';
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.top  = Math.random() * 100 + '%';
+    p.style.animationDelay = (Math.random() * 12) + 's';
+    p.style.animationDuration = (10 + Math.random() * 10) + 's';
+    particlesEl.appendChild(p);
+  }
+}
+
+function updateClock() {
+  const now = new Date();
+  const optsTime = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: settings.clockFormat === '12' };
+  const optsDate = { weekday: 'short', month: 'short', day: 'numeric' };
+  document.getElementById('clockTime').textContent = now.toLocaleTimeString([], optsTime);
+  document.getElementById('clockDate').textContent = now.toLocaleDateString([], optsDate);
+}
+
+/* ========== RENDER (NO CUSTOM TAG) ========== */
+function renderGames(list) {
+  gameCountEl.textContent = list.length + ' Games';
+  gamesGrid.innerHTML = '';
+  if (list.length === 0) {
+    gamesGrid.innerHTML = '<div class="loading-state">No games match your search.</div>';
+    return;
+  }
+  const frag = document.createDocumentFragment();
+  list.forEach((game, i) => {
+    const card = document.createElement('a');
+    card.href = '#';
+    card.className = 'game-card';
+    card.style.animationDelay = (Math.min(i, 30) * 0.025) + 's';
+    card.innerHTML = `
+      <div class="game-image">
+        <img src="${game.resolvedCover}" alt="${game.name}" loading="lazy"
+          onerror="this.style.display='none';this.parentElement.querySelector('.fallback').style.display='flex';">
+        <div class="fallback">NO IMAGE<br>${game.name}</div>
+      </div>
+      <div class="game-info">
+        <div class="game-title">${game.name}</div>
+        <div class="game-author">${game.author || 'Unknown'}</div>
+      </div>`;
+    card.onclick = e => { e.preventDefault(); openGame(game); };
+    frag.appendChild(card);
+  });
+  gamesGrid.appendChild(frag);
+}
+
+function handleSearch() {
+  const query = searchInput.value.toLowerCase().trim();
+  let results = allGames;
+  if (query) {
+    const tokens = query.split(/\s+/);
+    results = results.filter(g => {
+      const target = `${g.name} ${g.author||''}`.toLowerCase();
+      return tokens.every(t => target.includes(t));
+    });
+  }
+  renderGames(results);
+}
+
+function buildFilters() {
+  // No source filters needed since everything is just games now
+  filterBar.innerHTML = '';
+}
+
+async function loadAllSources() {
+  allGames = [...customGames];
+  // remove duplicates
+  const unique = [];
+  const seen = new Set();
+  for (const item of allGames) {
+    const key = item.name + '|' + item.resolvedUrl;
+    if (!seen.has(key)) { seen.add(key); unique.push(item); }
+  }
+  allGames = unique;
+  localStorage.setItem('uraniumGamesCache', JSON.stringify(allGames));
+  statusLine.textContent = settings.stealth ? `${allGames.length} resources ready` : `${allGames.length} games ready`;
+  handleSearch();
+}
+
+/* ========== GAME OPENING ========== */
+function showModalError(name, reason) {
+  gameFrame.style.display = 'none';
+  modalError.style.display = 'flex';
+  document.getElementById('modalErrorTitle').textContent = name + ' failed to load';
+  document.getElementById('modalErrorReason').textContent = reason;
+}
+function hideModalError() {
+  modalError.style.display = 'none';
+  gameFrame.style.display = 'block';
+}
+
+function getCloakingScript() {
+  return `<script>
+    (function(){
+      window.onbeforeunload = function(){ return "Stay on this page"; };
+      window.open = function(){ return null; };
+      const killAds = function(){
+        document.querySelectorAll('.ad,.ads,.adsbygoogle,.banner-ads,[id^="ad-"],iframe[src*="doubleclick"],iframe[src*="googleads"]').forEach(el => el.remove());
+      };
+      setInterval(killAds, 500);
+      killAds();
+    })();
+  <\/script>`;
+}
+
+function openGame(game) {
+  const url = game.resolvedUrl;
+  if (!url) return;
+  gameFrame.src = 'about:blank';
+  hideModalError();
+  gameModal.style.display = 'flex';
+
+  const cacheBuster = url + (url.includes('?') ? '&' : '?') + 't=' + Date.now();
+  fetch(cacheBuster)
+    .then(res => {
+      if (!res.ok) throw new Error('HTTP_' + res.status);
+      return res.text();
+    })
+    .then(html => {
+      if (html.length < 50) throw new Error('EMPTY');
+      if (currentBlobUrl) URL.revokeObjectURL(currentBlobUrl);
+      const safety = getCloakingScript();
+      const finalHtml = html.toLowerCase().includes('<head>')
+        ? html.replace(/<head>/i, '<head>' + safety)
+        : safety + html;
+      currentBlobUrl = URL.createObjectURL(new Blob([finalHtml], {type:'text/html;charset=utf-8'}));
+      gameFrame.src = currentBlobUrl;
+    })
+    .catch(err => {
+      let reason = 'Failed to load.';
+      if (err.message === 'EMPTY') reason = 'Empty response.';
+      else if (err.message?.startsWith('HTTP_')) reason = 'File not found.';
+      else if (err.message === 'Failed to fetch') reason = 'Network error.';
+      showModalError(game.name, reason);
+    });
+}
+
+function closeModal() {
+  gameModal.style.display = 'none';
+  gameFrame.src = 'about:blank';
+  hideModalError();
+  if (currentBlobUrl) { URL.revokeObjectURL(currentBlobUrl); currentBlobUrl = null; }
+}
+
+/* ========== SETTINGS UI ========== */
+const panel   = document.getElementById('settingsPanel');
+const overlay = document.getElementById('settingsOverlay');
+
+function openSettings() {
+  document.getElementById('setPrimary').value = settings.primary;
+  document.getElementById('setBg').value = settings.bg;
+  document.getElementById('setGlow').value = settings.glow;
+  document.getElementById('setBlur').value = settings.blur;
+  document.getElementById('setCard').value = settings.card;
+  document.getElementById('setFont').value = settings.font;
+  document.getElementById('setAnim').value = settings.anim;
+  document.getElementById('setParticles').value = settings.particles;
+  document.getElementById('setClockFormat').value = settings.clockFormat;
+  document.getElementById('setReducedMotion').checked = settings.reducedMotion;
+  document.getElementById('setStealth').checked = settings.stealth;
+  applySettings();
+  panel.classList.add('open');
+  overlay.classList.add('show');
+}
+function closeSettings() {
+  panel.classList.remove('open');
+  overlay.classList.remove('show');
+  saveSettings();
+}
+
+document.getElementById('openSettings').onclick = openSettings;
+document.getElementById('closeSettings').onclick = closeSettings;
+overlay.onclick = closeSettings;
+
+document.getElementById('setPrimary').oninput = e => { settings.primary = e.target.value; applySettings(); };
+document.getElementById('setBg').oninput = e => { settings.bg = e.target.value; applySettings(); };
+document.getElementById('setGlow').oninput = e => { settings.glow = +e.target.value; applySettings(); };
+document.getElementById('setBlur').oninput = e => { settings.blur = +e.target.value; applySettings(); };
+document.getElementById('setCard').oninput = e => { settings.card = +e.target.value; applySettings(); };
+document.getElementById('setFont').oninput = e => { settings.font = +e.target.value; applySettings(); };
+document.getElementById('setAnim').oninput = e => { settings.anim = +e.target.value; applySettings(); };
+document.getElementById('setParticles').oninput = e => { settings.particles = +e.target.value; applySettings(); };
+document.getElementById('setClockFormat').onchange = e => { settings.clockFormat = e.target.value; updateClock(); };
+document.getElementById('setReducedMotion').onchange = e => { settings.reducedMotion = e.target.checked; applySettings(); };
+document.getElementById('setStealth').onchange = e => { settings.stealth = e.target.checked; applySettings(); };
+
+document.getElementById('resetSettings').onclick = () => {
+  settings = { ...DEFAULTS };
+  applySettings();
+  openSettings();
+};
+
+searchInput.addEventListener('input', () => {
+  clearTimeout(window._searchTimer);
+  window._searchTimer = setTimeout(handleSearch, 140);
+});
+
+document.getElementById('closeBtn').onclick = closeModal;
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    if (panel.classList.contains('open')) closeSettings();
+    else if (gameModal.style.display === 'flex') closeModal();
+  }
+});
+
+applySettings();
+updateClock();
+setInterval(updateClock, 1000);
+window.addEventListener('load', loadAllSources);
+</script>
+</body>
+</html>

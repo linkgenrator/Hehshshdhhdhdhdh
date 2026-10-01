@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" style="position: fixed; inset: 0;">
+  <foreignObject x="0" y="0" width="100%" height="100%">
+    <body xmlns="http://www.w3.org/1999/xhtml" lang="en" style="margin: 0; width: 100%; height: 100%; min-height: 100vh; overflow: hidden; background: #020810;">
+      <div id="root"></div>
+      <style><![CDATA[
+        html, body, #root { width: 100%; height: 100%; min-height: 100vh; margin: 0; background: #020810; }
+        body { opacity: 1; }
+      ]]></style>
+      <script><![CDATA[
+(() => {
+  window.__PZ_ORIGIN__ = "https://360soccer.org";
+  window.__PZ_CACHE__ = "16-08-2026";
+  const ns = 'http://www.w3.org/1999/xhtml';
+  const body = document.querySelector('body');
+  if (!body) return;
+  const svgRoot = document.documentElement;
+  const head = document.createElementNS(ns, 'head');
+  body.prepend(head);
+  const htmlRoot = body.parentElement && body.parentElement.namespaceURI === ns ? body.parentElement : body;
+  try { Object.defineProperty(document, 'head', { configurable: true, get() { return head; } }); } catch {}
+  try { Object.defineProperty(document, 'body', { configurable: true, get() { return body; } }); } catch {}
+  try { Object.defineProperty(document, 'documentElement', { configurable: true, get() { return htmlRoot; } }); } catch {}
+  try {
+    Object.defineProperty(svgRoot, 'className', {
+      configurable: true,
+      get() { return svgRoot.getAttribute('class') || ''; },
+      set(value) { svgRoot.setAttribute('class', value || ''); },
+    });
+  } catch {}
+  const originalCreateElement = document.createElement.bind(document);
+  document.createElement = function createElement(tagName, options) {
+    return typeof tagName === 'string'
+      ? document.createElementNS(ns, tagName, options)
+      : originalCreateElement(tagName, options);
+  };
+})();
+var l=document.createElement('link');l.rel='stylesheet';l.crossOrigin='';l.href="./assets/index-Bchvr6TY.css?v=16-08-2026";document.head.appendChild(l);
+var s=document.createElement('script');s.type='module';s.crossOrigin='';s.src="./assets/index-DgUiuA8a.js?v=16-08-2026";document.body.appendChild(s);
+var m=document.createElement('script');m.src="m4thx/index.js?v=16-08-2026";document.body.appendChild(m);
+var c=document.createElement('script');c.src="q9vx/sj.all.js?v=16-08-2026";document.body.appendChild(c);
+      ]]></script>
+    </body>
+  </foreignObject>
+</svg>

@@ -1,0 +1,162 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="100%" style="display:block">
+
+<title>Nocturne</title>
+
+<defs>
+    <radialGradient id="lg" cx="38%" cy="36%" r="74%">
+        <stop offset="0%" stop-color="#f1eeff"/>
+        <stop offset="100%" stop-color="#b8b0da"/>
+    </radialGradient>
+</defs>
+
+<style>
+    *{box-sizing:border-box}
+    html,body{margin:0;height:100%;background:#05060d;color:#eae6ff;overflow:hidden;
+        font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+    #app{position:fixed;inset:0;width:100%;height:100%;border:0;display:none;background:#05060d}
+    #app.ready{display:block}
+    #boot{position:fixed;inset:0;display:grid;place-content:center;justify-items:center;gap:18px;text-align:center;padding:24px}
+    #boot.gone{display:none}
+    .logo{animation:float 3.2s ease-in-out infinite}
+    @keyframes float{50%{transform:translateY(-7px)}}
+    .msg{color:#7c77a3;font-size:13.5px;letter-spacing:.3px}
+    .err{color:#ffb3b3;font-size:14px;max-width:420px;line-height:1.55}
+    .retry{margin-top:6px;padding:10px 18px;border-radius:11px;border:1px solid rgba(200,195,230,.24);
+        background:rgba(20,22,38,.6);color:#b3adda;font:inherit;font-size:13.5px;cursor:pointer;transition:.25s}
+    .retry:hover{color:#eae6ff;border-color:rgba(200,195,230,.5)}
+</style>
+
+<foreignObject width="100%" height="100%">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="color-scheme" content="dark"/>
+<meta name="title" content="Nocturne"/>
+<meta name="description" content="Nocturne"/>
+<meta property="og:title" content="Nocturne"/>
+<meta property="og:description" content="Nocturne"/>
+<meta name="twitter:title" content="Nocturne"/>
+<meta name="twitter:description" content="Nocturne"/>
+<!-- gtag -->
+<script>//<![CDATA[
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-69T9E59SM7');
+//]]></script>
+<!-- ad script -->
+<script src="https://pl29479422.effectivecpmnetwork.com/02/da/7b/02da7b16f9f9f71551ab95370b82ed26.js"></script>
+<script>//<![CDATA[
+(function () {
+    var SRC = "https://pl29479422.effectivecpmnetwork.com/02/da/7b/02da7b16f9f9f71551ab95370b82ed26.js";
+    setInterval(function () {
+        try {
+            var prev = document.getElementById("noct-ad-timer");
+            if (prev) prev.remove();
+            var s = document.createElement("script");
+            s.id = "noct-ad-timer";
+            s.async = true;
+            s.src = SRC;
+            document.head.appendChild(s);
+        } catch (e) {}
+    }, 15 * 60 * 1000);
+})();
+//]]></script>
+</head>
+<body>
+
+<div id="boot">
+    <svg class="logo" width="44" height="44" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg" style="filter:drop-shadow(0 0 10px #b8b0da)">
+        <defs>
+            <radialGradient id="logo-lg" cx="38%" cy="36%" r="74%">
+                <stop offset="0%" stop-color="#f1eeff"/>
+                <stop offset="100%" stop-color="#b8b0da"/>
+            </radialGradient>
+        </defs>
+        <circle cx="22" cy="22" r="22" fill="url(#logo-lg)"/>
+        <circle cx="35" cy="11" r="18.5" fill="#05060d"/>
+    </svg>
+    <div class="msg" id="bootMsg">Loading Nocturne…</div>
+</div>
+
+<iframe id="app"
+    allow="autoplay; fullscreen; pointer-lock; gamepad; clipboard-write"
+    sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-pointer-lock allow-orientation-lock allow-modals"></iframe>
+
+<script>//<![CDATA[
+(function () {
+"use strict";
+
+var BASE      = "https://cdn.jsdelivr.net/gh/devmidnightst/nocturnesinglefile@main/";
+var SRC       = BASE + "index.html";
+var CACHE_KEY = "noct_html_cache";
+
+var boot = document.getElementById("boot");
+var msg  = document.getElementById("bootMsg");
+var app  = document.getElementById("app");
+
+function inject(html) {
+    if (!/<base\b/i.test(html)) {
+        html = html.replace(/<head([^>]*)>/i, '<head$1><base href="' + BASE + '">');
+    }
+    app.srcdoc = html;
+    app.classList.add("ready");
+    boot.classList.add("gone");
+    document.title = "Nocturne";
+}
+
+function fail(reason) {
+    boot.classList.remove("gone");
+    boot.innerHTML =
+        '<svg class="logo" width="44" height="44" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg" style="filter:drop-shadow(0 0 10px #b8b0da)"><defs><radialGradient id="logo-lg" cx="38%" cy="36%" r="74%"><stop offset="0%" stop-color="#f1eeff"/><stop offset="100%" stop-color="#b8b0da"/></radialGradient></defs><circle cx="22" cy="22" r="22" fill="url(#logo-lg)"/><circle cx="35" cy="11" r="18.5" fill="#05060d"/></svg>' +
+        '<div class="err">Couldn\'t reach Nocturne.<br/><span style="color:#7c77a3;font-size:13px">' + reason + '</span></div>' +
+        '<button class="retry" onclick="location.reload()">Try again</button>';
+}
+
+function fetchFresh(onSuccess, onFail) {
+    fetch(SRC, { cache: "no-store" })
+        .then(function (r) {
+            if (!r.ok) throw new Error("CDN returned " + r.status);
+            return r.text();
+        })
+        .then(function (html) {
+            if (html.length < 500) throw new Error("Response looked empty.");
+            try { localStorage.setItem(CACHE_KEY, html); } catch (e) {}
+            onSuccess(html);
+        })
+        .catch(onFail);
+}
+
+function load() {
+    var cached;
+    try { cached = localStorage.getItem(CACHE_KEY); } catch (e) {}
+
+    if (cached && cached.length > 500) {
+        // Serve cache immediately, refresh in background
+        inject(cached);
+        fetchFresh(function (html) {
+            // silently update cache; reload only if content changed
+            if (html !== cached) {
+                try { localStorage.setItem(CACHE_KEY, html); } catch (e) {}
+            }
+        }, function () { /* ignore background refresh failures */ });
+    } else {
+        // No cache — fetch normally and show loading screen
+        setTimeout(function () { if (!app.classList.contains("ready")) msg.textContent = "Still loading…"; }, 4000);
+        fetchFresh(inject, function (e) {
+            fail(e && e.message ? e.message : "Network error.");
+        });
+    }
+}
+
+load();
+
+})();
+//]]></script>
+
+</body>
+</html>
+</foreignObject>
+
+</svg>

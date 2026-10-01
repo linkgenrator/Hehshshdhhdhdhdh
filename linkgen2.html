@@ -1,0 +1,1524 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SVG & HTML Link Generator</title>
+  <meta name="description" content="Create a self-contained browser link from a local or GitHub-hosted SVG or HTML file or generate custom wildcard domain links." />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+            mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-6px); }
+    }
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.25; transform: scale(1); }
+      50% { opacity: 0.45; transform: scale(1.08); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes typewriter {
+      from { max-width: 0; }
+      to { max-width: 100%; }
+    }
+    @keyframes blinkCaret {
+      from, to { border-color: transparent; }
+      50% { border-color: #fb923c; }
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.25; transform: scale(0.85); }
+      50% { opacity: 1; transform: scale(1.3); }
+    }
+    @keyframes twinkleSlow {
+      0%, 100% { opacity: 0.15; transform: scale(0.9); }
+      50% { opacity: 0.85; transform: scale(1.1); }
+    }
+    @keyframes meteor {
+      0% {
+        transform: rotate(-35deg) translateX(300px) translateY(-300px);
+        opacity: 0;
+      }
+      15% { opacity: 1; }
+      75% { opacity: 1; }
+      100% {
+        transform: rotate(-35deg) translateX(-900px) translateY(900px);
+        opacity: 0;
+      }
+    }
+    .star-twinkle-1 { animation: twinkle 3.2s infinite ease-in-out; transform-origin: center; }
+    .star-twinkle-2 { animation: twinkle 4.8s infinite ease-in-out 1.5s; transform-origin: center; }
+    .star-twinkle-3 { animation: twinkle 2.7s infinite ease-in-out 0.8s; transform-origin: center; }
+    .star-twinkle-slow { animation: twinkleSlow 6.5s infinite ease-in-out 2.2s; transform-origin: center; }
+    .meteor-1 { animation: meteor 8s linear infinite 1s; }
+    .meteor-2 { animation: meteor 12s linear infinite 5s; }
+    .meteor-3 { animation: meteor 9.5s linear infinite 8s; }
+
+    .animate-float { animation: float 4s ease-in-out infinite; }
+    .animate-pulse-glow { animation: pulseGlow 5s ease-in-out infinite; }
+    .animate-fade-in { animation: fadeIn 0.5s ease-out forwards; }
+    .animate-fade-in-delayed { opacity: 0; animation: fadeIn 0.6s ease-out 0.2s forwards; }
+    .animate-typewriter {
+      display: inline-block;
+      overflow: hidden;
+      white-space: nowrap;
+      vertical-align: bottom;
+      border-right: 2px solid #fb923c;
+      animation: typewriter 2s steps(28, end) forwards, blinkCaret 0.8s step-end infinite;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(9, 9, 11, 0.6);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(161, 161, 170, 0.3);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(251, 146, 60, 0.5);
+    }
+  </style>
+</head>
+<body class="bg-black text-white min-h-screen selection:bg-orange-500/30 selection:text-orange-200 antialiased relative overflow-x-hidden">
+  <!-- Detailed Starry Space Background -->
+  <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none" aria-hidden="true">
+    <div class="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[700px] h-[700px] bg-gradient-to-br from-orange-600/15 via-amber-500/10 to-transparent rounded-full blur-[140px] animate-pulse-glow"></div>
+    <div class="absolute top-[40%] left-[-10%] w-[500px] h-[500px] bg-gradient-to-r from-purple-900/10 via-orange-900/10 to-transparent rounded-full blur-[120px] animate-float"></div>
+    <div class="absolute bottom-[-10%] right-[-5%] w-[600px] h-[600px] bg-gradient-to-tl from-orange-500/10 via-amber-600/5 to-transparent rounded-full blur-[130px] animate-pulse-glow"></div>
+
+    <svg class="absolute inset-0 w-full h-full opacity-80" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="starGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+          <stop offset="40%" stop-color="#fdba74" stop-opacity="0.8"/>
+          <stop offset="100%" stop-color="#fb923c" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="blueStarGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+          <stop offset="50%" stop-color="#93c5fd" stop-opacity="0.6"/>
+          <stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+
+      <g stroke="rgba(251, 146, 60, 0.15)" stroke-width="0.75" stroke-dasharray="3 3">
+        <line x1="12%" y1="18%" x2="25%" y2="28%" />
+        <line x1="25%" y1="28%" x2="38%" y2="22%" />
+        <line x1="38%" y1="22%" x2="45%" y2="35%" />
+        
+        <line x1="68%" y1="12%" x2="78%" y2="20%" />
+        <line x1="78%" y1="20%" x2="88%" y2="15%" />
+
+        <line x1="15%" y1="75%" x2="28%" y2="82%" />
+        <line x1="28%" y1="82%" x2="40%" y2="78%" />
+
+        <line x1="65%" y1="70%" x2="75%" y2="85%" />
+        <line x1="75%" y1="85%" x2="85%" y2="75%" />
+      </g>
+
+      <g transform="translate(180, 120)" class="star-twinkle-1">
+        <path d="M 0,-12 Q 0,0 12,0 Q 0,0 0,12 Q 0,0 -12,0 Q 0,0 0,-12 Z" fill="url(#starGlow)" />
+        <circle cx="0" cy="0" r="2" fill="#fff" />
+      </g>
+      <g transform="translate(850, 90)" class="star-twinkle-2">
+        <path d="M 0,-15 Q 0,0 15,0 Q 0,0 0,15 Q 0,0 -15,0 Q 0,0 0,-15 Z" fill="url(#starGlow)" />
+        <circle cx="0" cy="0" r="2.5" fill="#fff" />
+      </g>
+      <g transform="translate(320, 540)" class="star-twinkle-3">
+        <path d="M 0,-10 Q 0,0 10,0 Q 0,0 0,10 Q 0,0 -10,0 Q 0,0 0,-10 Z" fill="url(#blueStarGlow)" />
+        <circle cx="0" cy="0" r="1.5" fill="#fff" />
+      </g>
+      <g transform="translate(1100, 480)" class="star-twinkle-1">
+        <path d="M 0,-14 Q 0,0 14,0 Q 0,0 0,14 Q 0,0 -14,0 Q 0,0 0,-14 Z" fill="url(#starGlow)" />
+        <circle cx="0" cy="0" r="2" fill="#fff" />
+      </g>
+      <g transform="translate(600, 780)" class="star-twinkle-2">
+        <path d="M 0,-11 Q 0,0 11,0 Q 0,0 0,11 Q 0,0 -11,0 Q 0,0 0,-11 Z" fill="url(#starGlow)" />
+        <circle cx="0" cy="0" r="1.5" fill="#fff" />
+      </g>
+
+      <circle cx="5%" cy="10%" r="1" fill="#fed7aa" class="star-twinkle-1" />
+      <circle cx="12%" cy="18%" r="1.5" fill="#fff" class="star-twinkle-2" />
+      <circle cx="25%" cy="28%" r="1.2" fill="#fed7aa" class="star-twinkle-3" />
+      <circle cx="38%" cy="22%" r="1" fill="#fff" class="star-twinkle-slow" />
+      <circle cx="45%" cy="35%" r="1.8" fill="#fb923c" class="star-twinkle-1" />
+      <circle cx="52%" cy="14%" r="1" fill="#fff" class="star-twinkle-2" />
+      <circle cx="68%" cy="12%" r="1.5" fill="#fed7aa" class="star-twinkle-3" />
+      <circle cx="78%" cy="20%" r="1.2" fill="#fff" class="star-twinkle-slow" />
+      <circle cx="88%" cy="15%" r="1" fill="#fb923c" class="star-twinkle-1" />
+      <circle cx="95%" cy="8%" r="1.4" fill="#fff" class="star-twinkle-2" />
+
+      <circle cx="8%" cy="45%" r="1.2" fill="#fff" class="star-twinkle-3" />
+      <circle cx="16%" cy="52%" r="1" fill="#fed7aa" class="star-twinkle-slow" />
+      <circle cx="28%" cy="40%" r="1.6" fill="#fff" class="star-twinkle-1" />
+      <circle cx="82%" cy="42%" r="1.2" fill="#fed7aa" class="star-twinkle-2" />
+      <circle cx="91%" cy="55%" r="1.5" fill="#fff" class="star-twinkle-3" />
+      <circle cx="74%" cy="48%" r="1" fill="#fb923c" class="star-twinkle-slow" />
+
+      <circle cx="6%" cy="72%" r="1.4" fill="#fff" class="star-twinkle-1" />
+      <circle cx="15%" cy="75%" r="1.2" fill="#fed7aa" class="star-twinkle-2" />
+      <circle cx="28%" cy="82%" r="1" fill="#fff" class="star-twinkle-3" />
+      <circle cx="40%" cy="78%" r="1.5" fill="#fb923c" class="star-twinkle-slow" />
+      <circle cx="55%" cy="85%" r="1.2" fill="#fff" class="star-twinkle-1" />
+      <circle cx="65%" cy="70%" r="1" fill="#fed7aa" class="star-twinkle-2" />
+      <circle cx="75%" cy="85%" r="1.6" fill="#fff" class="star-twinkle-3" />
+      <circle cx="85%" cy="75%" r="1.2" fill="#fb923c" class="star-twinkle-slow" />
+      <circle cx="94%" cy="88%" r="1" fill="#fff" class="star-twinkle-1" />
+    </svg>
+
+    <div class="meteor meteor-1 absolute top-10 right-20 w-[140px] h-[2px] bg-gradient-to-r from-orange-400 via-amber-200 to-transparent rounded-full transform -rotate-45 shadow-[0_0_8px_#fb923c]"></div>
+    <div class="meteor meteor-2 absolute top-1/3 right-1/4 w-[180px] h-[2px] bg-gradient-to-r from-amber-300 via-white to-transparent rounded-full transform -rotate-45 shadow-[0_0_10px_#fff]"></div>
+    <div class="meteor meteor-3 absolute top-2/3 right-10 w-[120px] h-[1.5px] bg-gradient-to-r from-orange-500 via-amber-300 to-transparent rounded-full transform -rotate-45 shadow-[0_0_6px_#f97316]"></div>
+  </div>
+  <!-- Top-left Creator Badge -->
+  <div class="fixed top-4 left-4 z-50 border border-zinc-800 bg-zinc-950/90 px-3 py-1.5 rounded-full text-xs font-mono text-zinc-400 flex items-center gap-1.5 shadow-md">
+    <span>made by</span>
+    <span class="text-orange-300 font-semibold">@thetoasteddemise (frozen)</span>
+  </div>
+
+  <main class="min-h-screen flex items-center justify-center p-4 sm:p-6 md:p-10">
+    <div class="w-full max-w-xl mx-auto space-y-4" id="app"></div>
+  </main>
+
+  <div id="popups"></div>
+
+  <script>
+    (function () {
+      const app = document.getElementById('app');
+
+      const DOMAIN_OPTIONS = [
+        { name: 'Xylora', domain: 'frozenorbit.dedyn.io' },
+        { name: 'Zodiac', domain: 'frozen-zodiac.dedyn.io' },
+        { name: '1key', domain: 'frozenkey.theworkpc.com' },
+        { name: '1key', domain: 'frozen-1key-edu.dedyn.io' },
+        { name: 'catclass', domain: 'portmathclasses.ccwu.cc' },
+        { name: 'bestspark', domain: 'zakadoesnotlarp.ccwu.cc' },
+        { name: 'polaris', domain: 'frozen-polaris.dedyn.io' },
+        { name: 'Xylora', domain: 'frozen-link-drop.dedyn.io' },
+        { name: 'krypton', domain: 'krypton-edu.mytunnel.org' },
+        { name: 'NTH', domain: 'nth-frozen.dedyn.io' },
+      ];
+
+      let state = {
+        service: 'xylora', // 'quizizz' | 'blooket' | 'xylora' | 'suggestions' | 'vault' | null
+        source: 'file', // 'file' | 'github'
+        fileType: 'svg', // 'svg' | 'html'
+        selectedDomain: 'frozenorbit.dedyn.io', // 'frozenorbit.dedyn.io' | 'frozen-zodiac.dedyn.io'
+        domainSearchQuery: '',
+        vaultUnlocked: false,
+        vaultCodeInput: '',
+        vaultError: null,
+        copiedVaultLink: null,
+        githubUrl: '',
+        file: null,
+        dragging: false,
+        xyloraSlug: '',
+        result: null,
+        error: null,
+        copied: false,
+        loading: false,
+        showCleverPopup: true,
+        showGreetingPopup: false,
+      };
+
+      let copiedTimeout = null;
+
+      function pickFile(file) {
+        if (!file) return;
+        state.result = null;
+        state.error = null;
+        state.copied = false;
+        const isSvg = /\.svg$/i.test(file.name);
+        const isHtml = /\.html?$/i.test(file.name);
+        if (!isSvg && !isHtml) {
+          state.file = null;
+          state.error = 'Only .svg or .html files are supported.';
+        } else {
+          state.fileType = isSvg ? 'svg' : 'html';
+          state.file = file;
+        }
+        render();
+      }
+
+      async function handleCopy(text) {
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(text);
+          } else {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+          }
+          state.copied = true;
+          if (copiedTimeout) clearTimeout(copiedTimeout);
+          copiedTimeout = setTimeout(() => {
+            state.copied = false;
+            render();
+          }, 2000);
+        } catch {
+          state.error = "Couldn't copy — select the link and copy manually.";
+        }
+        render();
+      }
+
+      async function handleUpload(e) {
+        e.preventDefault();
+        state.error = null;
+        state.result = null;
+        state.loading = true;
+        render();
+
+        try {
+          let text = '';
+
+          if (state.source === 'file') {
+            if (!state.file) {
+              state.error = 'Choose a file first.';
+              state.loading = false;
+              render();
+              return;
+            }
+            text = await state.file.text();
+          } else {
+            if (!state.githubUrl.trim()) {
+              state.error = `Please enter a GitHub .${state.fileType} URL.`;
+              state.loading = false;
+              render();
+              return;
+            }
+            const extRe = state.fileType === 'svg' ? /\.svg($|\?)/i : /\.html?($|\?)/i;
+            if (!extRe.test(state.githubUrl)) {
+              state.error = `URL must point to a .${state.fileType} file.`;
+              state.loading = false;
+              render();
+              return;
+            }
+            const raw = state.githubUrl
+              .replace('github.com', 'raw.githubusercontent.com')
+              .replace('/blob/', '/');
+            const res = await fetch(raw, { method: 'GET' });
+            if (!res.ok) throw new Error(`Fetch failed (${res.status} ${res.statusText})`);
+            text = await res.text();
+          }
+
+          if (state.fileType === 'svg' && !text.includes('<svg')) {
+            throw new Error('Not a valid SVG file.');
+          }
+          if (state.fileType === 'html' && !/<html|<!doctype html/i.test(text)) {
+            throw new Error('Not a valid HTML file.');
+          }
+
+          const mime = state.fileType === 'svg' ? 'image/svg+xml' : 'text/html';
+          const bytes = new TextEncoder().encode(text);
+          let binary = '';
+          for (let i = 0; i < bytes.length; i += 0x8000) {
+            binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+          }
+          state.result = `data:${mime};charset=utf-8;base64,${btoa(binary)}`;
+        } catch (err) {
+          state.error = err instanceof Error ? err.message : 'Upload failed.';
+        } finally {
+          state.loading = false;
+        }
+        render();
+      }
+
+      function generateXyloraLink(e) {
+        e.preventDefault();
+        state.error = null;
+        state.copied = false;
+        const slug = state.xyloraSlug
+          .trim()
+          .toLowerCase()
+          .replace(/^\/+|\/+$/g, '');
+        if (!slug) {
+          state.error = 'Enter some text to put in front of the domain.';
+          state.result = null;
+          render();
+          return;
+        }
+        if (!/^[a-z0-9-]+(\/[a-z0-9-]+)*$/i.test(slug)) {
+          state.error = 'Only letters, numbers, hyphens, and / are allowed.';
+          state.result = null;
+          render();
+          return;
+        }
+        const [sub, ...rest] = slug.split('/');
+        const path = rest.length ? `/${rest.join('/')}` : '';
+        state.result = `https://${sub}.${state.selectedDomain}${path}`;
+        render();
+      }
+
+      function render() {
+        if (!state.service) {
+          renderPicker();
+        } else {
+          renderService();
+        }
+        bindPopupEvents();
+      }
+
+      function renderPopupsHtml() {
+        let html = '';
+        if (state.showCleverPopup) {
+          html += `
+            <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+              <div class="relative w-full max-w-md bg-white text-zinc-900 rounded-2xl p-6 sm:p-8 shadow-2xl border border-zinc-200 overflow-hidden">
+                <button
+                  type="button"
+                  data-close-clever="true"
+                  class="absolute top-4 right-4 text-zinc-400 hover:text-zinc-600 transition-colors p-1 rounded-full hover:bg-zinc-100"
+                  aria-label="Close modal"
+                >
+                  <i class="material-icons text-xl">close</i>
+                </button>
+
+                <div class="flex flex-col items-center text-center space-y-3 mb-6">
+                  <div class="w-14 h-14 bg-[#1271e6] rounded-2xl flex items-center justify-center shadow-lg text-white font-black text-3xl tracking-tighter">
+                    C
+                  </div>
+                  <div class="space-y-1">
+                    <h2 class="text-2xl font-bold text-zinc-900 tracking-tight">Log in to Clever</h2>
+                    <p class="text-xs text-zinc-500 font-medium">Search for your school or select a login method</p>
+                  </div>
+                </div>
+
+                <div class="space-y-3">
+                  <button
+                    type="button"
+                    data-close-clever="true"
+                    class="w-full py-3 px-4 bg-[#1271e6] hover:bg-[#0f5fc3] text-white font-semibold text-sm rounded-xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <i class="material-icons text-lg">school</i>
+                    <span>Log in as a Student</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    data-close-clever="true"
+                    class="w-full py-3 px-4 bg-zinc-50 hover:bg-zinc-100 border border-zinc-200 text-zinc-700 font-semibold text-sm rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24">
+                      <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
+                      <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.28v3.15C3.26 21.3 7.31 24 12 24z"/>
+                      <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.28C.46 8.21 0 10.05 0 12c0 1.95.46 3.79 1.28 5.42l4-3.15z"/>
+                      <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.28 6.58l4 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+                    </svg>
+                    <span>Log in with Google</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    data-close-clever="true"
+                    class="w-full py-3 px-4 bg-zinc-50 hover:bg-zinc-100 border border-zinc-200 text-zinc-700 font-semibold text-sm rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <i class="material-icons text-lg text-zinc-500">badge</i>
+                    <span>Log in as Teacher or Staff</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    data-close-clever="true"
+                    class="w-full py-3 px-4 bg-zinc-900 hover:bg-zinc-800 text-white font-semibold text-sm rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <i class="material-icons text-lg text-orange-300">auto_awesome</i>
+                    <span>Continue to Site</span>
+                  </button>
+                </div>
+
+                <div class="mt-6 pt-4 border-t border-zinc-100 text-center text-[11px] text-zinc-400 flex items-center justify-center gap-2">
+                  <i class="material-icons text-xs text-zinc-400">lock</i>
+                  <span>Protected by Clever Portal Identity</span>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+
+        if (state.showGreetingPopup) {
+          html += `
+            <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm animate-fade-in">
+              <div class="relative w-full max-w-md bg-zinc-950 text-white rounded-2xl p-6 sm:p-8 shadow-2xl border border-orange-400/40 space-y-5 overflow-hidden">
+                <button
+                  type="button"
+                  data-close-greeting="true"
+                  class="absolute top-4 right-4 text-zinc-400 hover:text-white transition-colors p-1 rounded-full hover:bg-zinc-800"
+                  aria-label="Close popup"
+                >
+                  <i class="material-icons text-xl">close</i>
+                </button>
+
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-full bg-orange-300 text-black flex items-center justify-center font-black text-lg shadow-md">
+                    ❄️
+                  </div>
+                  <div>
+                    <h3 class="text-base font-bold text-white flex items-center gap-1.5">
+                      <span>Message from creator</span>
+                      <span class="text-xs font-mono px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-300 border border-orange-400/30">@thetoasteddemise</span>
+                    </h3>
+                    <span class="text-xs text-zinc-400 font-mono">frozen</span>
+                  </div>
+                </div>
+
+                <div class="p-4 rounded-xl bg-zinc-900 border border-zinc-800 text-sm text-zinc-200 leading-relaxed font-sans shadow-inner">
+                  wsg yall this is a site i made for people who dont know how to make links uh experiment with it and this gets updated daily so theres always more links to get and the discord is at <a href="https://discord.gg/Y8ZSJraNss" target="_blank" rel="noreferrer" class="text-orange-300 font-semibold underline hover:text-orange-200 break-all">https://discord.gg/Y8ZSJraNss</a> so join it if you have any suggestions, byeee
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                  <a
+                    href="https://discord.gg/Y8ZSJraNss"
+                    target="_blank"
+                    rel="noreferrer"
+                    class="py-2.5 px-4 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-orange-300 border border-orange-400/40 font-bold text-xs transition-all shadow-md flex items-center justify-center gap-2 text-center"
+                  >
+                    <i class="material-icons text-base">forum</i>
+                    <span>Join Discord</span>
+                  </a>
+
+                  <button
+                    type="button"
+                    data-close-greeting="true"
+                    class="py-2.5 px-4 rounded-xl bg-orange-400 hover:bg-orange-300 text-black font-bold text-xs transition-all shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    <i class="material-icons text-base">check_circle</i>
+                    <span>Got it!</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+        return html;
+      }
+
+      function bindPopupEvents() {
+        const popupContainer = document.getElementById('popups');
+        if (popupContainer) {
+          popupContainer.innerHTML = renderPopupsHtml();
+          popupContainer.querySelectorAll('[data-close-clever]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+              state.showCleverPopup = false;
+              state.showGreetingPopup = true;
+              render();
+            });
+          });
+          popupContainer.querySelectorAll('[data-close-greeting]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+              state.showGreetingPopup = false;
+              render();
+            });
+          });
+        }
+      }
+
+      function renderPicker() {
+        app.innerHTML = `
+          <div class="text-center space-y-8 animate-fade-in">
+            <div class="space-y-3">
+              <span class="inline-block border border-orange-400/40 bg-orange-500/10 text-orange-300 px-3 py-1 rounded-full text-xs font-medium tracking-wide">
+                runs entirely in your browser
+              </span>
+              <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+                File Link Generator
+              </h1>
+              <p class="text-zinc-400 text-sm max-w-md mx-auto leading-relaxed">
+                Choose a workspace, then turn a local or GitHub file into a self-contained browser link.
+              </p>
+            </div>
+
+            <div class="space-y-4 text-left">
+              <!-- Featured Wildcard Generator Card -->
+              <button
+                type="button"
+                data-service="xylora"
+                class="w-full group text-left p-6 sm:p-8 border-2 border-orange-400/50 hover:border-orange-400 bg-zinc-900 hover:bg-zinc-850 rounded-2xl transition-all duration-300 hover:-translate-y-1 shadow-2xl cursor-pointer relative overflow-hidden"
+              >
+                <div class="flex items-center justify-between mb-3">
+                  <div class="flex items-center gap-2">
+                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-orange-500/20 text-orange-300 border border-orange-400/30">
+                      Featured Tool
+                    </span>
+                  </div>
+                  <i class="material-icons text-2xl text-orange-300 group-hover:scale-110 transition-transform">auto_awesome</i>
+                </div>
+                <div class="text-2xl sm:text-3xl font-black text-orange-300 mb-2">
+                  Wildcard Generator
+                </div>
+                <p class="text-sm text-zinc-300 leading-relaxed max-w-md">
+                  Create instant, custom wildcard domain links targeting <span class="font-mono text-orange-300 font-semibold">.frozenorbit.dedyn.io</span> (Xylora) or <span class="font-mono text-orange-300 font-semibold">.frozen-zodiac.dedyn.io</span> subdomains and custom paths.
+                </p>
+              </button>
+
+              <!-- Secondary Workspace Options -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <button
+                  type="button"
+                  data-service="quizizz"
+                  class="group text-left p-5 border border-zinc-800 bg-zinc-900 hover:bg-zinc-850 rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:border-orange-400/60 cursor-pointer relative"
+                >
+                  <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center gap-2">
+                      <span class="text-lg font-bold text-orange-300">Quizizz</span>
+                      <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-orange-500/20 text-orange-300 border border-orange-400/30">
+                        *broken!*
+                      </span>
+                    </div>
+                    <i class="material-icons text-orange-300/60 group-hover:text-orange-300 transition-colors">auto_awesome</i>
+                  </div>
+                  <p class="text-xs text-zinc-400 leading-normal">
+                    Prepare an SVG or HTML link for use in Quizizz.
+                  </p>
+                </button>
+
+                <button
+                  type="button"
+                  data-service="blooket"
+                  class="group text-left p-5 border border-zinc-800 bg-zinc-900 hover:bg-zinc-850 rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:border-orange-400/60 cursor-pointer relative"
+                >
+                  <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center gap-2">
+                      <span class="text-lg font-bold text-orange-300">Blooket</span>
+                      <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-orange-500/20 text-orange-300 border border-orange-400/30">
+                        *broken!*
+                      </span>
+                    </div>
+                    <i class="material-icons text-orange-300/60 group-hover:text-orange-300 transition-colors">extension</i>
+                  </div>
+                  <p class="text-xs text-zinc-400 leading-normal">
+                    Prepare an SVG or HTML link for use in Blooket.
+                  </p>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+
+        app.querySelectorAll('[data-service]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            state.service = btn.dataset.service;
+            state.result = null;
+            state.error = null;
+            state.copied = false;
+            render();
+          });
+        });
+      }
+
+      function renderService() {
+        const isXylora = state.service === 'xylora';
+        const isSuggestions = state.service === 'suggestions';
+        const isSettings = state.service === 'settings';
+        const isVault = state.service === 'vault';
+
+        let headerTitle = '';
+        if (state.service === 'quizizz') {
+          headerTitle = `<span class="text-orange-300 animate-typewriter">Quizizz Link Generator</span> <span class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-orange-500/20 text-orange-300 border border-orange-400/30 animate-fade-in-delayed">*broken!*</span>`;
+        } else if (state.service === 'blooket') {
+          headerTitle = `<span class="text-orange-300 animate-typewriter">Blooket Link Generator</span> <span class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-orange-500/20 text-orange-300 border border-orange-400/30 animate-fade-in-delayed">*broken!*</span>`;
+        } else if (state.service === 'suggestions') {
+          headerTitle = `<span class="text-orange-300 animate-typewriter">Suggestions Form</span>`;
+        } else if (state.service === 'settings') {
+          headerTitle = `<span class="text-orange-300 animate-typewriter">Application Settings</span>`;
+        } else if (state.service === 'vault') {
+          headerTitle = `<span class="text-orange-300 animate-typewriter">Secret Vault</span> ${
+            state.vaultUnlocked
+              ? '<span class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 flex items-center gap-1"><i class="material-icons text-xs">lock_open</i> Unlocked</span>'
+              : '<span class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-zinc-800 text-zinc-400 border border-zinc-700 flex items-center gap-1"><i class="material-icons text-xs">lock</i> Locked</span>'
+          }`;
+        } else {
+          headerTitle = `<span class="text-orange-300 animate-typewriter">Wildcard Link Generator</span>`;
+        }
+
+        let bodyFormHtml = '';
+        if (isSuggestions) {
+          bodyFormHtml = renderSuggestionsForm();
+        } else if (isSettings) {
+          bodyFormHtml = renderSettingsForm();
+        } else if (isVault) {
+          bodyFormHtml = renderVaultForm();
+        } else if (isXylora) {
+          bodyFormHtml = renderXyloraForm();
+        } else {
+          bodyFormHtml = renderUploadForm();
+        }
+
+        app.innerHTML = `
+          <!-- Top Workspace Selector Bar -->
+          <div class="flex items-center gap-1.5 p-1 bg-zinc-950 border border-zinc-800 rounded-2xl shadow-lg">
+            <button
+              type="button"
+              data-top-service="xylora"
+              class="flex-1 py-2 px-3 rounded-xl text-xs font-bold border transition-all cursor-pointer flex items-center justify-center gap-1.5 ${state.service === 'xylora' ? 'bg-orange-500/20 text-orange-300 border-orange-400/60' : 'border-transparent text-zinc-400 hover:text-zinc-200'}"
+            >
+              <i class="material-icons text-sm text-orange-300">auto_awesome</i>
+              <span>Wildcard Generator</span>
+            </button>
+
+            <button
+              type="button"
+              data-top-service="quizizz"
+              class="py-2 px-3 rounded-xl text-xs font-bold border transition-all cursor-pointer flex items-center justify-center gap-1.5 ${state.service === 'quizizz' ? 'bg-orange-500/20 text-orange-300 border-orange-400/60' : 'border-transparent text-zinc-400 hover:text-zinc-200'}"
+            >
+              <span>Quizizz</span>
+              <span class="text-[9px] font-extrabold px-1.5 py-0.2 bg-orange-500/20 text-orange-300 border border-orange-400/30 rounded-full">*broken!*</span>
+            </button>
+
+            <button
+              type="button"
+              data-top-service="blooket"
+              class="py-2 px-3 rounded-xl text-xs font-bold border transition-all cursor-pointer flex items-center justify-center gap-1.5 ${state.service === 'blooket' ? 'bg-orange-500/20 text-orange-300 border-orange-400/60' : 'border-transparent text-zinc-400 hover:text-zinc-200'}"
+            >
+              <span>Blooket</span>
+              <span class="text-[9px] font-extrabold px-1.5 py-0.2 bg-orange-500/20 text-orange-300 border border-orange-400/30 rounded-full">*broken!*</span>
+            </button>
+
+            <button
+              type="button"
+              data-top-service="suggestions"
+              class="py-2 px-3 rounded-xl text-xs font-bold border transition-all cursor-pointer flex items-center justify-center gap-1.5 ${state.service === 'suggestions' ? 'bg-orange-500/20 text-orange-300 border-orange-400/60' : 'border-transparent text-zinc-400 hover:text-zinc-200'}"
+            >
+              <i class="material-icons text-sm text-orange-300">feedback</i>
+              <span>Suggestions</span>
+            </button>
+
+            <button
+              type="button"
+              data-top-service="settings"
+              class="py-2 px-3 rounded-xl text-xs font-bold border transition-all cursor-pointer flex items-center justify-center gap-1.5 ${state.service === 'settings' ? 'bg-orange-500/20 text-orange-300 border-orange-400/60' : 'border-transparent text-zinc-400 hover:text-zinc-200'}"
+            >
+              <i class="material-icons text-sm text-orange-300">settings</i>
+              <span>Settings</span>
+              ${state.vaultUnlocked ? '<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400/50"></span>' : ''}
+            </button>
+          </div>
+
+          <div class="border border-zinc-800 bg-zinc-900 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
+            <div>
+              <div class="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1">Target Workspace</div>
+              <h1 class="text-2xl sm:text-3xl font-extrabold capitalize flex items-center gap-2">
+                ${headerTitle}
+              </h1>
+            </div>
+
+            ${bodyFormHtml}
+
+            ${state.error ? `
+              <div class="p-3.5 rounded-xl border border-red-500/40 bg-red-500/10 text-red-300 text-sm flex items-center gap-2">
+                <i class="material-icons text-lg flex-shrink-0">error_outline</i>
+                <span>${escapeHtml(state.error)}</span>
+              </div>
+            ` : ''}
+
+            ${state.result ? renderResult() : ''}
+          </div>
+        `;
+
+        app.querySelectorAll('[data-top-service]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            state.service = btn.dataset.topService;
+            state.result = null;
+            state.error = null;
+            state.copied = false;
+            render();
+          });
+        });
+
+        if (isSettings || isVault) {
+          bindVaultEvents();
+        } else if (isXylora) {
+          bindXyloraEvents();
+        } else if (!isSuggestions) {
+          bindUploadEvents();
+        }
+
+        if (state.result) {
+          bindResultEvents();
+        }
+      }
+
+      function renderSettingsForm() {
+        const vaultSection = renderVaultSectionHtml();
+        return `
+          <div class="animate-fade-in space-y-6">
+            <!-- GENERAL APP SETTINGS CARD -->
+            <div class="p-5 sm:p-6 rounded-2xl bg-zinc-950/80 border border-zinc-800 space-y-4">
+              <div class="flex items-center gap-2 text-orange-300 font-bold text-sm">
+                <i class="material-icons text-base">tune</i>
+                <span>Preferences &amp; System Info</span>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-mono">
+                <div class="p-3.5 rounded-xl bg-zinc-900 border border-zinc-800 space-y-1">
+                  <span class="text-zinc-400 text-[11px]">Default Wildcard Domain</span>
+                  <p class="text-orange-200 font-bold truncate">${escapeHtml(state.selectedDomain)}</p>
+                </div>
+
+                <div class="p-3.5 rounded-xl bg-zinc-900 border border-zinc-800 space-y-1">
+                  <span class="text-zinc-400 text-[11px]">System Status</span>
+                  <p class="text-emerald-400 font-bold flex items-center gap-1">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                    <span>All Nodes Operational</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- HIDDEN VAULT SECTION INSIDE SETTINGS -->
+            <div class="p-5 sm:p-6 rounded-2xl bg-zinc-950/80 border border-zinc-800/80 space-y-5">
+              <div class="flex items-center justify-between border-b border-zinc-800/80 pb-3">
+                <div class="flex items-center gap-2 text-white font-bold text-sm">
+                  <i class="material-icons text-orange-300 text-base">security</i>
+                  <span>Hidden Vault</span>
+                </div>
+                ${state.vaultUnlocked
+                  ? '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 flex items-center gap-1"><i class="material-icons text-xs">lock_open</i> Unlocked</span>'
+                  : '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-zinc-800 text-zinc-400 border border-zinc-700 flex items-center gap-1"><i class="material-icons text-xs">lock</i> Locked</span>'
+                }
+              </div>
+
+              ${vaultSection}
+            </div>
+          </div>
+        `;
+      }
+
+      const godLinks = [
+        {
+          category: 'Cloudflare Worker Endpoints',
+          icon: 'cloud',
+          links: [
+            'https://frozenpolaris-edu.unblockedgamesupreme.workers.dev/#/',
+            'https://polaris-edu.unblockedgamesupreme.workers.dev/'
+          ]
+        },
+        {
+          category: 'jsDelivr Multi-CDN Mirrors',
+          icon: 'dns',
+          links: [
+            'https://cdn.jsdelivr.net/gh/unblockedgamesupreme-cmd/polarisbeta@master/public/logo.svg#/',
+            'https://fastly.jsdelivr.net/gh/unblockedgamesupreme-cmd/polarisbeta@master/public/logo.svg#/',
+            'https://originfastly.jsdelivr.net/gh/unblockedgamesupreme-cmd/polarisbeta@master/public/logo.svg#/',
+            'https://gcore.jsdelivr.net/gh/unblockedgamesupreme-cmd/polarisbeta@master/public/logo.svg#/',
+            'https://jsdelivr.b-cdn.net/gh/unblockedgamesupreme-cmd/polarisbeta@master/public/logo.svg#/',
+            'https://quantil.jsdelivr.net/gh/unblockedgamesupreme-cmd/polarisbeta@master/public/logo.svg#/',
+            'https://testingcf.jsdelivr.net/gh/unblockedgamesupreme-cmd/polarisbeta@master/public/logo.svg#/'
+          ]
+        },
+        {
+          category: 'GitHack Raw Proxies',
+          icon: 'code',
+          links: [
+            'https://rawcdn.githack.com/unblockedgamesupreme-cmd/polarisbeta/4f3d029432909347ce0e198e5e1e0e74ae88b50f/public/logo.svg?#/',
+            'https://raw.githack.com/unblockedgamesupreme-cmd/polarisbeta/4f3d029432909347ce0e198e5e1e0e74ae88b50f/public/logo.svg?#/'
+          ]
+        },
+        {
+          category: 'Media Resource Proxies',
+          icon: 'perm_media',
+          links: [
+            'https://media.wayground.com/_mdserver/main/media/resource/gs/quizizz-media/uploadedFiles/3d8cac56-7125-4033-af4e-0f21f8911679-v2',
+            'https://media.quizizz.com/_mdserver/main/media/resource/gs/quizizz-media/uploadedFiles/3d8cac56-7125-4033-af4e-0f21f8911679-v2'
+          ]
+        }
+      ];
+
+      const dominiumLinks = [
+        {
+          category: 'ESM.sh Secure Endpoints',
+          icon: 'dynamic_feed',
+          links: [
+            'https://esm.sh/secure-test-browser-emsn23qs/index.html',
+            'https://esm.sh/secure-test-browser-3z3nxhmf/index.html',
+            'https://esm.sh/secure-test-browser-pw5nxdep/index.html',
+            'https://esm.sh/secure-test-browser-q0mgniqs/index.html',
+            'https://esm.sh/secure-test-browser-s55u3gg6/index.html',
+            'https://esm.sh/secure-test-browser-3bpg8lyh/index.html',
+            'https://esm.sh/secure-test-browser-sbfd7kfx/index.html',
+            'https://esm.sh/secure-test-browser-xob8el1r/index.html',
+            'https://esm.sh/secure-test-browser-t7a9jtay/index.html',
+            'https://esm.sh/secure-test-browser-ezbajpcd/index.html'
+          ]
+        },
+        {
+          category: 'Unpkg Secure Endpoints',
+          icon: 'widgets',
+          links: [
+            'https://unpkg.com/secure-test-browser-emsn23qs/index.html',
+            'https://unpkg.com/secure-test-browser-r270knja/index.html',
+            'https://unpkg.com/secure-test-browser-3z3nxhmf/index.html',
+            'https://unpkg.com/secure-test-browser-pw5nxdep/index.html',
+            'https://unpkg.com/secure-test-browser-q0mgniqs/index.html',
+            'https://unpkg.com/secure-test-browser-s55u3gg6/index.html',
+            'https://unpkg.com/secure-test-browser-3bpg8lyh/index.html',
+            'https://unpkg.com/secure-test-browser-sbfd7kfx/index.html',
+            'https://unpkg.com/secure-test-browser-xob8el1r/index.html',
+            'https://unpkg.com/secure-test-browser-t7a9jtay/index.html',
+            'https://unpkg.com/secure-test-browser-ezbajpcd/index.html'
+          ]
+        }
+      ];
+
+      function renderVaultSectionHtml() {
+        if (!state.vaultUnlocked) {
+          return `
+            <div class="text-center max-w-md mx-auto space-y-4 py-2">
+              <div class="w-12 h-12 rounded-2xl bg-orange-500/10 border border-orange-500/30 text-orange-400 flex items-center justify-center mx-auto shadow-inner">
+                <i class="material-icons text-2xl">lock</i>
+              </div>
+              <div class="space-y-1">
+                <h3 class="text-sm font-bold text-white">Vault Passcode Required</h3>
+                <p class="text-xs text-zinc-400 font-mono">Enter the security code to unlock hidden vault items.</p>
+              </div>
+
+              <form id="vaultLoginForm" class="space-y-3">
+                <div class="relative">
+                  <input
+                    id="vaultCodeInput"
+                    type="password"
+                    placeholder="Enter access code..."
+                    value="${escapeHtml(state.vaultCodeInput)}"
+                    class="w-full px-4 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-orange-400/80 focus:ring-1 focus:ring-orange-400/30 text-center font-mono tracking-widest transition-all"
+                  />
+                </div>
+
+                ${state.vaultError ? `
+                  <div class="p-2.5 rounded-xl border border-red-500/40 bg-red-500/10 text-red-300 text-xs flex items-center justify-center gap-2 font-mono">
+                    <i class="material-icons text-sm flex-shrink-0">error_outline</i>
+                    <span>${escapeHtml(state.vaultError)}</span>
+                  </div>
+                ` : ''}
+
+                <button
+                  type="submit"
+                  class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-zinc-950 font-extrabold text-xs uppercase tracking-wider transition-all shadow-lg shadow-orange-500/20 active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2"
+                >
+                  <i class="material-icons text-sm">key</i>
+                  <span>Unlock Vault</span>
+                </button>
+              </form>
+            </div>
+          `;
+        }
+
+        let dominiumGroupsHtml = dominiumLinks.map(group => {
+          let linksHtml = group.links.map(link => {
+            const isCopied = state.copiedVaultLink === link;
+            return `
+              <div class="p-2.5 rounded-xl bg-zinc-950 border border-zinc-800/80 hover:border-zinc-700 transition-all flex items-center justify-between gap-3 text-xs font-mono group">
+                <span class="text-zinc-300 truncate select-all hover:text-amber-200" title="${escapeHtml(link)}">${escapeHtml(link)}</span>
+                <div class="flex items-center gap-1.5 flex-shrink-0">
+                  <button
+                    type="button"
+                    data-copy-vault-link="${escapeHtml(link)}"
+                    class="px-2.5 py-1 rounded-lg bg-zinc-900 hover:bg-amber-500/20 hover:text-amber-300 border border-zinc-800 hover:border-amber-500/40 text-zinc-400 text-[11px] transition-all flex items-center gap-1 cursor-pointer"
+                  >
+                    <i class="material-icons text-xs">${isCopied ? 'check' : 'content_copy'}</i>
+                    <span>${isCopied ? 'Copied' : 'Copy'}</span>
+                  </button>
+                  <a
+                    href="${escapeHtml(link)}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="p-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 hover:text-white transition-all flex items-center justify-center cursor-pointer"
+                    title="Open Link"
+                  >
+                    <i class="material-icons text-xs">open_in_new</i>
+                  </a>
+                </div>
+              </div>
+            `;
+          }).join('');
+
+          return `
+            <div class="p-4 rounded-2xl bg-zinc-900/80 border border-zinc-800 space-y-3">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2 text-amber-300 font-bold text-xs">
+                  <i class="material-icons text-sm">${group.icon}</i>
+                  <span>Dominium — ${escapeHtml(group.category)}</span>
+                </div>
+                <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-amber-500/10 text-amber-400 border border-amber-500/20 font-semibold">
+                  ${group.links.length} ${group.links.length === 1 ? 'Link' : 'Links'}
+                </span>
+              </div>
+              <div class="space-y-2">
+                ${linksHtml}
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        let godGroupsHtml = godLinks.map(group => {
+          let linksHtml = group.links.map(link => {
+            const isCopied = state.copiedVaultLink === link;
+            return `
+              <div class="p-2.5 rounded-xl bg-zinc-950 border border-zinc-800/80 hover:border-zinc-700 transition-all flex items-center justify-between gap-3 text-xs font-mono group">
+                <span class="text-zinc-300 truncate select-all hover:text-orange-200" title="${escapeHtml(link)}">${escapeHtml(link)}</span>
+                <div class="flex items-center gap-1.5 flex-shrink-0">
+                  <button
+                    type="button"
+                    data-copy-vault-link="${escapeHtml(link)}"
+                    class="px-2.5 py-1 rounded-lg bg-zinc-900 hover:bg-orange-500/20 hover:text-orange-300 border border-zinc-800 hover:border-orange-500/40 text-zinc-400 text-[11px] transition-all flex items-center gap-1 cursor-pointer"
+                  >
+                    <i class="material-icons text-xs">${isCopied ? 'check' : 'content_copy'}</i>
+                    <span>${isCopied ? 'Copied' : 'Copy'}</span>
+                  </button>
+                  <a
+                    href="${escapeHtml(link)}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="p-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 hover:text-white transition-all flex items-center justify-center cursor-pointer"
+                    title="Open Link"
+                  >
+                    <i class="material-icons text-xs">open_in_new</i>
+                  </a>
+                </div>
+              </div>
+            `;
+          }).join('');
+
+          return `
+            <div class="p-4 rounded-2xl bg-zinc-900/80 border border-zinc-800 space-y-3">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2 text-orange-300 font-bold text-xs">
+                  <i class="material-icons text-sm">${group.icon}</i>
+                  <span>Polaris — ${escapeHtml(group.category)}</span>
+                </div>
+                <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-orange-500/10 text-orange-400 border border-orange-500/20 font-semibold">
+                  ${group.links.length} ${group.links.length === 1 ? 'Link' : 'Links'}
+                </span>
+              </div>
+              <div class="space-y-2">
+                ${linksHtml}
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        return `
+          <div class="space-y-6">
+            <div class="flex items-center justify-between p-3.5 rounded-xl bg-emerald-950/30 border border-emerald-800/40 text-xs">
+              <div class="flex items-center gap-2 text-emerald-300 font-mono font-semibold">
+                <i class="material-icons text-base">verified_user</i>
+                <span>Vault Unlocked — 34 Vault Links Active (13 Polaris, 21 Dominium)</span>
+              </div>
+              <button
+                type="button"
+                id="lockVaultBtn"
+                class="px-3 py-1 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700 text-xs font-mono transition-all flex items-center gap-1 cursor-pointer"
+              >
+                <i class="material-icons text-xs">lock</i>
+                <span>Lock Vault</span>
+              </button>
+            </div>
+
+            <div class="space-y-4">
+              <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-between">
+                <div class="flex items-center gap-2 text-amber-300 font-bold text-xs">
+                  <i class="material-icons text-sm">security</i>
+                  <span>Dominium Secure Test Browser Collection</span>
+                </div>
+                <span class="text-[10px] font-mono text-amber-400 font-semibold">21 Links</span>
+              </div>
+
+              ${dominiumGroupsHtml}
+            </div>
+
+            <div class="space-y-4">
+              <div class="p-3 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-between">
+                <div class="flex items-center gap-2 text-orange-300 font-bold text-xs">
+                  <i class="material-icons text-sm">star</i>
+                  <span>Polaris God Links Collection</span>
+                </div>
+                <span class="text-[10px] font-mono text-orange-400 font-semibold">13 Links</span>
+              </div>
+
+              ${godGroupsHtml}
+            </div>
+          </div>
+        `;
+      }
+
+      function renderVaultForm() {
+        return renderSettingsForm();
+      }
+
+      function bindVaultEvents() {
+        const inp = document.getElementById('vaultCodeInput');
+        if (inp) {
+          inp.addEventListener('input', (e) => {
+            state.vaultCodeInput = e.target.value;
+          });
+        }
+
+        const form = document.getElementById('vaultLoginForm');
+        if (form) {
+          form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (state.vaultCodeInput.trim() === 'ZnJvemVu') {
+              state.vaultUnlocked = true;
+              state.vaultError = null;
+              state.vaultCodeInput = '';
+            } else {
+              state.vaultError = 'Invalid access code. Access denied.';
+            }
+            render();
+          });
+        }
+
+        const lockBtn = document.getElementById('lockVaultBtn');
+        if (lockBtn) {
+          lockBtn.addEventListener('click', () => {
+            state.vaultUnlocked = false;
+            state.vaultCodeInput = '';
+            state.vaultError = null;
+            render();
+          });
+        }
+
+        document.querySelectorAll('[data-copy-vault-link]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const url = btn.getAttribute('data-copy-vault-link');
+            if (url) {
+              navigator.clipboard.writeText(url);
+              state.copiedVaultLink = url;
+              render();
+              setTimeout(() => {
+                if (state.copiedVaultLink === url) {
+                  state.copiedVaultLink = null;
+                  render();
+                }
+              }, 2000);
+            }
+          });
+        });
+      }
+
+      function renderSuggestionsForm() {
+        return `
+          <div class="space-y-4 animate-fade-in">
+            <div class="flex items-center justify-between text-xs text-zinc-400 font-mono">
+              <span>Submit feedback, ideas, or domain requests</span>
+              <a
+                href="https://forms.gle/cu3Yx9hxbMBUS7Ck6"
+                target="_blank"
+                rel="noreferrer"
+                class="text-orange-300 hover:underline flex items-center gap-1"
+              >
+                <span>Open form in new tab</span>
+                <i class="material-icons text-xs">open_in_new</i>
+              </a>
+            </div>
+            <div class="w-full h-[650px] rounded-xl overflow-hidden border border-zinc-800 bg-zinc-950 shadow-inner">
+              <iframe
+                src="https://forms.gle/cu3Yx9hxbMBUS7Ck6"
+                class="w-full h-full border-0"
+                title="Suggestions Google Form"
+                allow="autoplay"
+              ></iframe>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderUploadForm() {
+        return `
+          <form id="uploadForm" class="space-y-5">
+            <div class="space-y-2">
+              <span class="block text-sm font-medium text-zinc-200">Source</span>
+              <div class="grid grid-cols-2 gap-2 p-1 bg-zinc-950 rounded-xl border border-zinc-800">
+                <button
+                  type="button"
+                  data-source="file"
+                  class="py-2 px-3 rounded-lg text-xs font-semibold border transition-all cursor-pointer flex items-center justify-center gap-1.5 ${state.source === 'file' ? 'bg-orange-500/20 text-orange-300 border-orange-400/50' : 'border-transparent text-zinc-400'}"
+                >
+                  <i class="material-icons text-base">upload_file</i>
+                  <span>Upload file</span>
+                </button>
+
+                <button
+                  type="button"
+                  data-source="github"
+                  class="py-2 px-3 rounded-lg text-xs font-semibold border transition-all cursor-pointer flex items-center justify-center gap-1.5 ${state.source === 'github' ? 'bg-orange-500/20 text-orange-300 border-orange-400/50' : 'border-transparent text-zinc-400'}"
+                >
+                  <i class="material-icons text-base">code</i>
+                  <span>GitHub URL</span>
+                </button>
+              </div>
+            </div>
+
+            ${state.source === 'github' ? `
+              <div class="space-y-2">
+                <span class="block text-sm font-medium text-zinc-200">File type</span>
+                <div class="grid grid-cols-2 gap-2 p-1 bg-zinc-950 rounded-xl border border-zinc-800">
+                  <button
+                    type="button"
+                    data-type="svg"
+                    class="py-2 px-3 rounded-lg text-xs font-mono font-semibold border transition-all cursor-pointer ${state.fileType === 'svg' ? 'bg-orange-500/20 text-orange-300 border-orange-400/50' : 'border-transparent text-zinc-400'}"
+                  >
+                    .svg
+                  </button>
+
+                  <button
+                    type="button"
+                    data-type="html"
+                    class="py-2 px-3 rounded-lg text-xs font-mono font-semibold border transition-all cursor-pointer ${state.fileType === 'html' ? 'bg-orange-500/20 text-orange-300 border-orange-400/50' : 'border-transparent text-zinc-400'}"
+                  >
+                    .html
+                  </button>
+                </div>
+              </div>
+
+              <div class="space-y-2">
+                <label for="githubUrl" class="block text-sm font-medium text-zinc-200">GitHub .${state.fileType} URL</label>
+                <input
+                  id="githubUrl"
+                  type="url"
+                  placeholder="https://github.com/user/repo/blob/main/file.${state.fileType}"
+                  value="${escapeHtml(state.githubUrl)}"
+                  class="w-full bg-zinc-950 border border-zinc-800 focus:border-orange-400 focus:ring-1 focus:ring-orange-400/30 rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-500 outline-none transition-all"
+                />
+              </div>
+            ` : `
+              <div class="space-y-2">
+                <span class="block text-sm font-medium text-zinc-200">Your file</span>
+                <div
+                  tabindex="0"
+                  role="button"
+                  aria-label="Upload SVG or HTML file dropzone"
+                  id="dropzone"
+                  class="border-2 border-dashed border-zinc-800 hover:border-orange-400/60 bg-zinc-950 hover:bg-zinc-900 rounded-xl p-6 text-center cursor-pointer transition-all duration-200 group focus:outline-none ${state.dragging ? 'border-orange-400 bg-orange-500/10' : ''}"
+                >
+                  <i class="material-icons text-4xl text-orange-300 group-hover:text-orange-200 mb-2 transition-colors">cloud_upload</i>
+                  <div class="text-sm font-medium text-zinc-200">
+                    ${state.file ? `<span class="text-orange-300 font-semibold">${escapeHtml(state.file.name)}</span>` : 'Drop your .svg or .html here'}
+                  </div>
+                  <div class="text-xs text-zinc-400 mt-1">
+                    ${state.file ? `${(state.file.size / 1024).toFixed(1)} KB · click to change` : 'or click to browse'}
+                  </div>
+                  <div class="mt-3">
+                    <span class="inline-block border border-orange-400/40 bg-orange-500/10 text-orange-300 px-3 py-1 rounded-full text-xs font-medium">
+                      Choose file
+                    </span>
+                  </div>
+                </div>
+                <input
+                  id="fileInput"
+                  type="file"
+                  accept=".svg,.html,.htm,image/svg+xml,text/html"
+                  class="hidden"
+                />
+              </div>
+            `}
+
+            <button
+              type="submit"
+              ${state.loading ? 'disabled' : ''}
+              class="w-full py-3 px-4 rounded-xl bg-orange-400 hover:bg-orange-300 disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold text-sm transition-all cursor-pointer flex items-center justify-center gap-2 shadow-md"
+            >
+              ${state.loading ? `
+                <i class="material-icons animate-spin text-lg">sync</i>
+                <span>Generating…</span>
+              ` : `
+                <i class="material-icons text-lg">flash_on</i>
+                <span>Generate working link</span>
+              `}
+            </button>
+          </form>
+        `;
+      }
+
+      function bindUploadEvents() {
+        const uploadForm = document.getElementById('uploadForm');
+        if (uploadForm) {
+          uploadForm.addEventListener('submit', handleUpload);
+        }
+
+        app.querySelectorAll('[data-source]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            state.source = btn.dataset.source;
+            state.result = null;
+            state.error = null;
+            state.copied = false;
+            render();
+          });
+        });
+
+        app.querySelectorAll('[data-type]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            state.fileType = btn.dataset.type;
+            state.result = null;
+            state.error = null;
+            state.copied = false;
+            render();
+          });
+        });
+
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('fileInput');
+
+        if (dropzone && fileInput) {
+          dropzone.addEventListener('click', () => fileInput.click());
+          dropzone.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              fileInput.click();
+            }
+          });
+          dropzone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            state.dragging = true;
+            dropzone.classList.add('border-orange-400', 'bg-orange-500/10');
+          });
+          dropzone.addEventListener('dragleave', () => {
+            state.dragging = false;
+            dropzone.classList.remove('border-orange-400', 'bg-orange-500/10');
+          });
+          dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            state.dragging = false;
+            pickFile(e.dataTransfer.files[0]);
+          });
+          fileInput.addEventListener('change', (e) => pickFile(e.target.files[0]));
+        }
+
+        const githubInput = document.getElementById('githubUrl');
+        if (githubInput) {
+          githubInput.addEventListener('input', (e) => {
+            state.githubUrl = e.target.value;
+          });
+        }
+      }
+
+      function renderXyloraForm() {
+        const query = (state.domainSearchQuery || '').trim().toLowerCase();
+        const filtered = DOMAIN_OPTIONS.filter((opt) =>
+          !query || opt.name.toLowerCase().includes(query) || opt.domain.toLowerCase().includes(query)
+        );
+
+        const domainGridHtml = filtered.length > 0
+          ? `<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+              ${filtered.map((opt) => `
+                <button
+                  type="button"
+                  data-domain="${opt.domain}"
+                  class="py-3 px-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer flex flex-col items-center justify-center gap-0.5 text-center group hover:scale-[1.03] active:scale-[0.97] ${state.selectedDomain === opt.domain ? 'bg-orange-500/20 text-orange-200 border-orange-400 shadow-md shadow-orange-500/10' : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700'}"
+                >
+                  <div class="flex items-center gap-1 font-bold">
+                    <span>${opt.name}</span>
+                    ${state.selectedDomain === opt.domain ? '<i class="material-icons text-sm text-orange-300">check_circle</i>' : ''}
+                  </div>
+                  <span class="font-mono text-[10px] opacity-80 truncate max-w-full">.${opt.domain}</span>
+                </button>
+              `).join('')}
+            </div>`
+          : `<div class="p-4 rounded-xl bg-zinc-900/60 border border-zinc-800/80 text-center space-y-2">
+              <p class="text-xs text-zinc-400 font-mono">No domains found matching "<span class="text-orange-300">${escapeHtml(state.domainSearchQuery)}</span>"</p>
+              <button
+                type="button"
+                id="clearSearchBtn"
+                class="text-xs text-orange-300 hover:text-orange-200 font-semibold underline cursor-pointer"
+              >
+                Clear search filter
+              </button>
+            </div>`;
+
+        return `
+          <form id="xyloraForm" class="space-y-6">
+            <!-- SELECT DOMAIN BAR -->
+            <div class="p-4 rounded-xl border border-zinc-800 bg-zinc-950 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="block text-xs font-bold uppercase tracking-wider text-orange-300 flex items-center gap-1.5 font-mono">
+                  <i class="material-icons text-base text-orange-300">dns</i>
+                  <span>Select Domain Bar</span>
+                </span>
+                <span class="text-[11px] font-mono text-zinc-400">Active: <span class="text-orange-300 font-semibold">${state.selectedDomain}</span></span>
+              </div>
+              
+              <!-- Search Domain Filter Bar -->
+              <div class="relative flex items-center">
+                <i class="material-icons absolute left-3 text-zinc-500 text-lg pointer-events-none">search</i>
+                <input
+                  id="domainSearchInput"
+                  type="text"
+                  placeholder="Search domains (e.g., NTH, catclass, polaris, 1key)..."
+                  value="${escapeHtml(state.domainSearchQuery)}"
+                  class="w-full pl-9 pr-8 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-orange-400/80 focus:ring-1 focus:ring-orange-400/30 transition-all font-mono"
+                />
+                ${state.domainSearchQuery ? `
+                  <button
+                    type="button"
+                    id="clearSearchX"
+                    class="absolute right-2.5 text-zinc-400 hover:text-white p-0.5 rounded-md hover:bg-zinc-800 transition-colors"
+                    title="Clear search"
+                  >
+                    <i class="material-icons text-base">close</i>
+                  </button>
+                ` : ''}
+              </div>
+
+              ${domainGridHtml}
+            </div>
+
+            <!-- SLUG INPUT -->
+            <div class="space-y-2">
+              <label for="xyloraSlug" class="block text-sm font-medium text-zinc-200">Subdomain / Path Text</label>
+              <div class="flex items-stretch rounded-xl border border-zinc-800 bg-zinc-950 overflow-hidden focus-within:border-orange-400 focus-within:ring-1 focus-within:ring-orange-400/30 transition-all">
+                <input
+                  id="xyloraSlug"
+                  type="text"
+                  placeholder="myfile"
+                  value="${escapeHtml(state.xyloraSlug)}"
+                  class="flex-1 bg-transparent px-4 py-3 text-sm text-white placeholder-zinc-500 outline-none"
+                />
+                <span class="flex items-center px-3 sm:px-4 bg-orange-500/15 text-orange-300 font-mono text-xs sm:text-sm border-l border-zinc-800 whitespace-nowrap font-semibold">
+                  .${state.selectedDomain}
+                </span>
+              </div>
+              <p class="text-xs text-zinc-400">
+                Whatever you type becomes the subdomain in front of <span class="font-mono text-orange-300 font-semibold">.${state.selectedDomain}</span>.
+              </p>
+            </div>
+
+            <button
+              type="submit"
+              class="w-full py-3 px-4 rounded-xl bg-orange-400 hover:bg-orange-300 text-black font-bold text-sm transition-all cursor-pointer flex items-center justify-center gap-2 shadow-md"
+            >
+              <i class="material-icons text-lg">auto_awesome</i>
+              <span>Generate wildcard link</span>
+            </button>
+          </form>
+        `;
+      }
+
+      function bindXyloraEvents() {
+        document.getElementById('xyloraForm').addEventListener('submit', generateXyloraLink);
+        
+        const searchInput = document.getElementById('domainSearchInput');
+        if (searchInput) {
+          searchInput.addEventListener('input', (e) => {
+            state.domainSearchQuery = e.target.value;
+            const cursorPos = e.target.selectionStart;
+            render();
+            const newInp = document.getElementById('domainSearchInput');
+            if (newInp) {
+              newInp.focus();
+              newInp.setSelectionRange(cursorPos, cursorPos);
+            }
+          });
+        }
+
+        const clearBtn = document.getElementById('clearSearchBtn');
+        if (clearBtn) {
+          clearBtn.addEventListener('click', () => {
+            state.domainSearchQuery = '';
+            render();
+          });
+        }
+
+        const clearX = document.getElementById('clearSearchX');
+        if (clearX) {
+          clearX.addEventListener('click', () => {
+            state.domainSearchQuery = '';
+            render();
+          });
+        }
+
+        document.getElementById('xyloraSlug').addEventListener('input', (e) => {
+          state.xyloraSlug = e.target.value;
+        });
+        
+        app.querySelectorAll('[data-domain]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            state.selectedDomain = btn.dataset.domain;
+            state.result = null;
+            state.error = null;
+            render();
+          });
+        });
+      }
+
+      function renderResult() {
+        const isXylora = state.service === 'xylora';
+        const note = isXylora
+          ? `This link only resolves if that subdomain is actually set up on ${state.selectedDomain}.`
+          : `This data link contains the complete ${state.fileType.toUpperCase()} file. It is not uploaded to ${state.service === 'quizizz' ? 'Quizizz' : 'Blooket'}, and those services may restrict data links.`;
+
+        return `
+          <div class="p-4 rounded-xl border border-orange-400/30 bg-zinc-950 space-y-3">
+            <div class="text-xs font-bold uppercase tracking-wider text-orange-300 flex items-center justify-between font-mono">
+              <span>Your working link</span>
+              <span class="text-[10px] font-normal text-zinc-400 font-mono">Length: ${state.result ? state.result.length : 0} chars</span>
+            </div>
+            <div class="max-h-32 overflow-y-auto break-all rounded-lg bg-black p-3 font-mono text-[11px] text-zinc-200 border border-zinc-800 leading-relaxed select-all">
+              ${escapeHtml(state.result)}
+            </div>
+            <p class="text-xs text-zinc-400 leading-normal">${note}</p>
+            <div class="grid grid-cols-2 gap-3 pt-1">
+              <button
+                type="button"
+                id="copyBtn"
+                class="py-2.5 px-3 rounded-lg text-xs font-semibold border transition-all cursor-pointer flex items-center justify-center gap-1.5 ${state.copied ? 'border-orange-400 bg-orange-500/20 text-orange-200' : 'border-zinc-800 bg-zinc-950 text-zinc-200 hover:bg-zinc-900'}"
+              >
+                <i class="material-icons text-base">${state.copied ? 'check' : 'content_copy'}</i>
+                <span>${state.copied ? 'Copied!' : 'Copy link'}</span>
+              </button>
+
+              <a
+                href="${escapeHtml(state.result)}"
+                target="_blank"
+                rel="noreferrer"
+                class="py-2.5 px-3 rounded-lg text-xs font-semibold border border-orange-400/40 bg-orange-500/15 hover:bg-orange-500/25 text-orange-300 transition-all text-center flex items-center justify-center gap-1.5"
+              >
+                <i class="material-icons text-base">open_in_new</i>
+                <span>Open link</span>
+              </a>
+            </div>
+          </div>
+        `;
+      }
+
+      function bindResultEvents() {
+        const copyBtn = document.getElementById('copyBtn');
+        if (copyBtn) {
+          copyBtn.addEventListener('click', () => handleCopy(state.result));
+        }
+      }
+
+      function escapeHtml(str) {
+        if (str === null || str === undefined) return '';
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      }
+
+      render();
+    })();
+  </script>
+</body>
+</html>

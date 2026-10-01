@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 1920 1080">
+  <foreignObject id="fo" width="100%" height="100%" x="0" y="0">
+    <html xmlns="http://www.w3.org/1999/xhtml" style="width:100%;height:100%;margin:0;padding:0;">
+      <head>
+        <title>Home - Classroom</title>
+        <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAEACABoBQAAFgAAACgAAAAQAAAAIAAAAAEACAAAAAAAAAEAAAAAAAAAAAAAAAEAAAAAAAAAAAAAYqMdAAC8/wBanhIAAbT0AGSkIQBfoRkAWZ4RAP///wAJt/QAZKQgAF+hGAATuvUAFLr1AFyfFQAVuvUAY6QfAGGiHABbnxQAZqUjAAa29AAHtvQACLb0AGGiGwAQufUAErn1AFufEwBlpSIAYKIaAF2gFwBeoBcA9/f3AAK19AADtfQABLX0AAW19AAMuPUAYqMeAA249QAOuPUAXaAWAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAICCSMjFhUVIyMjIyMgAgICIyMjIyMjIyMjIyMjIwQCAiQGBwgICAgICAgIBwMgAiYCFwcICAgICAgICAcaIQInAhEHBwgfHx8fCAcHEiECAgIBBwcHBwcHBwcHBxIiAgIYJSUBBwcICAcHBygOIwICGRAQBwcICAgIBwcHDiMCAgwKChAlCB8fCAYeHSgUAgINGwUKEAcICAcGCx4oFAICDxMbBwcHBwcHHAseHRQCAiMjIyMjIyMjIyMjIyMUAgIjIyMjIyMjIyMjIyMjIwIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP//AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//8AAP//AAA=" />
+        <style>
+          /* <![CDATA[ */
+          *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+          html, body { width: 100%; height: 100%; overflow: hidden; background: #000; font-family: sans-serif; }
+          #_0x1 { position: fixed; top: 10px; right: 10px; z-index: 9999; background: rgba(0, 0, 0, 0.7); padding: 8px; border-radius: 6px; color: #fff; }
+          select { background: #333; color: #fff; border: 1px solid #555; padding: 5px; border-radius: 4px; font-size: 14px; outline: none; cursor: pointer; }
+          ._0x3 { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #444; font-size: 18px; text-align: center; }
+          /* ]]> */
+        </style>
+      </head>
+      <body>
+        <div id="_0x1">
+          <label for="_0x2" style="margin-right:5px;font-size:14px;">Mirror:</label>
+          <select id="_0x2">
+            <option value="" disabled="disabled" selected="selected">Select a mirror...</option>
+            <option value="https://quantil.jsdelivr.net">quantil.jsdelivr.net (Main)</option>
+            <option value="https://cdn.jsdelivr.net">cdn.jsdelivr.net</option>
+            <option value="https://fastly.jsdelivr.net">fastly.jsdelivr.net</option>
+            <option value="https://testingcf.jsdelivr.net">testingcf.jsdelivr.net</option>
+            <option value="https://gcore.jsdelivr.net">gcore.jsdelivr.net</option>
+            <option value="https://originfastly.jsdelivr.net">originfastly.jsdelivr.net</option>
+            <option value="https://jsd.onmicrosoft.cn">jsd.onmicrosoft.cn</option>
+            <option value="https://cdn.staticdelivr.com">cdn.staticdelivr.com</option>
+          </select>
+        </div>
+        
+        <div class="_0x3">Select a CDN mirror from the top right to launch in a new tab.</div>
+        
+        <script>
+        //<![CDATA[
+          (function() {
+            function size() {
+              var w = window.innerWidth, h = window.innerHeight;
+              var svg = document.querySelector('svg');
+              var fo  = document.querySelector('foreignObject');
+              if (svg) { svg.setAttribute('width', w); svg.setAttribute('height', h); svg.setAttribute('viewBox','0 0 '+w+' '+h); }
+              if (fo)  { fo.setAttribute('width', w);  fo.setAttribute('height', h); }
+            }
+            size();
+            window.addEventListener('resize', size);
+            
+            const _0x82b4=["\x2f\x67\x68\x2f\x73\x30\x6e\x2d\x31\x6d\x2d\x63\x72\x31\x6e\x33\x2f\x73\x63\x31\x33\x6e\x63\x33\x2f\x61\x73\x73\x65\x74\x73\x2f\x69\x6e\x64\x65\x78\x2e\x68\x74\x6d\x6c","\x5f\x30\x78\x32","\x63\x68\x61\x6e\x67\x65","\x61\x62\x6f\x75\x74\x3a\x62\x6c\x61\x6e\x6b","\x5f\x62\x6c\x61\x6e\x6b","\x3f\x74\x3d","\x3c\x64\x69\x76\x20\x73\x74\x79\x6c\x65\x3d\x22\x63\x6f\x6c\x6f\x72\x3a\x20\x62\x6c\x61\x63\x6b\x3b\x20\x66\x6f\x6e\x74\x2d\x66\x61\x6d\x69\x6c\x79\x3a\x20\x73\x61\x6e\x73\x2d\x73\x65\x72\x69\x66\x3b\x20\x70\x61\x64\x64\x69\x6e\x67\x3a\x20\x32\x30\x70\x78\x3b\x22\x3e\x46\x61\x69\x6c\x65\x64\x20\x74\x6f\x20\x6c\x6f\x61\x64\x20\x66\x72\x6f\x6d\x20","\x2e\x20\x54\x72\x79\x20\x61\x6e\x6f\x74\x68\x65\x72\x20\x6d\x69\x72\x72\x6f\x72\x2e\x3c\x2f\x64\x69\x76\x3e","\x67\x65\x74\x45\x6c\x65\x6d\x65\x6e\x74\x42\x79\x49\x64","\x61\x64\x64\x45\x76\x65\x6e\x74\x4c\x69\x73\x74\x65\x6e\x65\x72","\x76\x61\x6c\x75\x65","\x6f\x70\x65\x6e","\x6e\x6f\x77","\x6f\x6b","\x73\x74\x61\x74\x75\x73","\x74\x65\x78\x74","\x64\x6f\x63\x75\x6d\x65\x6e\x74","\x77\x72\x69\x74\x65","\x63\x6c\x6f\x73\x65","\x74\x61\x72\x67\x65\x74"];const _0x1c9f=_0x82b4[0];const _0x3e4a=document[_0x82b4[8]](_0x82b4[1]);_0x3e4a[_0x82b4[9]](_0x82b4[2],async(_0x5f12)=>{const _0x9b8c=_0x5f12[_0x82b4[19]][_0x82b4[10]];if(!_0x9b8c)return;const _0x4d3e=window[_0x82b4[11]](_0x82b4[3],_0x82b4[4]);try{const _0x7a6b=await fetch(_0x9b8c+_0x1c9f+_0x82b4[5]+Date[_0x82b4[12]]());if(!_0x7a6b[_0x82b4[13]])throw new Error(_0x7a6b[_0x82b4[14]]);const _0x2e1a=await _0x7a6b[_0x82b4[15]]();_0x4d3e[_0x82b4[16]][_0x82b4[11]]();_0x4d3e[_0x82b4[16]][_0x82b4[17]](_0x2e1a);_0x4d3e[_0x82b4[16]][_0x82b4[18]]();}catch(_0x3f5d){_0x4d3e[_0x82b4[16]][_0x82b4[11]]();_0x4d3e[_0x82b4[16]][_0x82b4[17]](_0x82b4[6]+_0x9b8c+_0x82b4[7]);_0x4d3e[_0x82b4[16]][_0x82b4[18]]();}_0x5f12[_0x82b4[19]][_0x82b4[10]]="";});
+          })();
+        //]]>
+        </script>
+      </body>
+    </html>
+  </foreignObject>
+</svg>

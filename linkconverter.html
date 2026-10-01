@@ -1,0 +1,2464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>P2P Link Converter</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --orange: #ff7a00;
+    --orange-light: #ff9b3d;
+    --black: #080808;
+    --black-2: #0e0e0e;
+    --black-3: #151515;
+    --border: #2b2b2b;
+    --border-orange: #663100;
+    --text: #f4f4f4;
+    --muted: #969696;
+}
+
+html,
+body {
+    margin: 0;
+    min-height: 100%;
+}
+
+body {
+    background: var(--black);
+    color: var(--text);
+
+    font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+}
+
+.container {
+    width: min(1250px, calc(100% - 32px));
+    margin: auto;
+    padding: 25px 0 60px;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+header {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+
+    padding: 4px 0 25px;
+}
+
+.icon {
+    width: 45px;
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+}
+
+.icon img {
+    display: block;
+    width: 45px;
+    height: 40px;
+    object-fit: contain;
+}
+
+.brand {
+    display: flex;
+    flex-direction: column;
+}
+
+.brand-name {
+    color: var(--orange);
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -.5px;
+}
+
+.brand-subtitle {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+h1 {
+    margin: 0;
+    font-size: 26px;
+}
+
+.subtitle {
+    margin: 5px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+/* =========================
+   PANELS
+========================= */
+
+.panel {
+    background: var(--black-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+
+    padding: 15px;
+    margin-bottom: 14px;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.panel-title {
+    margin: 0;
+
+    color: var(--orange);
+    font-size: 16px;
+}
+
+/* =========================
+   INPUT
+========================= */
+
+textarea {
+    width: 100%;
+    min-height: 165px;
+
+    resize: vertical;
+
+    padding: 12px;
+
+    border: 1px solid var(--border);
+    border-radius: 7px;
+
+    outline: none;
+
+    background: #050505;
+    color: var(--text);
+
+    font-family:
+        Consolas,
+        "Courier New",
+        monospace;
+
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+textarea:focus {
+    border-color: var(--orange);
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+.controls {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px;
+
+    margin-top: 10px;
+}
+
+button,
+select {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+
+    background: var(--black-3);
+    color: var(--text);
+
+    padding: 8px 11px;
+
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+button:hover,
+select:hover {
+    border-color: var(--orange);
+}
+
+button.primary {
+    background: var(--orange);
+    color: #000;
+
+    border-color: var(--orange);
+}
+
+button.primary:hover {
+    background: var(--orange-light);
+}
+
+button.danger:hover {
+    color: #ff7474;
+    border-color: #7b2525;
+}
+
+.stats {
+    margin-left: auto;
+
+    color: var(--muted);
+    font-size: 11px;
+}
+
+/* =========================
+   SERVICES
+========================= */
+
+.services {
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fill, minmax(230px, 1fr));
+
+    gap: 7px;
+}
+
+.service {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 9px;
+
+    border: 1px solid var(--border);
+    border-radius: 6px;
+
+    background: #111;
+
+    cursor: pointer;
+}
+
+.service:hover {
+    border-color: var(--border-orange);
+}
+
+.service input {
+    margin: 0;
+
+    accent-color: var(--orange);
+}
+
+.service-name {
+    display: block;
+
+    color: #eee;
+
+    font-size: 12px;
+    font-weight: 650;
+}
+
+.service-type {
+    display: block;
+
+    margin-top: 2px;
+
+    color: var(--muted);
+
+    font-size: 10px;
+}
+
+.service-info {
+    margin-top: 10px;
+
+    color: var(--muted);
+
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+/* =========================
+   OUTPUT
+========================= */
+
+.output-options {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+
+.output-options label {
+    color: var(--muted);
+    font-size: 11px;
+}
+
+/* =========================
+   NORMAL LINK LIST
+========================= */
+
+.link-group {
+    margin-bottom: 18px;
+}
+
+.link-group:last-child {
+    margin-bottom: 0;
+}
+
+.group-title {
+    margin-bottom: 7px;
+
+    color: var(--orange);
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.group-count {
+    margin-left: 6px;
+
+    color: var(--muted);
+
+    font-size: 10px;
+    font-weight: 400;
+}
+
+.source {
+    margin-bottom: 5px;
+
+    color: #707070;
+
+    font-family:
+        Consolas,
+        "Courier New",
+        monospace;
+
+    font-size: 10px;
+
+    word-break: break-all;
+}
+
+/*
+    IMPORTANT:
+
+    The service label is outside the URL element.
+    Copy All therefore only copies the URLs.
+*/
+
+.link-row {
+    display: flex;
+    align-items: center;
+
+    gap: 9px;
+
+    min-height: 34px;
+
+    padding: 5px 0;
+
+    border-bottom: 1px solid #191919;
+}
+
+.link-row:last-child {
+    border-bottom: none;
+}
+
+.service-label {
+    flex: 0 0 180px;
+
+    color: var(--orange);
+
+    font-size: 11px;
+    font-weight: 650;
+}
+
+.url-container {
+    flex: 1;
+
+    min-width: 0;
+}
+
+.link-url {
+    display: block;
+
+    color: #d6d6d6;
+
+    font-family:
+        Consolas,
+        "Courier New",
+        monospace;
+
+    font-size: 11px;
+
+    line-height: 1.45;
+
+    word-break: break-all;
+
+    text-decoration: none;
+}
+
+.link-url:hover {
+    color: var(--orange);
+}
+
+.copy-small {
+    flex: 0 0 auto;
+
+    padding: 4px 7px;
+
+    font-size: 10px;
+}
+
+/* =========================
+   ALL LINKS
+========================= */
+
+.all-link-row {
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 9px;
+
+    padding: 5px 0;
+
+    border-bottom: 1px solid #191919;
+}
+
+.all-link-row:last-child {
+    border-bottom: none;
+}
+
+.all-number {
+    width: 28px;
+
+    flex: 0 0 28px;
+
+    color: #555;
+
+    font-family: Consolas, monospace;
+    font-size: 10px;
+
+    text-align: right;
+}
+
+.all-service {
+    flex: 0 0 180px;
+
+    color: var(--orange);
+
+    font-size: 11px;
+    font-weight: 650;
+}
+
+.all-url {
+    flex: 1;
+
+    min-width: 0;
+
+    color: #d6d6d6;
+
+    font-family:
+        Consolas,
+        "Courier New",
+        monospace;
+
+    font-size: 11px;
+
+    line-height: 1.45;
+
+    word-break: break-all;
+}
+
+.empty {
+    padding: 24px;
+
+    border: 1px dashed var(--border);
+    border-radius: 7px;
+
+    color: var(--muted);
+
+    font-size: 12px;
+    text-align: center;
+}
+
+.warning {
+    margin-bottom: 9px;
+
+    padding: 8px 10px;
+
+    border: 1px solid #513300;
+    border-radius: 6px;
+
+    background: #160e04;
+
+    color: #d99b5c;
+
+    font-size: 11px;
+}
+
+.toast {
+    position: fixed;
+
+    right: 18px;
+    bottom: 18px;
+
+    z-index: 9999;
+
+    padding: 9px 13px;
+
+    border: 1px solid var(--orange);
+    border-radius: 6px;
+
+    background: #17100a;
+    color: var(--text);
+
+    font-size: 11px;
+}
+
+@media (max-width: 700px) {
+
+    .container {
+        width: calc(100% - 20px);
+    }
+
+    .panel-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .stats {
+        margin-left: 0;
+    }
+
+    .link-row,
+    .all-link-row {
+        align-items: flex-start;
+        flex-direction: column;
+
+        gap: 4px;
+    }
+
+    .service-label,
+    .all-service {
+        flex-basis: auto;
+    }
+
+    .url-container,
+    .all-url {
+        width: 100%;
+    }
+
+}
+</style>
+</head>
+
+
+<body>
+
+<div class="container">
+
+    <!-- =========================
+         HEADER
+    ========================== -->
+
+    <header>
+
+        <div class="icon">
+
+            <img
+                src="https://codeberg.org/HtmlLol/P2P-EMIS/raw/branch/main/download%20%281%29.png"
+                width="45"
+                height="40"
+                alt=""
+            >
+
+        </div>
+
+        <div class="brand">
+
+            <div class="brand-name">
+                P2P
+            </div>
+
+            <div class="brand-subtitle">
+         Get more links per link with this thing me (ai) made in a few mintutes  warning not all of the link types work maybye do a test batch with 1 link and see what types work for you and only select thoose. 
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- =========================
+         INPUT
+    ========================== -->
+
+    <section class="panel">
+
+        <div class="panel-header">
+
+            <h2 class="panel-title">
+                Input Links
+            </h2>
+
+        </div>
+
+
+        <textarea
+            id="inputLinks"
+            spellcheck="false"
+            placeholder="Paste one or more links, one per line..."
+        ></textarea>
+
+
+        <div class="controls">
+
+            <button
+                class="primary"
+                id="generateButton"
+            >
+                Generate Links
+            </button>
+
+            <button id="pasteButton">
+                Paste
+            </button>
+
+            <button
+                class="danger"
+                id="clearButton"
+            >
+                Clear
+            </button>
+
+            <span
+                class="stats"
+                id="inputStats"
+            >
+                0 links
+            </span>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         SERVICES
+    ========================== -->
+
+    <section class="panel">
+
+        <div class="panel-header">
+
+            <h2 class="panel-title">
+                Services
+            </h2>
+
+            <div class="controls">
+
+                <button id="selectAllButton">
+                    Select all
+                </button>
+
+                <button id="selectNoneButton">
+                    Select none
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="services"
+            id="services"
+        ></div>
+
+
+        <div class="service-info">
+
+            Select exactly which services you want generated.
+            Labels shown beside URLs are interface-only and are
+            never included in Copy All or Download.
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         OUTPUT
+    ========================== -->
+
+    <section class="panel">
+
+        <div class="panel-header">
+
+            <h2 class="panel-title">
+                Output
+            </h2>
+
+
+            <div class="output-options">
+
+                <label>
+
+                    Order:
+
+                    <select id="orderSelect">
+
+                        <option value="link">
+                            Link → every service
+                        </option>
+
+                        <option value="service">
+                            Service → every link
+                        </option>
+
+                        <option value="random">
+                            Random
+                        </option>
+
+                        <option value="original">
+                            Original generated order
+                        </option>
+
+                    </select>
+
+                </label>
+
+
+                <button id="copyOutputButton">
+                    Copy all
+                </button>
+
+
+                <button id="downloadOutputButton">
+                    Download
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div id="outputArea">
+
+            <div class="empty">
+                Generate links to see the results.
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         ALL LINKS
+    ========================== -->
+
+    <section class="panel">
+
+        <div class="panel-header">
+
+            <h2 class="panel-title">
+                All Links
+            </h2>
+
+
+            <div class="output-options">
+
+                <button id="copyAllButton">
+                    Copy all
+                </button>
+
+
+                <button id="downloadAllButton">
+                    Download
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div id="allLinksArea">
+
+            <div class="empty">
+                Generate links to populate this section.
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<script>
+
+/*
+=========================================================
+SERVICES
+=========================================================
+*/
+
+const SERVICES = [
+
+    {
+        id: "jsdelivr",
+        name: "jsDelivr",
+        type: "GitHub CDN",
+
+        make: p =>
+            `https://cdn.jsdelivr.net/gh/${p.owner}/${p.repo}@${p.ref}/${p.path}`
+    },
+
+
+    {
+        id: "jsdelivr-fastly",
+        name: "jsDelivr · Fastly",
+        type: "jsDelivr endpoint",
+
+        make: p =>
+            `https://fastly.jsdelivr.net/gh/${p.owner}/${p.repo}@${p.ref}/${p.path}`
+    },
+
+
+    {
+        id: "jsdelivr-gcore",
+        name: "jsDelivr · Gcore",
+        type: "jsDelivr endpoint",
+
+        make: p =>
+            `https://gcore.jsdelivr.net/gh/${p.owner}/${p.repo}@${p.ref}/${p.path}`
+    },
+
+
+    {
+        id: "jsdelivr-testingcf",
+        name: "jsDelivr · TestingCF",
+        type: "jsDelivr endpoint",
+
+        make: p =>
+            `https://testingcf.jsdelivr.net/gh/${p.owner}/${p.repo}@${p.ref}/${p.path}`
+    },
+
+
+    {
+        id: "statically",
+        name: "Statically",
+        type: "GitHub CDN",
+
+        make: p =>
+            `https://cdn.statically.io/gh/${p.owner}/${p.repo}@${p.ref}/${p.path}`
+    },
+
+
+    {
+        id: "githack",
+        name: "raw.githack",
+        type: "GitHub development CDN",
+
+        make: p =>
+            `https://raw.githack.com/${p.owner}/${p.repo}/${p.ref}/${p.path}`
+    },
+
+
+    {
+        id: "githack-cdn",
+        name: "rawcdn.githack",
+        type: "GitHub production CDN",
+
+        make: p =>
+            isCommitOrTag(p.ref)
+                ? `https://rawcdn.githack.com/${p.owner}/${p.repo}/${p.ref}/${p.path}`
+                : null
+    },
+
+
+    {
+        id: "githubraw",
+        name: "GitHubRaw",
+        type: "GitHub development",
+
+        make: p =>
+            `https://githubraw.com/${p.owner}/${p.repo}/${p.ref}/${p.path}`
+    },
+
+
+    {
+        id: "githubraw-cdn",
+        name: "GitHubRaw CDN",
+        type: "GitHub production CDN",
+
+        make: p =>
+            isCommitOrTag(p.ref)
+                ? `https://cdn.githubraw.com/${p.owner}/${p.repo}/${p.ref}/${p.path}`
+                : null
+    },
+
+
+    {
+        id: "staticdelivr",
+        name: "StaticDelivr",
+        type: "GitHub CDN",
+
+        make: p =>
+            `https://cdn.staticdelivr.com/gh/${p.owner}/${p.repo}/${p.ref}/${p.path}`
+    },
+
+
+    {
+        id: "github-raw",
+        name: "GitHub Raw",
+        type: "GitHub raw",
+
+        make: p =>
+            `https://raw.githubusercontent.com/${p.owner}/${p.repo}/${p.ref}/${p.path}`
+    },
+
+
+    {
+        id: "esm",
+        name: "esm.sh",
+        type: "GitHub / ESM",
+
+        make: p =>
+            `https://esm.sh/gh/${p.owner}/${p.repo}@${p.ref}/${p.path}?raw`
+    },
+
+
+    {
+        id: "raw-esm",
+        name: "raw.esm.sh",
+        type: "GitHub raw / ESM",
+
+        make: p =>
+            `https://raw.esm.sh/gh/${p.owner}/${p.repo}@${p.ref}/${p.path}`
+    },
+
+
+    {
+        id: "ghproxy",
+        name: "ghproxy.net",
+        type: "GitHub proxy",
+
+        make: p =>
+            `https://ghproxy.net/https://raw.githubusercontent.com/${p.owner}/${p.repo}/${p.ref}/${p.path}`
+    },
+
+
+    {
+        id: "ghproxy-mirror",
+        name: "mirror.ghproxy.com",
+        type: "GitHub proxy",
+
+        make: p =>
+            `https://mirror.ghproxy.com/raw.githubusercontent.com/${p.owner}/${p.repo}/${p.ref}/${p.path}`
+    },
+
+
+    {
+        id: "kkgithub",
+        name: "raw.kkgithub.com",
+        type: "GitHub mirror",
+
+        make: p =>
+            `https://raw.kkgithub.com/${p.owner}/${p.repo}/${p.ref}/${p.path}`
+    },
+
+
+    {
+        id: "staticdn",
+        name: "raw.staticdn.net",
+        type: "GitHub mirror",
+
+        make: p =>
+            `https://raw.staticdn.net/${p.owner}/${p.repo}/${p.ref}/${p.path}`
+    },
+
+
+    {
+        id: "gitmirror",
+        name: "raw.gitmirror.com",
+        type: "GitHub mirror",
+
+        make: p =>
+            `https://raw.gitmirror.com/${p.owner}/${p.repo}/${p.ref}/${p.path}`
+    }
+
+];
+
+
+/*
+=========================================================
+STATE
+=========================================================
+*/
+
+const state = {
+
+    rows: [],
+
+    allLinks: []
+
+};
+
+
+/*
+=========================================================
+HELPER
+=========================================================
+*/
+
+const $ = id =>
+    document.getElementById(id);
+
+
+/*
+=========================================================
+SERVICE LIST
+=========================================================
+*/
+
+function renderServices() {
+
+    $("services").innerHTML =
+        SERVICES.map(service => `
+
+            <label class="service">
+
+                <input
+                    type="checkbox"
+                    checked
+                    data-service-id="${escapeHTML(service.id)}"
+                >
+
+                <span>
+
+                    <span class="service-name">
+                        ${escapeHTML(service.name)}
+                    </span>
+
+                    <span class="service-type">
+                        ${escapeHTML(service.type)}
+                    </span>
+
+                </span>
+
+            </label>
+
+        `).join("");
+
+}
+
+
+function getSelectedServices() {
+
+    return SERVICES.filter(service => {
+
+        const checkbox =
+            document.querySelector(
+                `[data-service-id="${CSS.escape(service.id)}"]`
+            );
+
+        return checkbox?.checked;
+
+    });
+
+}
+
+
+/*
+=========================================================
+URL PARSER
+=========================================================
+*/
+
+function parseGitHubURL(value) {
+
+    let url;
+
+    try {
+
+        url =
+            new URL(value.trim());
+
+    } catch {
+
+        return null;
+
+    }
+
+
+    const hostname =
+        url.hostname.toLowerCase();
+
+
+    const path =
+        url.pathname
+            .replace(/^\/+/, "")
+            .replace(/\/+$/, "");
+
+
+    /*
+     * github.com/user/repo/blob/main/file
+     */
+
+    if (
+        hostname === "github.com"
+    ) {
+
+        const parts =
+            path.split("/");
+
+
+        if (
+            parts.length >= 5 &&
+            parts[2] === "blob"
+        ) {
+
+            return {
+
+                owner: parts[0],
+                repo: parts[1],
+                ref: parts[3],
+                path: parts.slice(4).join("/")
+
+            };
+
+        }
+
+    }
+
+
+    /*
+     * jsDelivr
+     */
+
+    if (
+
+        hostname === "cdn.jsdelivr.net" ||
+        hostname === "fastly.jsdelivr.net" ||
+        hostname === "gcore.jsdelivr.net" ||
+        hostname === "testingcf.jsdelivr.net"
+
+    ) {
+
+        const match =
+            path.match(
+                /^gh\/([^/]+)\/([^/@]+)@([^/]+)\/(.+)$/
+            );
+
+
+        if (match) {
+
+            return {
+
+                owner: match[1],
+                repo: match[2],
+                ref: match[3],
+                path: match[4]
+
+            };
+
+        }
+
+    }
+
+
+    /*
+     * Statically
+     */
+
+    if (
+        hostname === "cdn.statically.io"
+    ) {
+
+        const match =
+            path.match(
+                /^gh\/([^/]+)\/([^/@]+)@([^/]+)\/(.+)$/
+            );
+
+
+        if (match) {
+
+            return {
+
+                owner: match[1],
+                repo: match[2],
+                ref: match[3],
+                path: match[4]
+
+            };
+
+        }
+
+    }
+
+
+    /*
+     * GitHub Raw
+     */
+
+    if (
+        hostname === "raw.githubusercontent.com"
+    ) {
+
+        const parts =
+            path.split("/");
+
+
+        if (
+            parts.length >= 4
+        ) {
+
+            return {
+
+                owner: parts[0],
+                repo: parts[1],
+                ref: parts[2],
+                path: parts.slice(3).join("/")
+
+            };
+
+        }
+
+    }
+
+
+    /*
+     * Githack / GitHubRaw / mirrors
+     */
+
+    if (
+
+        hostname === "raw.githack.com" ||
+        hostname === "rawcdn.githack.com" ||
+        hostname === "githubraw.com" ||
+        hostname === "cdn.githubraw.com" ||
+        hostname === "raw.kkgithub.com" ||
+        hostname === "raw.staticdn.net" ||
+        hostname === "raw.gitmirror.com"
+
+    ) {
+
+        const parts =
+            path.split("/");
+
+
+        if (
+            parts.length >= 4
+        ) {
+
+            return {
+
+                owner: parts[0],
+                repo: parts[1],
+                ref: parts[2],
+                path: parts.slice(3).join("/")
+
+            };
+
+        }
+
+    }
+
+
+    /*
+     * StaticDelivr
+     */
+
+    if (
+        hostname === "cdn.staticdelivr.com"
+    ) {
+
+        const match =
+            path.match(
+                /^gh\/([^/]+)\/([^/]+)\/([^/]+)\/(.+)$/
+            );
+
+
+        if (match) {
+
+            return {
+
+                owner: match[1],
+                repo: match[2],
+                ref: match[3],
+                path: match[4]
+
+            };
+
+        }
+
+    }
+
+
+    /*
+     * esm.sh
+     */
+
+    if (
+
+        hostname === "esm.sh" ||
+        hostname === "raw.esm.sh"
+
+    ) {
+
+        const match =
+            path.match(
+                /^gh\/([^/]+)\/([^/@]+)@([^/]+)\/(.+)$/
+            );
+
+
+        if (match) {
+
+            return {
+
+                owner: match[1],
+                repo: match[2],
+                ref: match[3],
+                path: match[4]
+
+            };
+
+        }
+
+    }
+
+
+    /*
+     * ghproxy.net
+     */
+
+    if (
+        hostname === "ghproxy.net"
+    ) {
+
+        const match =
+            url.href.match(
+                /raw\.githubusercontent\.com\/([^/]+)\/([^/]+)\/([^/]+)\/(.+)$/
+            );
+
+
+        if (match) {
+
+            return {
+
+                owner: match[1],
+                repo: match[2],
+                ref: match[3],
+                path: match[4]
+
+            };
+
+        }
+
+    }
+
+
+    /*
+     * mirror.ghproxy.com
+     */
+
+    if (
+        hostname === "mirror.ghproxy.com"
+    ) {
+
+        const match =
+            path.match(
+                /^raw\.githubusercontent\.com\/([^/]+)\/([^/]+)\/([^/]+)\/(.+)$/
+            );
+
+
+        if (match) {
+
+            return {
+
+                owner: match[1],
+                repo: match[2],
+                ref: match[3],
+                path: match[4]
+
+            };
+
+        }
+
+    }
+
+
+    return null;
+
+}
+
+
+/*
+=========================================================
+TAG / COMMIT
+=========================================================
+*/
+
+function isCommitOrTag(ref) {
+
+    if (
+        /^[a-f0-9]{40}$/i.test(ref)
+    ) {
+
+        return true;
+
+    }
+
+
+    if (
+        /^v?\d+(?:\.\d+)*(?:[-+._][A-Za-z0-9._-]+)?$/
+            .test(ref)
+    ) {
+
+        return true;
+
+    }
+
+
+    if (
+        /^release[-_]/i.test(ref)
+    ) {
+
+        return true;
+
+    }
+
+
+    return false;
+
+}
+
+
+/*
+=========================================================
+GENERATE
+=========================================================
+*/
+
+function generateLinks() {
+
+    const inputs =
+        getInputLines();
+
+
+    const services =
+        getSelectedServices();
+
+
+    const rows = [];
+
+
+    for (
+        const input of inputs
+    ) {
+
+        const parsed =
+            parseGitHubURL(input);
+
+
+        if (!parsed) {
+
+            continue;
+
+        }
+
+
+        const links = [];
+
+
+        for (
+            const service of services
+        ) {
+
+            let url = null;
+
+
+            try {
+
+                url =
+                    service.make(parsed);
+
+            } catch {
+
+                url = null;
+
+            }
+
+
+            if (url) {
+
+                links.push({
+
+                    service: service.name,
+
+                    serviceId: service.id,
+
+                    url
+
+                });
+
+            }
+
+        }
+
+
+        rows.push({
+
+            input,
+
+            parsed,
+
+            links
+
+        });
+
+    }
+
+
+    state.rows =
+        rows;
+
+
+    state.allLinks =
+        rows.flatMap(
+            row =>
+                row.links.map(
+                    link => ({
+
+                        input: row.input,
+
+                        service: link.service,
+
+                        serviceId: link.serviceId,
+
+                        url: link.url
+
+                    })
+                )
+        );
+
+
+    renderOutput();
+
+    renderAllLinks();
+
+
+    $("inputStats").textContent =
+        `${inputs.length} input${inputs.length === 1 ? "" : "s"} · ` +
+        `${state.allLinks.length} generated`;
+
+}
+
+
+/*
+=========================================================
+INPUT
+=========================================================
+*/
+
+function getInputLines() {
+
+    return [
+        ...new Set(
+
+            $("inputLinks")
+                .value
+                .split(/\r?\n/)
+                .map(x => x.trim())
+                .filter(Boolean)
+
+        )
+    ];
+
+}
+
+
+/*
+=========================================================
+ORDER
+=========================================================
+*/
+
+function getOrderedLinks() {
+
+    const order =
+        $("orderSelect").value;
+
+
+    const links =
+        [...state.allLinks];
+
+
+    if (
+        order === "random"
+    ) {
+
+        for (
+            let i = links.length - 1;
+            i > 0;
+            i--
+        ) {
+
+            const j =
+                Math.floor(
+                    Math.random() * (i + 1)
+                );
+
+
+            [
+                links[i],
+                links[j]
+            ] = [
+                links[j],
+                links[i]
+            ];
+
+        }
+
+    }
+
+
+    if (
+        order === "service"
+    ) {
+
+        links.sort(
+            (a, b) =>
+                a.service.localeCompare(
+                    b.service
+                ) ||
+                a.input.localeCompare(
+                    b.input
+                )
+        );
+
+    }
+
+
+    return links;
+
+}
+
+
+/*
+=========================================================
+OUTPUT
+=========================================================
+*/
+
+function renderOutput() {
+
+    if (
+        !state.allLinks.length
+    ) {
+
+        $("outputArea").innerHTML = `
+            <div class="empty">
+                Nothing generated yet.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    const order =
+        $("orderSelect").value;
+
+
+    /*
+     * LINK → SERVICES
+     */
+
+    if (
+        order === "link"
+    ) {
+
+        let html = "";
+
+
+        state.rows.forEach(
+            (row, index) => {
+
+                html += `
+
+                    <div class="link-group">
+
+                        <div class="group-title">
+
+                            Link ${index + 1}
+
+                            <span class="group-count">
+                                ${row.links.length} services
+                            </span>
+
+                        </div>
+
+                        <div class="source">
+                            ${escapeHTML(row.input)}
+                        </div>
+
+                `;
+
+
+                row.links.forEach(
+                    link => {
+
+                        html +=
+                            renderRow(
+                                link
+                            );
+
+                    }
+                );
+
+
+                html += `
+                    </div>
+                `;
+
+            }
+        );
+
+
+        $("outputArea").innerHTML =
+            html;
+
+
+        return;
+
+    }
+
+
+    /*
+     * SERVICE → LINKS
+     */
+
+    if (
+        order === "service"
+    ) {
+
+        const groups = {};
+
+
+        getOrderedLinks()
+            .forEach(
+                link => {
+
+                    if (
+                        !groups[link.service]
+                    ) {
+
+                        groups[link.service] =
+                            [];
+
+                    }
+
+
+                    groups[link.service]
+                        .push(link);
+
+                }
+            );
+
+
+        let html = "";
+
+
+        for (
+            const [service, links]
+            of Object.entries(groups)
+        ) {
+
+            html += `
+
+                <div class="link-group">
+
+                    <div class="group-title">
+
+                        ${escapeHTML(service)}
+
+                        <span class="group-count">
+                            ${links.length} links
+                        </span>
+
+                    </div>
+
+            `;
+
+
+            links.forEach(
+                link => {
+
+                    html +=
+                        renderRow(
+                            link,
+                            true
+                        );
+
+                }
+            );
+
+
+            html += `
+                </div>
+            `;
+
+        }
+
+
+        $("outputArea").innerHTML =
+            html;
+
+
+        return;
+
+    }
+
+
+    /*
+     * RANDOM / ORIGINAL
+     */
+
+    const links =
+        getOrderedLinks();
+
+
+    $("outputArea").innerHTML =
+        links
+            .map(
+                link =>
+                    renderRow(
+                        link,
+                        true
+                    )
+            )
+            .join("");
+
+}
+
+
+/*
+=========================================================
+NORMAL LINK ROW
+=========================================================
+*/
+
+function renderRow(
+    link,
+    showSource = false
+) {
+
+    return `
+
+        <div class="link-row">
+
+            <div class="service-label">
+
+                ${escapeHTML(
+                    link.service
+                )}
+
+            </div>
+
+
+            <div class="url-container">
+
+                <a
+                    class="link-url"
+                    href="${escapeAttribute(link.url)}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    ${escapeHTML(link.url)}
+                </a>
+
+            </div>
+
+
+            <button
+                class="copy-small"
+                onclick='copyText(${JSON.stringify(link.url)})'
+            >
+                Copy
+            </button>
+
+        </div>
+
+    `;
+
+}
+
+
+/*
+=========================================================
+ALL LINKS
+=========================================================
+*/
+
+function renderAllLinks() {
+
+    if (
+        !state.allLinks.length
+    ) {
+
+        $("allLinksArea").innerHTML = `
+            <div class="empty">
+                Generate links to populate this section.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    $("allLinksArea").innerHTML =
+        state.allLinks
+            .map(
+                (link, index) => `
+
+                    <div class="all-link-row">
+
+                        <div class="all-number">
+                            ${index + 1}.
+                        </div>
+
+                        <div class="all-service">
+                            ${escapeHTML(link.service)}
+                        </div>
+
+                        <div class="all-url">
+                            ${escapeHTML(link.url)}
+                        </div>
+
+                        <button
+                            class="copy-small"
+                            onclick='copyText(${JSON.stringify(link.url)})'
+                        >
+                            Copy
+                        </button>
+
+                    </div>
+
+                `
+            )
+            .join("");
+
+}
+
+
+/*
+=========================================================
+COPY
+=========================================================
+*/
+
+async function copyText(text) {
+
+    try {
+
+        await navigator.clipboard.writeText(
+            text
+        );
+
+        showToast(
+            "Copied"
+        );
+
+    } catch {
+
+        const area =
+            document.createElement(
+                "textarea"
+            );
+
+
+        area.value =
+            text;
+
+
+        document.body.appendChild(
+            area
+        );
+
+
+        area.select();
+
+
+        document.execCommand(
+            "copy"
+        );
+
+
+        area.remove();
+
+
+        showToast(
+            "Copied"
+        );
+
+    }
+
+}
+
+
+async function copyOutput() {
+
+    const text =
+        getOrderedLinks()
+            .map(link => link.url)
+            .join("\n");
+
+
+    if (!text) {
+
+        showToast(
+            "Nothing to copy"
+        );
+
+        return;
+
+    }
+
+
+    await copyText(
+        text
+    );
+
+}
+
+
+async function copyAll() {
+
+    const text =
+        state.allLinks
+            .map(link => link.url)
+            .join("\n");
+
+
+    if (!text) {
+
+        showToast(
+            "Nothing to copy"
+        );
+
+        return;
+
+    }
+
+
+    await copyText(
+        text
+    );
+
+}
+
+
+/*
+=========================================================
+DOWNLOAD
+=========================================================
+*/
+
+function downloadText(
+    text,
+    filename
+) {
+
+    if (!text) {
+
+        showToast(
+            "Nothing to download"
+        );
+
+        return;
+
+    }
+
+
+    const blob =
+        new Blob(
+            [text],
+            {
+                type:
+                    "text/plain;charset=utf-8"
+            }
+        );
+
+
+    const url =
+        URL.createObjectURL(
+            blob
+        );
+
+
+    const a =
+        document.createElement(
+            "a"
+        );
+
+
+    a.href =
+        url;
+
+
+    a.download =
+        filename;
+
+
+    document.body.appendChild(
+        a
+    );
+
+
+    a.click();
+
+
+    a.remove();
+
+
+    setTimeout(
+        () =>
+            URL.revokeObjectURL(
+                url
+            ),
+        1000
+    );
+
+}
+
+
+function downloadOutput() {
+
+    downloadText(
+        getOrderedLinks()
+            .map(link => link.url)
+            .join("\n"),
+
+        "p2p-links.txt"
+    );
+
+}
+
+
+function downloadAll() {
+
+    downloadText(
+        state.allLinks
+            .map(link => link.url)
+            .join("\n"),
+
+        "p2p-all-links.txt"
+    );
+
+}
+
+
+/*
+=========================================================
+CLEAR
+=========================================================
+*/
+
+$("clearButton")
+    .addEventListener(
+        "click",
+        () => {
+
+            $("inputLinks").value =
+                "";
+
+            state.rows =
+                [];
+
+            state.allLinks =
+                [];
+
+            $("inputStats").textContent =
+                "0 links";
+
+            renderOutput();
+
+            renderAllLinks();
+
+        }
+    );
+
+
+/*
+=========================================================
+PASTE
+=========================================================
+*/
+
+$("pasteButton")
+    .addEventListener(
+        "click",
+        async () => {
+
+            try {
+
+                const text =
+                    await navigator.clipboard.readText();
+
+
+                $("inputLinks").value =
+                    text;
+
+
+                updateStats();
+
+
+            } catch {
+
+                showToast(
+                    "Clipboard permission denied"
+                );
+
+            }
+
+        }
+    );
+
+
+/*
+=========================================================
+SELECT SERVICES
+=========================================================
+*/
+
+$("selectAllButton")
+    .addEventListener(
+        "click",
+        () => {
+
+            document
+                .querySelectorAll(
+                    "[data-service-id]"
+                )
+                .forEach(
+                    checkbox =>
+                        checkbox.checked =
+                            true
+                );
+
+        }
+    );
+
+
+$("selectNoneButton")
+    .addEventListener(
+        "click",
+        () => {
+
+            document
+                .querySelectorAll(
+                    "[data-service-id]"
+                )
+                .forEach(
+                    checkbox =>
+                        checkbox.checked =
+                            false
+                );
+
+        }
+    );
+
+
+/*
+=========================================================
+EVENTS
+=========================================================
+*/
+
+$("generateButton")
+    .addEventListener(
+        "click",
+        generateLinks
+    );
+
+
+$("orderSelect")
+    .addEventListener(
+        "change",
+        renderOutput
+    );
+
+
+$("copyOutputButton")
+    .addEventListener(
+        "click",
+        copyOutput
+    );
+
+
+$("downloadOutputButton")
+    .addEventListener(
+        "click",
+        downloadOutput
+    );
+
+
+$("copyAllButton")
+    .addEventListener(
+        "click",
+        copyAll
+    );
+
+
+$("downloadAllButton")
+    .addEventListener(
+        "click",
+        downloadAll
+    );
+
+
+$("inputLinks")
+    .addEventListener(
+        "input",
+        updateStats
+    );
+
+
+/*
+=========================================================
+STATS
+=========================================================
+*/
+
+function updateStats() {
+
+    const count =
+        getInputLines().length;
+
+
+    $("inputStats").textContent =
+        `${count} link${count === 1 ? "" : "s"}`;
+
+}
+
+
+/*
+=========================================================
+ESCAPING
+=========================================================
+*/
+
+function escapeHTML(value) {
+
+    return String(value)
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
+}
+
+
+function escapeAttribute(value) {
+
+    return escapeHTML(value);
+
+}
+
+
+/*
+=========================================================
+TOAST
+=========================================================
+*/
+
+function showToast(message) {
+
+    const old =
+        document.querySelector(
+            ".toast"
+        );
+
+
+    if (old) {
+
+        old.remove();
+
+    }
+
+
+    const toast =
+        document.createElement(
+            "div"
+        );
+
+
+    toast.className =
+        "toast";
+
+
+    toast.textContent =
+        message;
+
+
+    document.body.appendChild(
+        toast
+    );
+
+
+    setTimeout(
+        () => toast.remove(),
+        1300
+    );
+
+}
+
+
+/*
+=========================================================
+START
+=========================================================
+*/
+
+renderServices();
+
+</script>
+
+</body>
+</html>

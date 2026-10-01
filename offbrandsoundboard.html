@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+  <!-- Head -->
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OutRed Soundboard</title>
+    <style>
+      body {
+        background-color: black;
+        font-family: arial;
+        color: white;
+        text-align: center;
+      }
+
+      .active {
+          background-color: #04AA6D;
+          color: white;
+          border-radius: 33px;
+      }
+
+      .topnav {
+        overflow: hidden;
+        background-color: #333;
+        border-radius: 33px;
+      }
+
+      .topnav a {
+        float: left;
+        display: block;
+        color: #f2f2f2;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+        font-size: 17px;
+        border-radius: 33px;
+      }
+
+      .active {
+        background-color: #04AA6D;
+        color: white;
+      }
+
+      .topnav .icon {
+        display: none;
+      }
+
+      .dropdown {
+        float: left;
+        overflow: hidden;
+      }
+
+      .dropdown .dropbtn {
+        font-size: 17px;    
+        border: none;
+        outline: none;
+        color: white;
+        padding: 14px 16px;
+        background-color: inherit;
+        font-family: inherit;
+        margin: 0;
+        border-radius: 33px;
+        transition: 0.5s;
+      }
+
+      .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 1;
+        transition: 0.5s;
+        background-color: grey;
+        border-bottom-left-radius: 33px;
+        border-bottom-right-radius: 33px;
+        background-color: #333;
+        color: #FFFFFF;
+      }
+
+      .dropdown-content a {
+        float: none;
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+        text-align: left;
+      }
+
+      .topnav a:hover, .dropdown:hover .dropbtn {
+        background-color: #555;
+        color: white;
+        transition: 0.5s;
+      }
+
+      .dropdown-content a:hover {
+        background-color: #ddd;
+        color: black;
+        transition: 0.5s;
+      }
+
+      .dropdown:hover .dropdown-content {
+        display: block;
+        transition: 0.5s;
+      }
+
+      @media screen and (max-width: 600px) {
+        .topnav a:not(:first-child), .dropdown .dropbtn {
+          display: none;
+        }
+        .topnav a.icon {
+          float: right;
+          display: block;
+        }
+      }
+
+      @media screen and (max-width: 600px) {
+        .topnav.responsive {position: relative;}
+        .topnav.responsive .icon {
+          position: absolute;
+          right: 0;
+          top: 0;
+        }
+        .topnav.responsive a {
+          float: none;
+          display: block;
+          text-align: left;
+        }
+        .topnav.responsive .dropdown {float: none;}
+        .topnav.responsive .dropdown-content {position: relative;}
+        .topnav.responsive .dropdown .dropbtn {
+          display: block;
+          width: 100%;
+          text-align: left;
+        }
+      }
+
+      button {
+        background:  #04AA6D;
+        padding: 10px;
+        font-size: 20px;
+        border-radius: 15px;
+        transition: all 0.3s ease;
+      }
+
+      button:hover {
+        -ms-transform: scale(1.5); /* IE 9 */
+        -webkit-transform: scale(1.5); /* Safari 3-8 */
+        transform: scale(1.1);
+        -webkit-box-shadow: 0px 0px 31px #000000;
+        -moz-box-shadow: 0px 0px 31px #000000;
+        box-shadow: 0px 0px 31px #000000;  
+      }
+
+      .pause {
+        background: #e8332e;
+      }
+    </style>
+  </head>
+
+  <!-- Body -->
+  <body>
+    <!-- Top nav -->
+    <div class="topnav" id="myTopnav">
+      <a href="https://outred.github.io">Home</a>
+      <a href="https://outred.github.io/game">Games</a>
+      <a href="https://outred.github.io/holyunblocker">Unblocker</a>
+      <div class="dropdown">
+        <button class="dropbtn">Apps 
+          <i class="fa fa-caret-down"></i>
+        </button>
+        <div class="dropdown-content">
+          <a href="https://monstermath.herokuapp.com/main/https://discord.com/login">Discord</a>
+          <a href="#" class="active">Meme Soundboard</a>
+          <a href="#">Coming Soon!</a>
+        </div>
+      </div> 
+      <a href="patreon.com/user?u=82149481">Patreon</a>
+      <a href="javascript:void(0);" style="font-size:15px;" class="icon" onclick="myFunction()">&#9776;</a>
+    </div>
+    <h1>Meme Sound Board</h1>
+    <!-- Sounds -->
+    <div>
+      <!-- Amogus 1 sound -->
+      <div>
+        <audio id="amogus1">
+          <source src="https://outred.github.io/sfx/amogus-sfx.mp3" type="audio/mpeg">
+            Your browser does not support the audio element.</source>
+        </audio>
+        <p>Amogus Sound Effect</p>
+        <button onclick="playAudio(amogus1)" type="button">Play Audio</button>
+        <button class="pause" onclick="pauseAudio()" type="button">Pause Audio</button> 
+      </div>
+      <!-- Bruh 1 sound -->
+      <div>
+          <audio id="bruh1">
+            <source src="https://outred.github.io/sfx/bruh-sfx.mp3" type="audio/mpeg">
+              Your browser does not support the audio element.
+            </source>
+          </audio>
+          <p>Bruh Sound Effect</p>
+          <button onclick="playAudio(bruh1)" type="button">Play Audio</button>
+          <button class="pause" onclick="pauseAudio()" type="button">Pause Audio</button> 
+      </div>
+      <!-- Lore 1 sound (didnt have to cut me off sfx) -->
+      <div>
+        <audio id="lore1">
+          <source src="https://outred.github.io/sfx/youdidnthavetocutmeoff-sfx.mp3" type="audio/mpeg">
+            Your browser does not support the audio element.
+          </source>
+        </audio>
+        <p>You Didn't Have to Cut Me Off Sound Effect</p>
+        <button onclick="playAudio(lore1)" type="button">Play Audio</button>
+        <button class="pause" onclick="pauseAudio()" type="button">Pause Audio</button> 
+      </div>
+    </div>
+    <!-- Auuuuggghh 1 sound -->
+     <div>
+          <audio id="aaa1">
+            <source src="https://outred.github.io/sfx/aaa-sfx.mp3" type="audio/mpeg">
+              Your browser does not support the audio element.
+            </source>
+          </audio>
+          <p>Auuuuggghh Sound Effect</p>
+          <button onclick="playAudio(aaa1)" type="button">Play Audio</button>
+          <button class="pause" onclick="pauseAudio()" type="button">Pause Audio</button> 
+      </div>
+    <!-- Anime "Wow" 1 sound -->
+     <div>
+          <audio id="wowanime1">
+            <source src="https://outred.github.io/sfx/animewow-sfx.mp3" type="audio/mpeg">
+              Your browser does not support the audio element.
+            </source>
+          </audio>
+          <p>Anime Wow Sound Effect</p>
+          <button onclick="playAudio(wowanime1)" type="button">Play Audio</button>
+          <button class="pause" onclick="pauseAudio()" type="button">Pause Audio</button> 
+      </div>
+    <!-- Guy screaming among us 1 sound -->
+     <div>
+          <audio id="amongus1">
+            <source src="https://outred.github.io/sfx/amongus-sfx.mp3" type="audio/mpeg">
+              Your browser does not support the audio element.
+            </source>
+          </audio>
+          <p>Guy Screaming Among Us Sound Effect</p>
+          <button onclick="playAudio(amongus1)" type="button">Play Audio</button>
+          <button class="pause" onclick="pauseAudio()" type="button">Pause Audio</button> 
+      </div>
+    
+     <div>
+          <audio id="bruh1">
+            <source src="https://outred.github.io/sfx/bruh-sfx.mp3" type="audio/mpeg">
+              Your browser does not support the audio element.
+            </source>
+          </audio>
+          <p>Bruh Sound Effect</p>
+          <button onclick="playAudio(bruh1)" type="button">Play Audio</button>
+          <button class="pause" onclick="pauseAudio()" type="button">Pause Audio</button> 
+      </div>
+    <!-- Script -->
+    <script>
+    // Responsive Function
+    function myFunction() {
+      let x = document.getElementById("myTopnav");
+      if (x.className === "topnav") {
+        x.className += " responsive";
+      } else {
+        x.className = "topnav";
+      }
+    }
+
+    // defining variables
+    let amogus1 = document.getElementById("amogus1"); 
+    let bruh1 = document.getElementById("bruh1"); 
+    // add new sounds here
+    let lore1 = document.getElementById("lore1");
+    let aaa1 = document.getElementById("aaa1");
+    let wowanime1 = document.getElementById("wowanime1");
+    let amongus1 = document.getElementById("amongus1");
+
+    // temporary value for storing the current sound
+    let tmp;
+
+    // playAudio function is used when a button is clicked to refer to a specific audio
+    function playAudio(audioNumber) { 
+      tmp = audioNumber
+      tmp.play(); 
+    } 
+
+    function pauseAudio() { 
+      tmp.pause(); 
+    } 
+
+    </script>
+  </body>
+</html> 
